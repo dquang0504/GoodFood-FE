@@ -1,0 +1,105 @@
+/* menu.css */
+
+.navbar {
+    background-color: #067A38;
+    transition: background-color 0.3s ease-in-out;
+    padding: .5rem 1rem !important;
+}
+
+.navbar .nav-link,
+.navbar .navbar-brand {
+    color: #fff !important;
+    transition: color 0.3s ease-in-out;
+}
+
+.navbar .nav-link:hover,
+.navbar .navbar-brand:hover {
+    color: #F28B13 !important;
+}
+
+.navbar-nav {
+    flex-direction: row;
+}
+
+.img-menu {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+}
+
+.navbar-nav .nav-item {
+    margin-left: 15px;
+    margin-right: 15px;
+    transition: transform 0.3s ease-in-out;
+}
+
+.navbar-nav .nav-item:hover {
+    transform: scale(1.1);
+}
+
+.navbar-nav .nav-item .nav-link {
+    position: relative;
+    transition: color 0.3s ease-in-out;
+}
+
+.navbar-nav .nav-item .nav-link:hover::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -5px;
+    height: 2px;
+    background-color: #fff;
+    transition: width 0.3s ease-in-out;
+    width: 100%;
+}
+
+/* Adjusting the dropdown style */
+.nav-item.cart-dropdown .cart-dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: white;
+    min-width: 200px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    text-align: left;
+    padding: 10px;
+}
+
+.nav-item.cart-dropdown {
+    z-index: 10;
+}
+
+.nav-item.cart-dropdown:hover .cart-dropdown-content {
+    display: block;
+}
+
+.nav-item.cart-dropdown .cart-dropdown-content form {
+    display: flex;
+    flex-direction: column;
+}
+
+.nav-item.cart-dropdown .cart-dropdown-content form .form-control {
+    margin-bottom: 10px;
+}
+
+.nav-item.cart-dropdown .cart-dropdown-content .dropdown-item {
+    display: block;
+    width: 100%;
+    padding: 5px 10px;
+    clear: both;
+    font-weight: 400;
+    color: #212529;
+    text-align: inherit;
+    white-space: nowrap;
+    background-color: transparent;
+    border: 0;
+}
+
+.nav-item.cart-dropdown .cart-dropdown-content .dropdown-divider {
+    height: 1px;
+    margin: 0.5rem 0;
+    overflow: hidden;
+    background-color: #e9ecef;
+}

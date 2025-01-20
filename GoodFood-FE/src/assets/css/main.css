@@ -1,0 +1,375 @@
+/* Hero Section */
+
+.hero {
+    background-color: #F5F0DC;
+    padding: 100px 0;
+    position: relative;
+    text-align: left;
+    animation: fadeIn 1.5s ease-in-out;
+}
+
+.hero .btn {
+    background-color: #366A1F;
+    border: none;
+    border-radius: 25px;
+    /* Make button rounded */
+    color: #fff;
+    padding: 10px 20px;
+    font-size: 1rem;
+    transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+.hero .btn:hover {
+    background-color: #045A2A;
+    transform: scale(1.05);
+}
+
+.hero h1 {
+    font-size: 60px;
+    font-weight: bold;
+    width: 600px;
+    color: #333;
+    margin-bottom: 20px;
+    animation: slideInLeft 1s ease-in-out;
+}
+
+.hero p {
+    color: #666;
+    animation: slideInRight 1s ease-in-out;
+}
+
+.hero-img {
+    max-width: 100%;
+    height: auto;
+    animation: fadeIn 1.5s ease-in-out;
+    height: 545px;
+    transform: rotate(-10deg);
+    /* Độ nghiêng -10 độ */
+
+
+}
+
+/* Services Section */
+.services {
+    background-color: #F5F0DC;
+    padding: 60px 0;
+    animation: fadeIn 1.5s ease-in-out;
+}
+
+.services h2 {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 40px;
+}
+.services h4{
+    font-size: 1.4rem;
+    font-weight: bold;
+}
+.services .col-md-4 {
+    margin-bottom: 20px;
+    transition: transform 0.3s ease-in-out;
+}
+
+.services .col-md-4:hover {
+    transform: scale(1.05);
+}
+
+.services img {
+    height: 150px;
+}
+
+/* Menu Section */
+.similar-product1 {
+    margin: 0px !important;
+    background-color: #F5F0DC   ;
+}
+
+.similar-product1 .product-name {
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.similar-product1 .product-price {
+    color: red;
+    font-size: 20px;
+    display: inline;
+}
+
+.similar-product1 .card {
+    height: 360px;
+    width: 300px;
+    background-color: #509224;
+    transition: 0.5s;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: none;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.similar-product1 .card img {
+    width: 300px;
+    height: 300px;
+    transition: transform 0.2s;
+}
+
+.similar-product1 .card img:hover {
+    transform: scale(1.1);
+}
+
+.similar-product1 .card-body {
+    position: absolute;
+    bottom: 0;
+    margin: 20px 0 0;
+    width: 100%;
+    font-size: 20px;
+    font-weight: bold;
+    background-color: #fff;
+    border-top-left-radius: 150px 30px;
+    border-top-right-radius: 150px 30px;
+}
+
+.similar-product1 .see-more {
+    text-align: center;
+    margin: 20px 0 0;
+}
+
+.similar-product1 .card-body i {
+    padding-left: 80px;
+}
+
+.similar-product1 .see-more .xem-them {
+    text-align: center;
+    background-color: #366A1F;
+    border-radius: 20px;
+    width: 136px;
+    color: #fff;
+}
+
+
+/* About Us Section */
+.about-us {
+    background-color: #F5F0DC;
+    padding: 60px 0;
+    animation: fadeIn 1.5s ease-in-out;
+}
+
+.about-us h2 {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    animation: slideInLeft 1s ease-in-out;
+}
+
+.about-us p {
+    font-size: 1.1rem;
+    color: #666;
+    animation: slideInRight 1s ease-in-out;
+}
+
+.about-us-img {
+    max-width: 100%;
+    height: auto;
+    animation: fadeIn 1.5s ease-in-out;
+}
+
+.about-us .btn {
+    background-color: #366A1F;
+    border: none;
+    border-radius: 25px;
+    /* Make button rounded */
+    color: #fff;
+    padding: 10px 20px;
+    font-size: 1rem;
+    transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+.about-us .btn:hover {
+    background-color: #045A2A;
+    transform: scale(1.05);
+}
+
+/* Contact Section */
+
+.contact {
+    background-color: #F5F0DC !important;
+    padding: 60px 0;
+}
+
+.contact h2 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.contact p {
+    font-size: 1rem;
+    margin-bottom: 20px;
+}
+
+.contact-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-top: 20px;
+    margin-bottom: 0;
+}
+
+.contact-subtitle {
+    font-size: 1.25rem;
+    margin-bottom: 30px;
+}
+
+/* .contact input,
+.contact textarea {
+    transition: all 0.3s ease-in-out;
+    padding: 15px;
+    border-radius: 5px;
+    border: none;
+    border-bottom: 2px solid #000; 
+    background: transparent;
+    width: 100%;
+    margin-bottom: 15px;
+    font-size: 1rem;
+    margin-left: 215px;
+} */
+
+
+.contact input::placeholder,
+.contact textarea::placeholder {
+    color: #000000;
+    font-style: italic;
+}
+
+.contact input:focus,
+.contact textarea:focus {
+    border-bottom-color: #4caf50; /* Green color for focus */
+    outline: none;
+    box-shadow: none; /* Remove default focus shadow */
+}
+
+.contact .btn {
+    background-color: #198754;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    /* margin-left:215px ; */
+    padding: 10px 50px;
+    font-size: 1rem;
+    transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.contact .btn:hover {
+    background-color: #045a2a;
+    transform: scale(1.05);
+}
+
+.text-center {
+    text-align: center;
+}
+
+.contact .input-lien-he {
+    transition: all 0.3s ease-in-out;
+    height: 50px;
+    /* padding-left: 50px; */
+    /* padding-left: 10px; */
+    padding-right: 15px;
+    background: transparent;
+    border: none;
+    outline: none;
+    border: 2px solid rgba(0, 0, 0, .5);
+    border-radius: 10px;
+}
+.contact .input-textarea{
+    height: 80px;
+}
+
+@media (max-width: 768px) {
+    .contact .row {
+        flex-direction: column;
+    }
+
+    .contact .col-md-4, .contact .col-md-8 {
+        width: 100%;
+        text-align: center;
+    }
+
+    .contact h2, .contact p, .contact-title, .contact-subtitle, .contact .text-left {
+        text-align: center;
+    }
+}
+
+
+/* Keyframes for Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        transform: translateX(-50%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(50%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideInUp {
+    from {
+        transform: translateY(50%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes scaleUp {
+    from {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes rotateIn {
+    from {
+        transform: rotate(-180deg);
+        opacity: 0;
+    }
+
+    to {
+        transform: rotate(0);
+        opacity: 1;
+    }
+}

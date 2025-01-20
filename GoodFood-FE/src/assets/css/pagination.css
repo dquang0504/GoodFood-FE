@@ -1,0 +1,97 @@
+@charset "UTF-8";
+.pagination-outer{ text-align: center; }
+.pagination{
+    font-family: 'Agdasima', sans-serif;
+    display: inline-flex;
+    position: relative;
+    width: 100%;
+}
+.pagination li a.page-link{
+    color: #fff;
+    background: transparent;
+    font-size: 23px;
+    font-weight: 400;
+    text-align: center;
+    line-height: 40px;
+    height: 40px;
+    width: 33px;
+    padding: 0;
+    margin: 0 7px;
+    border: none;
+    border-radius: 0;
+    display: block;
+    position: relative;
+    z-index: 0;
+    transition: all 0.1s ease 0s;
+}
+.pagination li:first-child a.page-link,
+.pagination li:last-child a.page-link{
+    font-size: 23px;
+    line-height: 37px;
+}
+.pagination li a.page-link:hover,
+.pagination li a.page-link:focus,
+.pagination li.active a.page-link:hover,
+.pagination li.active a.page-link{
+    color: #fff;
+    background: transparent;
+}
+.pagination li a.page-link:before{
+    content: '';
+    background-color: #2f3542;
+    height: 100%;
+    width: 100%;
+    box-shadow: 3px 3px rgba(0,0,0,0.2);
+    transform-origin: center center;
+    transform: perspective(75px) rotateX(30deg);
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    z-index: -1;
+    transition: all 0.3s ease 0s;
+}
+.pagination li a.page-link:hover:before,
+.pagination li a.page-link:focus:before,
+.pagination li.active a.page-link:hover:before,
+.pagination li.active a.page-link:before{
+    background-color: #05a55a;
+    box-shadow: -3px -3px rgba(0,0,0,0.2);
+    transform: perspective(75px) rotateX(-30deg);
+}
+@media only screen and (max-width: 480px){
+    .pagination{
+        font-size: 0;
+        display: inline-block;
+    }
+    .pagination li{
+        display: inline-block;
+        vertical-align: top;
+        margin: 0 0 15px;
+    }
+}
+
+.sentiment-label {
+    font-weight: bold;
+    padding: 3px;
+    border-radius: 5px;
+}
+
+.sentiment-label.pos {
+    background-color: #28a745;
+    color: white;
+}
+
+.sentiment-label.neg {
+    background-color: #dc3545;
+    color: white;
+}
+
+.sentiment-label.neu {
+    background-color: #6c757d;
+    color: white;
+}
+
+.sentiment-item {
+    margin-bottom: 10px;
+}
+
