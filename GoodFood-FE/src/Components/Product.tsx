@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import '../assets/css/product.css';
 import '../assets/css/pagination.css'
 import Navbar from './Navbar';
@@ -13,17 +13,30 @@ import { useNavigate } from 'react-router-dom';
 import ReactPaginate from 'react-paginate';
 import Footer from './Footer';
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 
 const Product = () => {
 
     const [loaiSanPhams, setLoaiSanPhams] = useState<ProductTypes[]>([]);
-    const [text,setText] = useState("");
     const [timKiem,setTimKiem] = useState("");
     const [loading,setLoading] = useState(false);
     const [products,setProducts] = useState<Products[]>([]);
+    const [loai,setLoai] = useState<ProductTypes | null>(null);
     const [valueSapXep,setValueSapXep] = useState("");
     const [totalPage,setToTalPage] = useState(0);
-    const [pageNum,setPageNum] = useState(1); 
+    const [pageNum,setPageNum] = useState(1);
+    
+    const [text,setText] = useState("");
+    //state isListening để xác định xem micro còn đang lắng nghe không
+    const [isListening, setIsListening] = useState(false);
+    const transcriptRef = useRef(''); // Sử dụng useRef để giữ giá trị transcript
+
+    // Kiểm tra xem trình duyệt có hỗ trợ Web Speech API không
+    const recognition = new ((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition)();
+    recognition.lang = 'vi-VN';
+    recognition.interimResults = true;
+
     const navigate = useNavigate();
 
 
@@ -37,10 +50,10 @@ const Product = () => {
         }
     }
 
-    const fetchProductsByPage = async (page: number, loai?: ProductTypes | null) => {
+    const fetchProductsByPage = async (page: number,searchQuery: string, loai?: ProductTypes | null) => {
         try {
             const typeQuery = loai ? `&type=${loai.typeName}` : '';
-            const response = await axios.get(`${ENDPOINT}/products?page=${page}${typeQuery}&search=`);
+            const response = await axios.get(`${ENDPOINT}/products?page=${page}${typeQuery}&search=${searchQuery}`);
             setProducts(response.data.data);
             setToTalPage(response.data.totalPage);
         } catch (error: any) {
@@ -49,21 +62,71 @@ const Product = () => {
         }
     };
 
-    const clickTimkiem = ()=>{
-
+    const clickTimkiem = (timKiem: string)=>{
+        fetchProductsByPage(pageNum,timKiem,loai);
     }
 
     const timKiemBangGiongNoi = ()=>{
-        
+        if (isListening){
+            recognition.stop();
+        } else{
+            recognition.start();
+        }
     }
 
-    const uploadImage = ()=>{
-
+    // Xử lý khi nhận được kết quả từ mic
+    recognition.onresult = (event: any)=>{
+        let transcript = '';
+        for(let i = event.resultIndex;i<event.results.length;i++){
+            transcript += event.results[i][0].transcript;
+        }
+        transcriptRef.current = transcript;
+        setText(transcript);
+    }
+    // Xử lý khi bắt đầu và kết thúc lắng nghe
+    recognition.onstart = () => setIsListening(true);
+    recognition.onend = ()=>{
+        setIsListening(false);
+        setTimKiem(transcriptRef.current);
+        clickTimkiem(transcriptRef.current);
+        recognition.stop();
+        setTimKiem("");
+        setText("");
+        transcriptRef.current = "";
     }
 
-    const clickChonLoai = async(loai?: ProductTypes | null)=>{
-        console.log(loai?.typeName)
-        fetchProductsByPage(1,loai)
+    const uploadImage = async(event: React.ChangeEvent<HTMLInputElement>)=>{
+        console.log(event.target.files?.[0]);
+        const file = event.target.files?.[0] || null;
+        try {
+            setLoading(true);
+            //Chuyển ảnh thành base64
+            const base64Image = await convertToBase64(file);
+            const response = await axios.post(`${ENDPOINT}/products/classify-image`,{
+                image: file
+            },{
+                headers:{
+                    "Content-Type": 'multipart/form-data'
+                }
+            })
+            console.log(response);
+        } catch (error) {
+            console.log(error);
+            console.log("Hello")
+        }
+    }
+
+    const convertToBase64 = async(file: File | null): Promise<string> =>{
+        return new Promise((resolve,reject)=>{
+            if (!file){
+                reject(new Error("File is null or undefined"));
+                return;
+            }
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = ()=> resolve(reader.result as string);
+            reader.onerror = (error) => reject(error);
+        })
     }
 
     const clickSapXep = (event: React.ChangeEvent<HTMLSelectElement>)=>{
@@ -74,14 +137,22 @@ const Product = () => {
 
     }
 
+    const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) =>{
+        setTimKiem(event.target.value);
+    }
+
 
     useEffect(()=>{
         fetchLoaiSP();
     },[])
 
     useEffect(()=>{
-        fetchProductsByPage(pageNum);
-    },[pageNum])
+        fetchProductsByPage(pageNum,"",loai);
+    },[pageNum,loai])
+
+    // useEffect(()=>{
+    //     fetchProductsByPage(pageNum,timKiem)
+    // },[timKiem])
 
     // useEffect(()=>{
     //     handlePageClick(pageNum);
@@ -100,13 +171,13 @@ const Product = () => {
                                         type="search"
                                         className="form-control"
                                         placeholder="Tìm kiếm..."
-                                        onChange={(event) => { setTimKiem(event.target.value) }}
+                                        onChange={(event) => { handleSearch(event)}}
                                         value={text ? text : timKiem}
                                     />
                                     <button
                                         className="btn btn-success"
                                         type="button"
-                                        onClick={() => { clickTimkiem() }}
+                                        onClick={() => { clickTimkiem(timKiem) }}
                                     >
                                         <i className="fa-solid fa-magnifying-glass"></i>
                                     </button>
@@ -125,7 +196,7 @@ const Product = () => {
                                             accept="image/*"
                                             capture='user'
                                             style={{ display: "none" }}
-                                            onChange={uploadImage}
+                                            onChange={(event)=>uploadImage(event)}
                                         />
                                     </label>
                                 </div>
@@ -135,7 +206,7 @@ const Product = () => {
                                     {loaiSanPhams.filter(item => item.status === true)
                                         .map(loai => (
                                             <li key={loai.productTypeID} style={{cursor:'pointer'}}>
-                                                <a onClick={() => { clickChonLoai(loai) }}>{loai.typeName}</a></li>
+                                                <a onClick={() => { setLoai(loai) }}>{loai.typeName}</a></li>
                                         ))}
                                 </ul>
 
