@@ -8,8 +8,10 @@ import axios, { AxiosResponse } from 'axios';
 import { ENDPOINT } from '../App';
 import { Products } from '../Interfaces/Products';
 import { formatVND } from '../Services/FormatVND';
+import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
+    const navigate = useNavigate();
     const [products,setProducts] = useState<Products[]>([]);
     const [loading,setLoading] = useState(true);
     const [formData,setFormData] = useState({
@@ -36,14 +38,14 @@ const Home = () => {
         setShowFullText(!showFullText);
     };
 
-    const handleChange = (e) => {
+    const handleChange = (e: any) => {
         setFormData({
           ...formData,
           [e.target.name]: e.target.value,
         });
     };
 
-    const clickMuaNgay = ()=>{
+    const clickMuaNgay = (item: Products)=>{
 
     }
 
@@ -125,7 +127,7 @@ const Home = () => {
                     {products.map(product => (
                         <div key={product.productID} className="col-md-3 d-flex justify-content-center">
                             <div className="card">
-                                <img src={product.coverImage} alt={product.productName} />
+                                <img src={product.coverImage} alt={product.productName} onClick={() => { navigate(`/home/product-details/${product.productID}`,{state:{productID:product.productID,productType:product.productTypeID}}) }} />
                                 <div className="card-body">
                                     <h3 className="product-name">{product.productName}</h3>
                                     <div className="action row me-1">

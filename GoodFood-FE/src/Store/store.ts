@@ -1,21 +1,27 @@
-import { configureStore } from "@reduxjs/toolkit";
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import loginReducer from '../Slices/LoginSlice'
+import cartReducer from "../Slices/CartSlice";
 import storage from 'redux-persist/lib/storage'
 import persistReducer from "redux-persist/es/persistReducer";
 import persistStore from "redux-persist/es/persistStore";
 import { FLUSH, PAUSE, PERSIST, PURGE, REGISTER, REHYDRATE } from "redux-persist";
+import { setStore } from "../Services/AxiosInstance";
 
 const persistConfig = {
     key: 'root', //key dùng để lưu trữ
     storage,
+    whitelist: ["login"],
 }
 
-const persistedReducer = persistReducer(persistConfig,loginReducer);
+const rootReducer = combineReducers({
+    login: loginReducer,
+    cart: cartReducer
+});
+
+const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 const store = configureStore({
-    reducer: {
-        login: persistedReducer,
-    },
+    reducer: persistedReducer,
     middleware: (getDefaultMiddleware)=> 
         getDefaultMiddleware({
             serializableCheck: {
@@ -23,6 +29,8 @@ const store = configureStore({
             },
         }),
 })
+
+setStore(store);
 
 export default store;
 export const persistor = persistStore(store)

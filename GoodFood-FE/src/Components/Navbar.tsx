@@ -4,22 +4,29 @@ import '../assets/css/menu.css'
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../Store/store';
 import { logout } from '../Slices/LoginSlice';
+import axiosInstance from '../Services/AxiosInstance';
+import { Carts } from '../Interfaces/Carts';
+import { formatVND } from '../Services/FormatVND';
+import { fetchCart } from '../Slices/CartSlice';
 
 const Navbar = () => {
 
-    const [listCart, setListCart] = useState([]);
-    const [taiKhoan,setTaiKhoan] = useState(null);
+    const {cart} = useSelector((state:RootState)=>state.cart)
     const {user} = useSelector((state:RootState)=>state.login)
     const dispatch = useDispatch<AppDispatch>();
 
     const clickDangXuat = ()=>{
-        sessionStorage.removeItem("user");
-        sessionStorage.removeItem("token")
         dispatch(logout())
     }
 
+    const getCart = ()=>{
+        if(user?.accountID !== undefined){
+            dispatch(fetchCart(user.accountID))
+        }  
+    }
+
     useEffect(()=>{
-       console.log(user) 
+       getCart();
     },[])
 
     return (
@@ -50,30 +57,28 @@ const Navbar = () => {
                     <NavLink className="nav-link cart-icon " to="/home/cart">
                         <i className="fas fa-shopping-cart position-relative">
                             {
-                                listCart.length === 0 ? (
-                                    <></>
-                                ) : (
+                                cart && cart.length > 0 && (
                                     <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                        {listCart.length}
+                                        {cart.length}
                                     </span>
                                 )
                             }
                         </i>
                     </NavLink>
                     {
-                        listCart.length === 0 ? (
+                        !cart || cart.length === 0 ? (
                             <div className="cart-dropdown-content" style={{ borderRadius:5 }}>
                                 <p className='mt-3 ms-3'>Chưa Có Sản Phẩm</p>
                             </div>
                         ) : (
                             <div className="cart-dropdown-content" style={{ width: "350px", borderRadius:5 }}>
                                 {
-                                    listCart.map((item) => {
+                                    Array.isArray(cart) && cart.map((item) => {
                                         return (
-                                            <div className="row mt-1" key={item.sanPhamGH.maSanPham}>
-                                                <div className="col-md-2"><img alt="" src={item.sanPhamGH.hinhAnh} height="40px" width="40px" /> </div>
-                                                <div className="col-md-5 align-content-center" >{item.sanPhamGH.tenSanPham}</div>
-                                                <div className="col-md-5 align-content-center">{item.soLuong} x {formatVND(item.sanPhamGH.gia)} <formatVND value={item.sanPhamGH.gia} format={"0.0"} /></div>
+                                            <div className="row mt-1" key={item.product?.productID}>
+                                                <div className="col-md-2"><img alt="" src={item.product?.coverImage} height="40px" width="40px" /> </div>
+                                                <div className="col-md-5 align-content-center" >{item.product?.productName}</div>
+                                                <div className="col-md-5 align-content-center">{item?.quantity} x {formatVND(item.product?.price)} </div>
                                             </div>
                                         )
                                     })

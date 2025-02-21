@@ -1,0 +1,339 @@
+@charset "UTF-8";
+
+.body-details,
+.bg-content{
+	background-color: #F5F0DC;
+}
+
+.image-product .image-big {
+	margin: 0 0 0 50px;
+	width: 50%;
+}
+
+.no-reviews-message{
+	background-color: #F5F0DC;
+	font-size: 20px;
+	margin: 20px 0 20px 0;
+}
+
+.image {
+	border: 1px solid;
+	border-radius: 10px;
+}
+
+.icon-share {
+	font-size: 30px;
+	margin: 0 5px 0 0;
+}
+
+.detail {
+	padding: 50px 0 0 0;
+	justify-content: center;
+}
+
+.share b {
+	font-size: 20px;
+}
+
+/* Detail Product */
+.detail-product {
+	margin: 0 0 0 50px;
+	padding: 0 0 0 30px;
+	border-left: 1px solid #cecece;
+}
+
+.detail-product .star {
+	display: inline;
+}
+
+.star .bi-star-fill {
+	color: #FAA41A;
+	font-size: 24px;
+}
+
+.detail-product .star .number-star {
+	color: #FAA41A;
+	font-size: 20px;
+	font-size: 30px;
+	margin-left: 20px;
+}
+
+.detail-product .name-product {
+	font-size: 40px;
+	font-weight: bold;
+	margin: 0 0 10px 20px;
+}
+
+.detail-product .star span {
+	font-size: 20px;
+}
+
+.text-number-evaluate,
+.text-number-buy {
+	color: #727272;
+}
+
+.detail-product2 {
+	margin: 0 0 0 20px;
+}
+
+.detail-product .price {
+	color: red;
+	font-size: 35px;
+	font-weight: bold;
+	margin-top: 10px;
+}
+
+.detail-product .description {
+	border-left: 3px solid red;
+	margin-top: 10px;
+}
+
+.detail-product .description span {
+	margin: 0 0 0 10px;
+	font-size: 24px;
+}
+
+.detail-product .salary {
+	color: #6C6C6C;
+	font-size: 16px;
+	margin: 20px 0 0 0;
+	display: flex; 
+    align-items: center; 
+    gap: 10px; 
+}
+
+/* Salary */
+.salary .box-add-salary button,
+.salary .box-add-salary button{
+	width: 30px;
+	height: 30px;
+	border: 1px solid #ddd;
+	background-color: #f8f9fa;
+	cursor: pointer;
+}
+
+.salary .box-add-salary input {
+	text-align: center;
+	border: 1px solid #ddd;
+	margin: 0 5px;
+}
+
+.salary .box-add-salary {
+	display: flex;
+	align-items: center;
+}
+
+.salary .box-add-salary button {
+	border: 1px solid;
+}
+
+.button-btn {
+	margin: 30px 0 0 0;
+}
+
+.btn-add-cart {
+	width: 209px;
+	height: 47px;
+	border-radius: 13px;
+}
+
+.btn-buy {
+	margin: 0 0 0 10px;
+	width: 161px;
+	height: 47px;
+	border-radius: 13px;
+}
+
+/* Detail Evaluate Star */
+
+
+.detail-evaluate-star {
+	border: 1px solid #366A1F;
+	background-color: rgba(114, 154, 88, 0.08);
+	margin-top: 10px;
+	width: 1200px;
+	height: 100px;
+	margin-left: 30px;
+	border-radius: 5px;
+}
+
+.detail-evaluate-star .number-star {
+	margin: 0 0 0 40px;
+	color: #FAA41A;
+	font-size: 24px;
+}
+
+.detail-evaluate-star form {
+	margin: -10px 0 0 300px;
+}
+
+.detail-evaluate-star div {
+	color: #FAA41A;
+	font-size: 64px;
+	margin: -50px 0 0 0;
+}
+
+.detail-evaluate-star .bi-star-fill {
+	color: #FAA41A;
+	font-size: 35px;
+}
+
+.detail-evaluate-star .btn {
+	border: 1px solid #366A1F;
+	width: 139px;
+	font-size: 20px;
+	background: #fff;
+	color: #366A1F;
+}
+
+.card-sp {
+	background-color: #F5F0DC;
+	border: none
+}
+.detail-evaluate .card-evaluate {
+	background-color: #F5F0DC;
+	margin-top: 10px;
+	margin-left: 30px;
+	border: none;
+	width: 1200px;
+}
+.detail-evaluate .card-evaluate .card-body .name {
+	font-size: 15px;
+}
+
+.detail-evaluate .card-evaluate .card-body .bi-star-fill {
+	color: #FAA41A;
+	font-size: 15px;
+}
+
+.detail-evaluate .col-md-9 {
+	margin: 0 0 0 -50px;
+}
+
+.card-evaluate .content {
+	background-color: #F5F0DC;
+	border: none;
+	padding: 5px 20px 0 5px;
+	margin-bottom: 10px;
+	margin-left: 0px;
+	margin-right: 0px;
+}
+.detail-evaluate .content .content-lable{
+	background-color: #F5F0DC;
+	margin: -100px 0 0 0;
+}
+
+.detail-evaluate .body-content {
+	margin: 0 0 15px 75px;
+	display: block;
+	border: none;
+}
+
+/* Similar Product */
+.container .similar-product-details{
+	/* margin: 0 50px 0 30px; */
+	width: 1220px;
+	margin-left: 20px;
+}
+.container .similar-product-details .card-product{
+	height: 390px;
+}
+.container .similar-product-details .product-name {
+	text-align: center;
+	font-size: 20px;
+	font-weight: bold;
+	white-space: nowrap;
+}
+
+.container .similar-product-details .product-price {
+	color: red;
+	font-size: 20px;
+	display: inline;
+}
+
+.container .similar-product-details .card-sp {
+	height: 360px;
+	background-color: #509224;
+	transition: 0.5s;
+	margin-bottom: 30px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	border: none;
+	border-radius: 8px;
+	overflow: hidden;
+}
+
+.container .similar-product-details .card-sp img {
+	width: 100%;
+	height: 290px;
+	transition: transform .2s;
+	border-top-left-radius: 8px;
+	border-top-right-radius: 8px;
+}
+
+.container .similar-product-details .card-sp img:hover {
+	transform: scale(1.1);
+}
+
+.container .similar-product-details .card-sp .card-body {
+	position: absolute;
+	bottom: 0;
+	margin: 20px 0 0 0;
+	width: 100%;
+	font-size: 20px;
+	font-weight: bold;
+	background-color: #ffffff;
+	border-top-left-radius: 150px 30px;
+	border-top-right-radius: 150px 30px;
+}
+
+.container .see-more {
+	text-align: center;
+	margin: 20px 0 0 0;
+}
+
+.container .similar-product-details .card-sp .card-body i {
+	padding-left: 80px;
+}
+
+.container .see-more .xem-them {
+	text-align: center;
+	border-radius: 20px;
+	width: 136px;
+	color: #fff;
+}
+
+.container .thumbnail {
+	width: 90px;
+	height: 90px;
+	margin: 8px 10px 10px 0;
+	cursor: pointer;
+}
+
+.container .large-image {
+	width: 500px;
+	height: 390px;
+}
+
+.container .fa-brands {
+	font-size: 30px;
+	margin: 0 10px 0 0;
+}
+
+.container button,
+a {
+	cursor: pointer;
+}
+
+.container .xemthem {
+	text-align: center;
+	border-radius: 40px;
+	width: 136px;
+	color: #fff;
+}
+
+.danhGiaBtn{
+	display: flex;
+	justify-content: right;
+	margin: -35px 70px 7px 0;
+}

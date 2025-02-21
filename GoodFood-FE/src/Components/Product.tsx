@@ -54,7 +54,8 @@ const Product = () => {
         try {
             const typeQuery = loai ? `&type=${loai.typeName}` : '';
             const response = await axios.get(`${ENDPOINT}/products?page=${page}${typeQuery}&search=${searchQuery}`);
-            setProducts(response.data.data);
+            setProducts(response.data.data || []);
+            console.log(products)
             setToTalPage(response.data.totalPage);
         } catch (error: any) {
             console.log(error);
@@ -63,6 +64,7 @@ const Product = () => {
     };
 
     const clickTimkiem = (timKiem: string)=>{
+        console.log("Đây")
         fetchProductsByPage(pageNum,timKiem,loai);
     }
 
@@ -97,36 +99,33 @@ const Product = () => {
 
     const uploadImage = async(event: React.ChangeEvent<HTMLInputElement>)=>{
         console.log(event.target.files?.[0]);
-        const file = event.target.files?.[0] || null;
+        const file = event.target.files?.[0];
+        if(!file) return
         try {
             setLoading(true);
-            //Chuyển ảnh thành base64
-            const base64Image = await convertToBase64(file);
-            const response = await axios.post(`${ENDPOINT}/products/classify-image`,{
-                image: file
-            },{
+            // Tạo FormData và gán file ảnh
+            const formData = new FormData();
+            formData.append("image", file);
+            const response = await axios.post(`${ENDPOINT}/products/classify-image`,formData,{
                 headers:{
-                    "Content-Type": 'multipart/form-data'
+                    "Content-Type": "multipart/form-data"
                 }
             })
             console.log(response);
+            // Tìm kiếm ngay với tên sản phẩm cần tìm
+            transcriptRef.current = response.data.data[0].className; // Lấy tên sản phẩm có độ tin cậy cao nhất
+            setTimKiem(transcriptRef.current); // Đặt text từ result vào thanh tìm kiếm
+            clickTimkiem(transcriptRef.current); // Gọi hàm tìm kiếm với giá trị text
+            setTimKiem("");
+            setText("");
+            transcriptRef.current = "";
         } catch (error) {
             console.log(error);
             console.log("Hello")
         }
-    }
-
-    const convertToBase64 = async(file: File | null): Promise<string> =>{
-        return new Promise((resolve,reject)=>{
-            if (!file){
-                reject(new Error("File is null or undefined"));
-                return;
-            }
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = ()=> resolve(reader.result as string);
-            reader.onerror = (error) => reject(error);
-        })
+        finally{
+            setLoading(false);
+        }
     }
 
     const clickSapXep = (event: React.ChangeEvent<HTMLSelectElement>)=>{
@@ -206,7 +205,7 @@ const Product = () => {
                                     {loaiSanPhams.filter(item => item.status === true)
                                         .map(loai => (
                                             <li key={loai.productTypeID} style={{cursor:'pointer'}}>
-                                                <a onClick={() => { setLoai(loai) }}>{loai.typeName}</a></li>
+                                                <a onClick={() => { setLoai(loai),setPageNum(1) }}>{loai.typeName}</a></li>
                                         ))}
                                 </ul>
 
@@ -240,13 +239,13 @@ const Product = () => {
                                 <FourSquare color="#067A38" size="large" text="" textColor="" />
                             </div>
                             :
-                            products.length === 0 ? <div className='px-5'>Không có sản phẩm để hiển thị.</div> :
+                            products?.length === 0 ? <div className='px-5'>Không có sản phẩm để hiển thị.</div> :
                                 <div className="similar-product row container-center">
-                                    {products.filter(item => item.status === true)
+                                    {products?.filter(item => item.status === true)
                                         .map(product => (
                                             <div key={product.productID} className="col-md-4">
                                                 <div className="card">
-                                                    <img src={product.coverImage} alt={product.productName} onClick={() => { navigate(`/home/product-details/${product.productID}`) }} />
+                                                    <img src={product.coverImage} alt={product.productName} onClick={() => { navigate(`/home/product-details/${product.productID}`,{state:{productID:product.productID,productType:product.productTypeID}}) }} />
                                                     <div className="card-body">
                                                         <h3 className="product-name">{product.productName}</h3>
                                                         <div className="action row">
@@ -279,23 +278,13 @@ const Product = () => {
                                     breakLinkClassName='page-link'
                                     containerClassName='pagination'
                                     activeClassName='active'
+                                    forcePage={pageNum - 1}
                                 />
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            {/* {imageURL && (
-                <img
-                    src={imageURL}
-                    alt="Upload Preview"
-                    crossOrigin="anonymous"
-                    ref={imageRef}
-                    onLoad={identify} // Gọi identify sau khi ảnh đã load xong
-                    style={{ display: "none" }}
-                />
-            )} */}
-
             <Footer />
         </div>
     );
