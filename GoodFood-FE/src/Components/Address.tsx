@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import '../assets/css/Address.css'
+import '../assets/css/pagination.css'
 import Navbar from './Navbar';
-import { Form } from 'react-router-dom';
 import { Addresses } from '../Interfaces/Addresses';
-import { Prev } from 'react-bootstrap/esm/PageItem';
 import { Districts } from '../Interfaces/Districts';
 import { Provinces } from '../Interfaces/Provinces';
 import { RootState } from '../Store/store';
@@ -13,16 +12,20 @@ import ReactPaginate from 'react-paginate';
 import axiosInstance from '../Services/AxiosInstance';
 import { toast } from 'react-toastify';
 import axios from 'axios';
+import { Button, Modal } from 'react-bootstrap';
 
 const Address = () => {
     const apiKey = import.meta.env.VITE_API_GHN;
     const {user} = useSelector((state:RootState)=>state.login)
+    const [pageNum,setPageNum] = useState(1);
+    const [totalPage,setToTalPage] = useState(0);
+    const [showModal,setShowModal] = useState(false);
     const [address,setAddress] = useState({
         wardName: "",
         districtName: "",
         provinceName: "Cần Thơ"
     })
-    const [addressForm,setAddressForm] = useState<Addresses>({
+    const initialAddressForm = {
         address: "Cần Thơ",
         addressID: 0,
         districtID: 0,
@@ -34,8 +37,9 @@ const Address = () => {
         wardID: 0,
         deleteStatus: false,
         accountID: user?.accountID || 0,
-        wardCode: 0
-    });
+        wardCode: "",
+    }
+    const [addressForm,setAddressForm] = useState<Addresses>(initialAddressForm);
     const [errorMessages,setErrorMessages] = useState({
         fullNameError: "",
         phoneError: "",
@@ -56,33 +60,17 @@ const Address = () => {
     const [listWard, setListWard] = useState<Wards[]>([]);
     const [listAddress,setListAddress] = useState<Addresses[]>([]);
 
-    const fetchAddreses = async()=>{
+    const fetchAddresesByPage = async(page: number)=>{
         try {
-            const response = await axiosInstance.get(`address/fetch?accountID=${user?.accountID}`)
+            const response = await axiosInstance.get(`address/fetch?page=${page}&accountID=${user?.accountID}`)
+            setToTalPage(response.data.totalPage);
             setListAddress(response.data.data);
-            console.log(response);
         } catch (error) {
             console.log(error);
         }
     }
 
-    // const fetchDistrict = async()=>{
-    //     try {
-    //         const response = await axios.post("https://online-gateway.ghn.vn/shiip/public-api/master-data/district",{province_id:province.provinceID},{
-    //             headers:{
-    //                 "token": apiKey,
-    //                 "Content-Type": "application/json"
-    //             }
-    //         })
-    //         setListDistrct(response.data.data);
-    //         console.log(response.data.data);
-    //     } catch (error) {
-    //         console.log(error)
-    //     }
-    // }
-
-    const fetchWard = async(districtID: number)=>{
-        console.log(districtID)
+    const fetchWard = async(districtID: number, selectedWard: string)=>{
         try {
             const response = await axios.post("https://online-gateway.ghn.vn/shiip/public-api/master-data/ward",{district_id:districtID},{
                 headers:{
@@ -91,6 +79,17 @@ const Address = () => {
                 }
             })
             setListWard(response.data.data);
+            const copy: Wards[] = response.data.data;
+            if (selectedWard){
+                const ward = copy.find(item => item.WardCode == selectedWard)
+                console.log(listWard);
+                if (ward){
+                    setAddress(prev=>({
+                        ...prev,
+                        wardName: ward.WardName
+                    }))
+                }
+            }
         } catch (error) {
             console.log(error)
         }
@@ -134,14 +133,12 @@ const Address = () => {
                 ...prev,
                 wardName: ""
             }))
-            fetchWard(selectedValue[fieldName]);
+            fetchWard(selectedValue[fieldName],"");
         }
-        console.log(selectedValue)
     }
     
     useEffect(()=>{
-        fetchAddreses();
-        console.log(listDistrict)
+        fetchAddresesByPage(pageNum);
     },[])
 
     useEffect(()=>{
@@ -152,52 +149,129 @@ const Address = () => {
         console.log(address)
     },[addressForm,address])
 
+    useEffect(()=>{
+        fetchAddresesByPage(pageNum);
+    },[pageNum])
+
     const clickAddNewAddress = async()=>{
-        setAddressForm(prev => ({
-            ...prev,
+        const updatedAddressForm = {
+            ...addressForm,
             address: address.wardName + ", " + address.districtName + ", " + address.provinceName
-        }))
-        console.log(addressForm);
+        }
+        setAddressForm(updatedAddressForm);
         if (basicValidation()){
             try {
-                const response = await axiosInstance.post(`address/insert`,addressForm);
-                console.log(response);
+                const response = await axiosInstance.post(`address/insert`,updatedAddressForm); 
+                toast.success(response.data.message);
             } catch (error) {
                 console.log(error);
             }
             finally{
+                clickResetAddress();
+                fetchAddresesByPage(pageNum);
                 setErrorMessages({districtError:"",fullNameError:"",phoneError:"",specificAddressError:"",wardError:""})
             }
         }
     }
 
-    const clickUpdateAddress = ()=>{
-        
+    const clickUpdateAddress = async()=>{
+        const updatedAddressForm = {
+            ...addressForm,
+            address: address.wardName + ", " + address.districtName + ", " + address.provinceName
+        }
+        setAddressForm(updatedAddressForm);
+        if (basicValidation()){
+            try {
+                const response = await axiosInstance.put(`address/update?accountID=${user?.accountID}&addressID=${addressForm.addressID}`,updatedAddressForm); 
+                toast.success(response.data.message);
+            } catch (error) {
+                console.log(error);
+            }
+            finally{
+                setEditting(false);
+                fetchAddresesByPage(pageNum);
+                setErrorMessages({districtError:"",fullNameError:"",phoneError:"",specificAddressError:"",wardError:""})
+                clickResetAddress();
+            }
+        }
     }
 
     const clickResetAddress = ()=>{
-        
-    }
-
-    const clickEditAddress = (address: Addresses)=>{
-
-    }
-
-    const clickDeleteAddress = (address: Addresses)=>{
-
-    }
-
-    const basicValidation = ()=>{
-        if (address.districtName === ""){
-            setErrorMessages({...errorMessages,districtError: "Vui lòng chọn quận/huyện!"})
-            return false
+        if(user){
+            setAddressForm(initialAddressForm)
+            setErrorMessages({districtError:"",fullNameError:"",phoneError:"",specificAddressError:"",wardError:""})
+            setEditting(false);
         }
-        if (address.wardName === ""){
-            setErrorMessages({...errorMessages,districtError: "Vui lòng chọn phường/xã!"})
-            return false
-        }
-        return true
     }
+
+    const clickEditAddress = async(address: Addresses)=>{
+        setEditting(true);
+        try {
+            const response = await axiosInstance.get(`address/detail?addressID=${address.addressID}&accountID=${address.accountID}`);
+            setAddressForm(response.data.data);
+            const selectedDistrict = listDistrict.find(district => district.DistrictID === response.data.data.districtID)
+            console.log(selectedDistrict)
+            if (selectedDistrict){
+                setAddress(prev=>({
+                    ...prev,
+                    districtName: selectedDistrict.DistrictName
+                }))
+            }
+
+            fetchWard(response.data.data.districtID,response.data.data.wardCode);
+        } catch (error) {
+           console.log(error); 
+        }
+    }
+
+    const clickDeleteAddress = async()=>{
+        setShowModal(true);
+        try {
+            const response = await axiosInstance.delete(`address/delete?accountID=${user?.accountID}&addressID=${addressForm.addressID}`)
+            toast.success(response.data.message);
+        } catch (error) {
+            console.log(error);
+        }finally{
+            setShowModal(false);
+            fetchAddresesByPage(pageNum)
+            clickResetAddress();
+        }
+    }
+
+    const basicValidation = () => {
+        let validated = true;
+        let newErrors: typeof errorMessages = {
+            fullNameError: "",
+            districtError:"",
+            phoneError:"",
+            specificAddressError:"",
+            wardError:""
+        }; // Tạo object tạm để chứa tất cả lỗi
+    
+        if (addressForm.fullName === "") {
+            newErrors.fullNameError = "Please provide your full name!";
+            validated = false;
+        }
+        if (addressForm.phoneNumber === "") {
+            newErrors.phoneError = "Please provide your mobile number";
+            validated = false;
+        }
+        if (address.districtName === "") {
+            newErrors.districtError = "Please select your district!";
+            validated = false;
+        }
+        if (address.wardName === "") {
+            newErrors.wardError = "Please select your ward!";
+            validated = false;
+        }
+        if(addressForm.specificAddress === ""){
+            newErrors.specificAddressError = "Please provide your specific address!"
+            validated = false;
+        }
+    
+        setErrorMessages(newErrors); // Cập nhật lỗi một lần duy nhất
+        return validated;
+    };
 
     return (
         <>
@@ -253,7 +327,7 @@ const Address = () => {
                                                 </div>
                                                 <div className="input-box-address ">
                                                     <div className="input-giua">
-                                                        <select className="form-select" id="district" onChange={(e)=>handleChangeSelect("districtID",e)} >
+                                                        <select className="form-select" id="district" value={JSON.stringify({ "districtID": addressForm.districtID, "districtName": address.districtName })} onChange={(e)=>handleChangeSelect("districtID",e)} >
                                                             <option selected hidden={true} value={JSON.stringify({ "districtID": "", "districtName": "" })}>Quận/Huyện</option>
                                                             {
                                                                 listDistrict.map((item, index) => {
@@ -274,7 +348,7 @@ const Address = () => {
                                             <div className="d-flex justify-content-between div-input">
                                                 <div className="input-box-address ">
                                                     <div className="input-giua">
-                                                        <select className="form-select" id="ward" onChange={(e)=>handleChangeSelect("wardCode",e)}>
+                                                        <select className="form-select" id="ward" value={JSON.stringify({ "wardCode": addressForm.wardCode, "wardName": address.wardName })} onChange={(e)=>handleChangeSelect("wardCode",e)}>
                                                             <option selected hidden={true} value={JSON.stringify({ "wardCode": "", "wardName": "" })}>Xã/Phường</option>
                                                             {
                                                                 listWard.map((item, index) => {
@@ -301,7 +375,7 @@ const Address = () => {
                                         <div className="d-flex justify-content-center">
                                             <div style={{ width: '750px' }}>
                                                 <input id='checkDefault' type="checkbox" name="macDinhDC"
-                                                    value={addressForm.specificAddress}
+                                                   checked={addressForm.status === true} onChange={(e)=> setAddressForm({...addressForm,status:e.target.checked})}
                                                 /> <label htmlFor='checkDefault'>Đặt làm địa chỉ mặc định</label>
                                             </div>
                                         </div>
@@ -326,9 +400,9 @@ const Address = () => {
                         </div>
                     </div>
 
-                    <div className="col-md-12 ms-5 me-4 p-0 mt-4 mb-5">
-                        <div className="fs-2">Danh sách địa chỉ </div>
+                    <div className="col-md-12 ms-5 me-4 p-0 mt-4 mb-5 d-flex justify-content-center">
                         <div className="card card-list">
+                            <div className="fs-2 d-flex  d-flex justify-content-center ">Danh sách địa chỉ </div>
                             <div className="card-body">
                                 <table className="table table-address">
                                     <thead>
@@ -355,8 +429,8 @@ const Address = () => {
 
                                                             </td>
                                                             <td className="col-md-2 text-center ">
-                                                                <span onClick={() => { clickEditAddress(item) }}><i className="fa-solid fa-pencil" style={{ color: '#0091ff' }}></i></span> <i>|</i>
-                                                                <span onClick={() => { clickDeleteAddress(item) }}><i className="fa-solid fa-trash-can" style={{ color: '#ff0000' }}></i></span>
+                                                                <span style={{cursor: "pointer"}} onClick={() => { clickEditAddress(item)}}><i className="fa-solid fa-pencil" style={{ color: '#0091ff' }}></i></span> <i>|</i>
+                                                                <span style={{cursor: "pointer"}} onClick={() => { setShowModal(true); setAddressForm(item) }}><i className="fa-solid fa-trash-can" style={{ color: '#ff0000' }}></i></span>
                                                             </td>
                                                         </tr>
                                                     )
@@ -365,33 +439,65 @@ const Address = () => {
                                     </tbody>
                                 </table>
                             </div>
-                        </div>
-                        <div className='d-flex justify-content-center' style={{ marginRight: '72px' }}>
-                            {/* <ReactPaginate
-                                breakLabel="..."
-                                nextLabel={<i className="fa-solid fa-forward-step"></i>}
-                                onPageChange={handlePageClick}
-                                pageRangeDisplayed={3}
-                                pageCount={totalPage}
-                                previousLabel={<i className="fa-solid fa-backward-step"></i>}
-                                renderOnZeroPageCount={null}
 
-                                pageClassName='page-item  page-address'
-                                pageLinkClassName='page-link'
-                                previousClassName='page-item page-address'
-                                previousLinkClassName='page-link'
-                                nextClassName='page-item page-address'
-                                nextLinkClassName='page-link'
-                                breakClassName='page-item'
-                                breakLinkClassName='page-link'
-                                containerClassName='pagination'
-                                activeClassName='active'
-                            /> */}
+                            <div className="pagination justify-content-center">
+                                <div className='d-flex justify-content-center' >
+                                    <ReactPaginate
+                                        breakLabel="..."
+                                        nextLabel={<i className="fa-solid fa-forward-step"></i>}
+                                        onPageChange={(event)=>setPageNum(event.selected + 1)}
+                                        pageRangeDisplayed={3}
+                                        pageCount={totalPage}
+                                        previousLabel={<i className="fa-solid fa-backward-step"></i>}
+                                        renderOnZeroPageCount={null}
+                                        pageClassName='page-item page-address'
+                                        pageLinkClassName='page-link'
+                                        previousClassName='page-item page-address mr-3'
+                                        previousLinkClassName='page-link'
+                                        nextClassName='page-item page-address'
+                                        nextLinkClassName='page-link'
+                                        breakClassName='page-item'
+                                        breakLinkClassName='page-link'
+                                        containerClassName='pagination'
+                                        activeClassName='active'
+                                        forcePage={pageNum - 1}
+                                    />
+                                </div>
+                            </div>
+
                         </div>
                     </div>
-
                 </div>
             </main>
+
+            <Modal show={showModal} onHide={()=>setShowModal(false)}>
+                <Modal.Header closeButton className='d-flex justify-content-end '>
+                    <Modal.Title className='fw-bold fs-3'>Xóa địa chỉ</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <div className='ms-4 me-4 mt-2 mb-2'>
+                        Bạn có chắc muốn xóa địa chỉ <span className='fw-bold'>{addressForm.address + ", " + addressForm.specificAddress}</span> này không?
+                    </div>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={()=>setShowModal(false)} style={{ width: '80px' }}>
+                        Không
+                    </Button>
+                    <Button variant="danger" onClick={() => clickDeleteAddress()} style={{ width: '80px' }}>
+                        Có
+                    </Button>
+                </Modal.Footer>
+                {/* {
+                    loadingDeleteAddress&& (
+                        <div className='position-absolute bg-black loading-modal-delete-all d-flex justify-content-center align-items-center' style={{ opacity: 0.4 }}>
+                            <div>
+                                <OrbitProgress variant="disc" color="#32cd32" size="small" text="" textColor="" />
+                            </div>
+                        </div>
+                    )
+                } */}
+            </Modal>
+
         </>
     );
 };

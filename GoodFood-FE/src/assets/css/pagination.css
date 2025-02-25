@@ -5,6 +5,8 @@
     display: inline-flex;
     position: relative;
     width: 100%;
+    display: flex;
+    justify-content: center;
 }
 .pagination li a.page-link{
     color: #fff;
@@ -94,4 +96,5 @@
 .sentiment-item {
     margin-bottom: 10px;
 }
+
 

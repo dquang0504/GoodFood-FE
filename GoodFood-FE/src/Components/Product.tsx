@@ -55,7 +55,6 @@ const Product = () => {
             const typeQuery = loai ? `&type=${loai.typeName}` : '';
             const response = await axios.get(`${ENDPOINT}/products?page=${page}${typeQuery}&search=${searchQuery}`);
             setProducts(response.data.data || []);
-            console.log(products)
             setToTalPage(response.data.totalPage);
         } catch (error: any) {
             console.log(error);

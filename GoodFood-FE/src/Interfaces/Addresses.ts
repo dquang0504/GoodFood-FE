@@ -10,5 +10,5 @@ export interface Addresses{
     wardID: number,
     deleteStatus: boolean,
     accountID: number,
-    wardCode: number,
+    wardCode: string,
 }
