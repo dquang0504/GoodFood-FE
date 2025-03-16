@@ -1,0 +1,16 @@
+.sidebar-brand {
+	color: #f8f9fa;
+	display: block;
+	font-size: 1.15rem;
+	font-weight: 600;
+	padding: 1.15rem 1.5rem
+}
+
+.sidebar-brand:hover {
+	color: #f8f9fa;
+	text-decoration: none
+}
+
+.sidebar-brand:focus {
+	outline: 0
+}

@@ -31,6 +31,7 @@ const ProductDetail = () => {
         try {
             const response = await axios.get(`${ENDPOINT}/products/detail?id=${state.productID}`)
             setProduct(response.data.data);
+            console.log(response)
         } catch (error) {
             console.log(error);
         }

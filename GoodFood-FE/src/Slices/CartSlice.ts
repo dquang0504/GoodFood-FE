@@ -52,9 +52,9 @@ export const fetchCart = createAsyncThunk(
 
 export const modifyQuantityCart = createAsyncThunk(
     "cart/modifyQuantity",
-    async({cartID,quantity}:{cartID:number,quantity:number},{rejectWithValue})=>{
+    async({cartID,quantity,accountID}:{cartID:number,quantity:number, accountID:number},{rejectWithValue})=>{
         try {
-            const response = await axiosInstance.post(`cart/modify?cartID=${cartID}`,{quantity: quantity})
+            const response = await axiosInstance.post(`cart/modify?cartID=${cartID}&accountID=${accountID}`,{quantity: quantity})
             return response.data.data
         } catch (error: any) {
             toast.error(error.response.data.message)
@@ -65,9 +65,9 @@ export const modifyQuantityCart = createAsyncThunk(
 
 export const deleteCartItem = createAsyncThunk(
     "cart/delete",
-    async(cartID:number,{rejectWithValue})=>{
+    async({cartID,accountID}: {cartID:number,accountID:number},{rejectWithValue})=>{
         try {
-            const response = await axiosInstance.delete(`cart/delete?cartID=${cartID}`)
+            const response = await axiosInstance.delete(`cart/delete?cartID=${cartID}&accountID=${accountID}`)
             toast.success("Successfully deleted a cart item");
             return response.data.data
         } catch (error : any) {

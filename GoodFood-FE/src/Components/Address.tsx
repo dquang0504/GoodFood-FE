@@ -13,6 +13,7 @@ import axiosInstance from '../Services/AxiosInstance';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { Button, Modal } from 'react-bootstrap';
+import Footer from './Footer';
 
 const Address = () => {
     const apiKey = import.meta.env.VITE_API_GHN;
@@ -497,7 +498,7 @@ const Address = () => {
                     )
                 } */}
             </Modal>
-
+            <Footer></Footer>
         </>
     );
 };

@@ -56,6 +56,7 @@ const Product = () => {
             const response = await axios.get(`${ENDPOINT}/products?page=${page}${typeQuery}&search=${searchQuery}`);
             setProducts(response.data.data || []);
             setToTalPage(response.data.totalPage);
+            console.log(response);
         } catch (error: any) {
             console.log(error);
             toast.error(error.response?.data?.message || "Error fetching products");
@@ -240,7 +241,7 @@ const Product = () => {
                             :
                             products?.length === 0 ? <div className='px-5'>Không có sản phẩm để hiển thị.</div> :
                                 <div className="similar-product row container-center">
-                                    {products?.filter(item => item.status === true)
+                                    {products.filter(item => item.status === true)
                                         .map(product => (
                                             <div key={product.productID} className="col-md-4">
                                                 <div className="card">

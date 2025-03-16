@@ -1,7 +1,7 @@
 /* Hero Section */
 
 .hero {
-    background-color: #F5F0DC;
+    background-color: #FAF3EB;
     padding: 100px 0;
     position: relative;
     text-align: left;
@@ -9,7 +9,7 @@
 }
 
 .hero .btn {
-    background-color: #366A1F;
+    background-color: #D95D39;
     border: none;
     border-radius: 25px;
     /* Make button rounded */
@@ -51,7 +51,7 @@
 
 /* Services Section */
 .services {
-    background-color: #F5F0DC;
+    background-color: #FAF3EB;
     padding: 60px 0;
     animation: fadeIn 1.5s ease-in-out;
 }
@@ -81,7 +81,7 @@
 /* Menu Section */
 .similar-product1 {
     margin: 0px !important;
-    background-color: #F5F0DC   ;
+    background-color: #FAF3EB   ;
 }
 
 .similar-product1 .product-name {
@@ -141,7 +141,7 @@
 
 .similar-product1 .see-more .xem-them {
     text-align: center;
-    background-color: #366A1F;
+    background-color: #D95D39;
     border-radius: 20px;
     width: 136px;
     color: #fff;
@@ -150,7 +150,7 @@
 
 /* About Us Section */
 .about-us {
-    background-color: #F5F0DC;
+    background-color: #FAF3EB;
     padding: 60px 0;
     animation: fadeIn 1.5s ease-in-out;
 }
@@ -175,7 +175,7 @@
 }
 
 .about-us .btn {
-    background-color: #366A1F;
+    background-color: #D95D39;
     border: none;
     border-radius: 25px;
     /* Make button rounded */
@@ -193,7 +193,7 @@
 /* Contact Section */
 
 .contact {
-    background-color: #F5F0DC !important;
+    background-color: #FAF3EB !important;
     padding: 60px 0;
 }
 

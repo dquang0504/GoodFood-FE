@@ -12,32 +12,39 @@ import { toast } from 'react-toastify';
 import { deleteAllItems, deleteCartItem, modifyQuantityCart } from '../Slices/CartSlice';
 import { FourSquare, OrbitProgress } from 'react-loading-indicators';
 import Footer from './Footer';
+import { useNavigate } from 'react-router-dom';
 
 const Cart = () => {
     const dispatch = useDispatch<AppDispatch>()
-    const [loading,setLoading] = useState(true);
-    const {user} = useSelector((state:RootState)=>state.login)
-    const {accessToken} = useSelector((state:RootState)=>state.login)
-    const [listCart,setListCart] = useState<Carts[]>([]);
-    const {cart} = useSelector((state:RootState)=>state.cart)
-    const [totalAmount,setTotalAmount] = useState(0);
-    const [totalProductSelect,setTotalProductSelect] = useState(0);
-    const [showModalDeleteAll,setShowModalDeleteAll] = useState(false)
+    const [loading, setLoading] = useState(true);
+    const { user } = useSelector((state: RootState) => state.login)
+    const { accessToken } = useSelector((state: RootState) => state.login)
+    const [listCart, setListCart] = useState<Carts[]>([]);
+    const { cart } = useSelector((state: RootState) => state.cart)
+    const [totalAmount, setTotalAmount] = useState(0);
+    const [totalProductSelect, setTotalProductSelect] = useState(0);
+    const [showModalDeleteAll, setShowModalDeleteAll] = useState(false)
+    const [chosenItems,setChosenItems] = useState<Carts[]>([]);
 
-    const fetchCartDetail = async()=>{
+    const fetchCartDetail = async () => {
         try {
             const response = await axiosInstance.get(`cart?accountID=${user?.accountID}`)
             setListCart(response.data.data);
+            console.log(response);
         } catch (error) {
             console.log(error);
         }
     }
 
-    const clickDeleteCart = async(cartItem: Carts) => {
+    const clickDeleteCart = async (cartItem: Carts) => {
         try {
-            dispatch(deleteCartItem(cartItem.cartID))
+            if (!user) {
+                return console.log("User is empty");
+            }
+            const accountID = user.accountID
+            dispatch(deleteCartItem({cartID: cartItem.cartID,accountID: accountID}))
             setListCart(
-                listCart.filter(item=>
+                listCart.filter(item =>
                     item.cartID !== cartItem.cartID
                 )
             )
@@ -46,32 +53,50 @@ const Cart = () => {
         }
     }
 
-    useEffect(()=>{
+    useEffect(() => {
         fetchCartDetail();
-    },[])
+    }, [])
 
-    const clickChonSanPham = (event: React.MouseEvent<HTMLInputElement, MouseEvent>, cartItem: Carts)=>{
+    useEffect(() => {
+        console.log(totalProductSelect);
+    
         const checkboxes = document.querySelectorAll<HTMLInputElement>(".checkboxClass");
-        const isChecked = (event.target as HTMLInputElement).checked
-        setTotalProductSelect(prev=> isChecked ? prev + 1 : prev - 1);
-        //calculating the total amount
-        setTotalAmount(prev=> isChecked ? prev + (cartItem.product.price * cartItem.quantity) : prev - (cartItem.product.price * cartItem.quantity))
-        //checking if checkboxAll is present
         const checkboxAll = document.querySelector<HTMLInputElement>("#checkboxAll");
-        if(checkboxAll){
-            if (totalProductSelect == 1){
-                checkboxAll.checked = false
-            }
-            if(totalProductSelect == checkboxes.length - 1){
-                checkboxAll.checked = true
+    
+        if (checkboxAll) {
+            if (totalProductSelect === 0) {
+                checkboxAll.checked = false; // Uncheck nếu không có sản phẩm nào được chọn
+            } else if (totalProductSelect === checkboxes.length) {
+                checkboxAll.checked = true; // Check nếu tất cả sản phẩm đã được chọn
             }
         }
-    }
+    }, [totalProductSelect]); // Theo dõi thay đổi của totalProductSelect
+    
+    const clickChonSanPham = (event: React.MouseEvent<HTMLInputElement, MouseEvent>, cartItem: Carts) => {
+        const isChecked = (event.target as HTMLInputElement).checked;
+        
+        setTotalProductSelect(prev => isChecked ? prev + 1 : prev - 1);
+        setTotalAmount(prev => isChecked ? prev + (cartItem.product.price * cartItem.quantity) : prev - (cartItem.product.price * cartItem.quantity));
+    
+        setChosenItems(prevItems => {
+            const index = prevItems.findIndex(item => item.cartID === cartItem.cartID);
+    
+            if (index === -1 && isChecked) {
+                return [...prevItems, cartItem]; // Thêm mới vào mảng
+            } else if (index !== -1) {
+                return prevItems.filter(item => item.cartID !== cartItem.cartID); // Xóa khỏi mảng
+            }
+            return prevItems;
+        });
+    };
 
-    const clickSoLuong = async(cartItem: Carts, operator: string)=>{
-        let newQuantity = operator === "increase" ? cartItem.quantity + 1 : Math.max(cartItem.quantity - 1,1);
+    const clickSoLuong = async (cartItem: Carts, operator: string) => {
+        let newQuantity = operator === "increase" ? cartItem.quantity + 1 : Math.max(cartItem.quantity - 1, 1);
         try {
-            const response = await dispatch(modifyQuantityCart({cartID:cartItem.cartID,quantity: newQuantity}))
+            if (!user) {
+                return console.log("User is empty");
+            }
+            const response = await dispatch(modifyQuantityCart({ cartID: cartItem.cartID, quantity: newQuantity, accountID: user?.accountID }))
             //update state listCart
             // Lấy dữ liệu từ action.payload
             if (modifyQuantityCart.fulfilled.match(response)) {
@@ -80,7 +105,7 @@ const Cart = () => {
                 ));
                 //checking if an item is chosen => update totalAmount
                 const checkbox = document.querySelector<HTMLInputElement>(`.checkboxClass[data-id="${cartItem.cartID}"]`);
-                if(checkbox?.checked){
+                if (checkbox?.checked) {
                     setTotalAmount(prev =>
                         operator === "increase"
                             ? prev + cartItem.product.price
@@ -95,24 +120,24 @@ const Cart = () => {
         }
     }
 
-    const clickSelectAll = (event: React.MouseEvent<HTMLInputElement,MouseEvent>)=>{
+    const clickSelectAll = (event: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
         const checkboxes = document.querySelectorAll<HTMLInputElement>(".checkboxClass");
         const isChecked = (event.target as HTMLInputElement).checked
         let totalPrice = 0;
-        checkboxes.forEach(item=>{
+        checkboxes.forEach(item => {
             item.checked = isChecked
         })
 
-        if(isChecked){
-            totalPrice = listCart.reduce((acc,item)=> acc + item.product.price * item.quantity,0);
+        if (isChecked) {
+            totalPrice = listCart.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
         }
         setTotalProductSelect(prev => isChecked ? checkboxes.length : 0);
         setTotalAmount(totalPrice)
     }
-    
-    const clickAgreeDeleteAll = ()=>{
-        if(user){
-            dispatch(deleteAllItems({isDelete:true,accountID:user?.accountID}))
+
+    const clickAgreeDeleteAll = () => {
+        if (user) {
+            dispatch(deleteAllItems({ isDelete: true, accountID: user?.accountID }))
             setListCart([]);
             setShowModalDeleteAll(false);
             return;
@@ -120,23 +145,28 @@ const Cart = () => {
         console.log("user rỗng");
     }
 
+    const navigate = useNavigate();
+
+    const clickMuaHang = async()=>{
+        navigate("/home/payment-details",{state:{listChosenItems: chosenItems}});
+    }
 
     return (
         <div style={{ marginTop: 65 }}>
             <Navbar></Navbar>
             {loading ? (
                 <>
-                    <div className='container mt-5 cart-container' style={{marginBottom:"75px",minHeight:"430px"}}>
+                    <div className='container mt-5 cart-container' style={{ marginBottom: "75px", minHeight: "430px" }}>
                         <h2 className='text-center cart-header pb-2'>Giỏ Hàng</h2>
                         {
-                            listCart.length === 0 ? (
+                            listCart && listCart.length === 0 ? (
                                 <div>
                                     <div className='d-flex justify-content-center mt-5'>
                                         <img src={imgCart} alt={imgCart} />
                                     </div>
                                     <div className="text-center fs-4">Chưa có sản phẩm</div>
                                 </div>
-                            ):(
+                            ) : (
                                 <div>
                                     <div className="table-responsive">
                                         <table className="table">
@@ -152,14 +182,14 @@ const Cart = () => {
                                             </thead>
                                             <tbody>
                                                 {
-                                                    listCart.map((item) => {
+                                                    listCart && listCart.map((item) => {
                                                         return (
                                                             <tr className="cart-item" key={`cart-${item.cartID}`}>
                                                                 <td className="align-content-center">
                                                                     <div className="d-flex justify-content-center">
                                                                         <input type="checkbox"
                                                                             className="checkboxClass"
-                                                                            data-id = {item.cartID}
+                                                                            data-id={item.cartID}
                                                                             onClick={(event) => { clickChonSanPham(event, item) }}
                                                                         />
                                                                     </div>
@@ -174,9 +204,9 @@ const Cart = () => {
                                                                 <td className="align-content-center">
                                                                     <div>
                                                                         <div className="quantity-control">
-                                                                            <button type="button" className="btn btn-sm" onClick={() => { clickSoLuong(item,"decrease") }} >-</button>
+                                                                            <button type="button" className="btn btn-sm" onClick={() => { clickSoLuong(item, "decrease") }} >-</button>
                                                                             <input type="text" className="form-control" name="soLuong" value={item.quantity} min="1" style={{ width: '80px' }} id="soLuong" disabled={true} />
-                                                                            <button type="button" className="btn btn-sm" onClick={() => { clickSoLuong(item,"increase") }} >+</button>
+                                                                            <button type="button" className="btn btn-sm" onClick={() => { clickSoLuong(item, "increase") }} >+</button>
                                                                         </div>
                                                                     </div>
                                                                 </td>
@@ -203,8 +233,8 @@ const Cart = () => {
                                                             type="submit"
                                                             className="btn btn-success"
                                                             id="muaHang"
-                                                            // onClick={clickMuaHang}
-                                                            // disabled={listItemClickChon.length === 0 ? true : false}
+                                                            onClick={clickMuaHang}
+                                                            disabled={totalAmount == 0 ? true : false}
                                                         >Mua Hàng
                                                         </button>
                                                     </td>
@@ -217,7 +247,7 @@ const Cart = () => {
                         }
                     </div>
                 </>
-            ):(
+            ) : (
                 <>
                     <div className='d-flex justify-content-center align-items-center' style={{ minHeight: 510 }}>
                         <FourSquare color="#067A38" size="large" text="" textColor="" />
@@ -225,7 +255,7 @@ const Cart = () => {
                 </>
             )}
 
-            <Modal show={showModalDeleteAll} onHide={()=> showModalDeleteAll ? setShowModalDeleteAll(false) : setShowModalDeleteAll(true)}>
+            <Modal show={showModalDeleteAll} onHide={() => showModalDeleteAll ? setShowModalDeleteAll(false) : setShowModalDeleteAll(true)}>
                 <Modal.Header closeButton className='d-flex justify-content-end '>
                     <Modal.Title className='fw-bold fs-3'>Xóa tất cả sản phẩm</Modal.Title>
                 </Modal.Header>
@@ -235,7 +265,7 @@ const Cart = () => {
                     </div>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={()=> setShowModalDeleteAll(false)} style={{ width: '80px' }}>
+                    <Button variant="secondary" onClick={() => setShowModalDeleteAll(false)} style={{ width: '80px' }}>
                         Không
                     </Button>
                     <Button variant="danger" onClick={() => clickAgreeDeleteAll()} style={{ width: '80px' }}>

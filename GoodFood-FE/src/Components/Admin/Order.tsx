@@ -1,0 +1,394 @@
+import React, { useEffect, useState } from 'react';
+import SideNav from './SideNav';
+import HorizontalNav from './HorizontalNav';
+import axiosInstance from '../../Services/AxiosInstance';
+import { Invoices } from '../../Interfaces/Invoices';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../Store/store';
+import { InvoiceDetails } from '../../Interfaces/InvoiceDetails';
+import { InvoiceStatuses } from '../../Interfaces/InvoicesStatuses';
+import { Modal } from 'react-bootstrap';
+import Footer from './Footer';
+import ReactPaginate from 'react-paginate';
+import { formatVND } from '../../Services/FormatVND';
+
+type Cards = {
+    TotalInvoice: number,
+    TotalCanceled: number,
+}
+
+const Order = () => {
+
+    const [ngayFrom,setNgayFrom] = useState(new Date());
+    const [ngayTo,setNgayTo] = useState(new Date());
+    const [pageNum,setPageNum] = useState(1);
+    const [totalPage,setToTalPage] = useState(0);
+    const [sort,setSort] = useState("Mã hóa đơn");
+    const [search,setSearch] = useState("");
+    const {user} = useSelector((state:RootState)=>state.login);
+    const [editting,setEditting] = useState(false);
+    const [show,setShow] = useState(false);
+    const [cards,setCards] = useState<Cards>({
+        TotalInvoice: 0,
+        TotalCanceled: 0,
+    });
+    const [invoices,setInvoices] = useState<Invoices[]>([]);
+    const [displayI,setDisplayI] = useState<InvoiceDetails[]>();
+    const initialInvoice = {
+        accountID: user ? user.accountID : 0,
+        cancelReason: "",
+        invoiceID: 0,
+        invoiceStatus: null,
+        invoiceStatusID: 0,
+        note: "",
+        paymentDate: new Date().toISOString(),
+        paymentMethod: false,
+        receiveAddress: "",
+        receiveName: "",
+        receivePhone: "",
+        shippingFee: 0,
+        status: false,
+        totalPrice: 0,
+    }
+    const [displayInvoice,setDisplayInvoice] = useState<Invoices>(initialInvoice);
+    const [statusList,setStatusList] = useState<InvoiceStatuses[]>([]);
+    const initialInvoiceStatus = {
+        invoiceStatusID: 0,
+        statusName: ""
+    }
+    const [status,setStatus] = useState<InvoiceStatuses>(initialInvoiceStatus)
+
+    const fetchData = async(page: number,sort: string, search: string)=>{
+        try {
+            const response = await axiosInstance.get(`admin/order?page=${page}&sort=${sort}&search=${search}`);
+            setCards(response.data.cards);
+            setInvoices(response.data.data);
+            setToTalPage(response.data.totalPage);
+            console.log(response.data);
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    useEffect(()=>{
+        fetchData(pageNum,sort,search);
+    },[])
+
+    const handleShow = (invoiceID: number,statusName: string)=>{
+        if(statusName === "Đã Hủy"){
+            setShow(true);
+        }
+        else{
+            updateOrder(invoiceID,statusName);
+        }
+        
+    }
+
+    const updateOrder = async(invoiceID: number, statusName: string)=>{
+        try {
+            
+        } catch (error) {
+            
+        }
+    }
+
+    const handleSend = (invoiceID: number,statusName: string)=>{
+        setShow(true);
+        updateOrder(invoiceID,statusName);
+    }
+
+
+    const toggleSearchAndDateFields = ()=>{
+        var sortSelect = document.getElementById("sortSelect") as HTMLSelectElement;
+	    var searchField = document.getElementById("searchField") as HTMLElement;
+	    var dateFields = document.getElementById("dateFields") as HTMLElement;
+	        
+	    if (sortSelect && sortSelect.value === "Ngày thanh toán") {
+            searchField.style.display = "none";
+            dateFields.style.display = "flex"; // Keep elements in the same row
+        } else if (sortSelect) {
+            searchField.style.display = "flex"; // Keep elements in the same row
+            dateFields.style.display = "none";
+        }
+    }
+
+    const handleSortChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        setSort(event.target.value);
+        toggleSearchAndDateFields();
+        console.log(event.target.value)
+    }
+
+    const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const {name,value} = event.target;
+        if(name === 'ngayFrom'){
+            setNgayFrom(new Date(value));
+
+        }else if(name === 'ngayTo'){
+            setNgayTo(new Date(value));
+        }
+    }
+
+    const fetchDetail = async(invoiceID: number)=>{
+        try {
+            const response = await axiosInstance.get(`admin/order/detail?invoiceID=${invoiceID}`)
+            setDisplayInvoice(response.data.data);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const handleSearchSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        fetchData(pageNum,sort,search);
+    }
+
+    useEffect(() => {
+        const delayDebounce = setTimeout(() => {
+            fetchData(pageNum, sort, search);
+        }, 500); // debounce 500ms tránh spam gọi API liên tục
+    
+        return () => clearTimeout(delayDebounce);
+    }, [search, sort, pageNum]); // tự động gọi lại mỗi khi search/sort/pageNum thay đổi
+    
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearch(e.target.value);
+    };
+
+    return (
+        <div className="wrapper">
+            <SideNav></SideNav>
+
+            <div className="main main-admin p-0">
+                <HorizontalNav></HorizontalNav>
+                <main className="content">
+                    <div className="container-fluid p-0">
+                        <h1 className="h3 mb-3">Danh sách hóa đơn</h1>
+                        <div className="row">
+                            <div className="col-md-6">
+                                <div className="card">
+                                    <div className="card-body" style={{borderRadius:8}}>
+                                        <div className="row">
+                                            <div className="col mt-0">
+                                                <h5 className="card-title">Tổng số hóa đơn</h5>
+                                            </div>
+
+                                            <div className="col-auto">
+                                                <div className="stat text-primary">
+                                                    <i className="fa-solid fa-file-invoice" style={{color: "#067a38"}}></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <h1 className="mt-1 mb-3 fs-2">{cards.TotalInvoice}</h1>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="col-md-6">
+                                <div className="card">
+                                    <div className="card-body" style={{borderRadius:8}}>
+                                        <div className="row">
+                                            <div className="col mt-0">
+                                                <h5 className="card-title">Số hóa đơn bị hủy</h5>
+                                            </div>
+
+                                            <div className="col-auto">
+                                                <div className="stat text-primary">
+                                                    <i className="fa-solid fa-file-invoice" style={{color:"#067a38"}}></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <h1 className="mt-1 mb-3 fs-2">{cards.TotalCanceled}</h1>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="invoiceDetail" style={{marginTop:"20px"}}>
+                            <h4> Hóa đơn chi tiết </h4>
+                            <form>
+                                <div className="row">
+                                    <div className="col-md-8 col-xxl-8">
+                                        <table className="table table-striped table-hover table-light">
+                                            <thead className="text-center" style={{ backgroundColor: '#067a38', color: '#fff',fontSize: '0.8rem' }}>                                                
+                                                <th>Tên sản phẩm</th>
+                                                <th>Số lượng</th>
+                                                <th>Tên khách hàng</th>
+                                                <th>Địa chỉ</th>
+                                                <th>Số điện thoại</th>
+                                            </thead>
+
+                                            <tbody className="text-center">
+                                                {displayI && displayI.map((detail,index)=>(
+                                                    <tr key={index}>
+                                                        <td>{detail.product?.productName}</td>
+                                                        <td>{detail.quantity}</td>
+                                                        <td>{detail.invoice?.receiveName}</td>
+                                                        <td>{detail.invoice?.receiveAddress}</td>
+                                                        <td>{detail.invoice?.receivePhone}</td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <div className="col-md-4">
+                                        <div className="mb-3">
+                                            <label className="form-label fw-bold">Trạng thái:</label>
+                                            <select value={status.statusName} onChange={(e)=>setStatus({...status,statusName: e.target.value})} name="trangThaiHoaDon.tenTrangThai" className="form-select"
+                                                aria-label="Default select example">
+                                                    {statusList!==null ? (
+                                                        statusList.map((item, index) => (
+                                                            <option value={item.statusName} key={index}>{item.statusName}</option>
+                                                        ))
+                                                        ) : (
+                                                        <option value={displayInvoice.invoiceStatus?.statusName}>{displayInvoice.invoiceStatus?.statusName}</option>
+                                                    )}
+                                            </select>
+                                            {/* <em className="text-danger" th:text="${errType}"></em> */}
+                                        </div>
+
+                                        <button 
+                                            disabled={!editting}
+                                            onClick={() => handleShow(displayInvoice.invoiceID, displayInvoice.invoiceStatus?.statusName ? displayInvoice.invoiceStatus?.statusName : '')} 
+                                            className="btn btn-primary" 
+                                            type="button"
+                                            >
+                                            Cập nhật trạng thái đơn hàng
+                                        </button>     
+                                        {/* updateOrder(displayHoaDon.maHoaDon,displayHoaDon.trangThaiHoaDon.tenTrangThai)          */}
+                                        <Modal show={show} onHide={()=>setShow(false)} backdrop="static" aria-labelledby="contained-modal-title-vcenter" centered>
+                                            <Modal.Header closeButton>
+                                                <Modal.Title id="contained-modal-title-vcenter">Lý do hủy</Modal.Title>
+                                            </Modal.Header>
+                                            <Modal.Body>
+                                                <div className='mb-3'>
+                                                    <textarea onChange={(event)=>setDisplayInvoice({...displayInvoice,})} placeholder='Nhập vào lý do hủy' className='form-control' name="" id="" cols={3} rows={6}></textarea>
+                                                </div>
+                                            </Modal.Body>
+                                            <Modal.Footer>
+                                            <button className='btn btn-primary' onClick={()=>handleSend(displayInvoice.invoiceID,displayInvoice.invoiceStatus ? displayInvoice.invoiceStatus?.statusName : '')}>
+                                                Gửi
+                                            </button>
+                                            </Modal.Footer>
+                                        </Modal>
+                                    </div> 
+                                </div>
+                            </form>
+                        </div>
+
+                        <div className="invoiceList" style={{marginTop:"20px"}}>
+                            <h4 className="text-center"> Danh sách hóa đơn </h4>
+                            <form onSubmit={(event)=>handleSearchSubmit(event)}>
+                                <div className="row">
+                                    <div className="col-md-4 col-xxl-6">
+                                        <div className="input-group mb-3">
+                                            <select id="sortSelect" name="sort" onChange={(event)=> {toggleSearchAndDateFields(); handleSortChange(event)}}
+                                                className="form-select" aria-label="Default select example">
+                                                <option value="Mã hóa đơn">Mã hóa đơn</option>
+                                                <option value="Tên khách hàng">Tên khách hàng</option>
+                                                <option value="Ngày thanh toán">Ngày thanh toán</option>
+                                                <option value="Trạng thái">Trạng thái</option>
+                                            </select>
+                                            <div id="searchField">
+                                                <input name="search" type="search" className="form-control"
+                                                    placeholder="Tìm kiếm" value={search} onChange={handleSearchChange}></input>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div id="dateFields" className="col-md-8 col-xxl-6" style={{display:"none"}}>
+                                        <div className="input-group mb-3">
+                                            <input name="ngayFrom" type="date"
+                                                className="form-control" placeholder="Từ" onChange={(event)=>handleDateChange(event)}></input> 
+                                            <input name="ngayTo" type="date"
+                                                className="form-control" placeholder="Đến" onChange={(event)=>handleDateChange(event)}></input>
+                                            <button type="submit" className="btn btn-success">Tìm kiếm</button>
+                                        </div>
+                                    </div>                
+                                </div>
+                            </form>
+
+                            <table className="table table-striped table-hover table-light">
+                                <thead className="text-center align-middle" style={{ backgroundColor: '#067a38', color: '#fff',fontSize:'0.8rem' }}>
+                                    <th>Mã hóa đơn</th>
+                                    <th>Ngày thanh toán</th>
+                                    <th>Trạng thái</th>
+                                    <th>Tổng tiền sản phẩm</th>
+                                    <th>Trạng thái thanh toán</th>
+                                    <th>Ghi chú</th>
+                                    <th>Phí vận chuyển</th>
+                                    <th>Phương thức thanh toán</th>
+                                    <th>Hành động</th>
+                                </thead>    
+
+                                <tbody className="text-center">
+                                    {invoices.map((invoice) => (
+                                        <tr key={invoice.invoiceID}>
+                                            <td>{invoice.invoiceID}</td>
+                                            <td>{invoice.paymentDate.toLocaleString()}</td>
+                                            <td>
+                                                <span className={`badge ${invoice.invoiceStatus?.statusName === 'Đã Hủy' ? 'bg-danger' : invoice.invoiceStatus?.statusName === 'Đang xử lý' ? 'bg-warning' : invoice.invoiceStatus?.statusName === 'Đang vận chuyển' ? 'bg-info' : 'bg-success'}`}>
+                                                    {invoice.invoiceStatus?.statusName}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span>{formatVND(invoice.totalPrice)}</span>
+                                            </td>
+                                            <td>{invoice.status ? 'Đã thanh toán' : 'Chưa thanh toán'}</td>
+                                            <td>{invoice.note !== null ? invoice.note : 'Không có'}</td>
+                                            <td>
+                                                <span>{formatVND(invoice.shippingFee)}</span>
+                                            </td>
+                                            <td>{invoice.paymentMethod ? 'Thanh toán khi nhận hàng' : 'Thanh toán online'}</td>
+                                            <td>
+                                                <i className="fa-solid fa-pen-to-square" onClick={()=>fetchDetail(invoice.invoiceID)}></i>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>  
+
+                            <div className="text-center" hidden={totalPage !== 0}>
+                                <p className="fw-bold">Không tìm thấy hóa đơn tương ứng</p>
+                            </div>
+
+                            <div hidden={totalPage===0} className="d-flex justify-content-between" style={{marginTop:"25px"}}>
+                                {/* Vị trí hiển thị số trang */}
+                                <p className="fw-bold">Đang xem trang {pageNum} / {totalPage}</p>
+
+                                
+                                {/* React Paginate */}
+                                <ReactPaginate
+                                        breakLabel="..."
+                                        nextLabel={<i className="fa-solid fa-forward-step"></i>}
+                                        onPageChange={(event)=>setPageNum(event.selected + 1)}
+                                        pageRangeDisplayed={3}
+                                        pageCount={totalPage}
+                                        previousLabel={<i className="fa-solid fa-backward-step"></i>}
+                                        renderOnZeroPageCount={null}
+                                        pageClassName='page-item page-address'
+                                        pageLinkClassName='page-link'
+                                        previousClassName='page-item page-address mr-3'
+                                        previousLinkClassName='page-link'
+                                        nextClassName='page-item page-address'
+                                        nextLinkClassName='page-link'
+                                        breakClassName='page-item'
+                                        breakLinkClassName='page-link'
+                                        containerClassName='pagination'
+                                        activeClassName='active'
+                                        forcePage={pageNum - 1}
+                                    />
+                                <p className="fw-bold">6 bản ghi / 1 trang</p>
+                            </div>                      
+
+                        </div>
+
+                    </div>
+                </main>
+                <Footer></Footer>
+            </div>
+        </div>
+    );
+};
+
+export default Order;

@@ -8,5 +8,6 @@ export interface Products{
     description: string,
     status: boolean,
     insertDate: Date,
-    productTypeID: number
+    productTypeID: number,
+    weight: number,
 }

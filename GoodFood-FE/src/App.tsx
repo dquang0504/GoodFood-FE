@@ -10,6 +10,9 @@ import Cart from './Components/Cart'
 import { useSelector } from 'react-redux'
 import { RootState } from './Store/store'
 import Address from './Components/Address'
+import PaymentDetails from './Components/PaymentDetails'
+import Dashboard from './Components/Admin/Dashboard'
+import Order from './Components/Admin/Order'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -43,6 +46,9 @@ function App() {
           <Route path='/home/product-details/:productID' element={<ProductDetail></ProductDetail>}></Route>
           <Route path='/home/cart' element={ <PrivateRoute element={Cart}/> }></Route>
           <Route path='/home/address' element={ <PrivateRoute element={Address}></PrivateRoute> }></Route>
+          <Route path='/home/payment-details' element={ <PrivateRoute element={PaymentDetails}></PrivateRoute> }></Route>
+          <Route path='/home-admin' element={ <PrivateRoute element={Dashboard}></PrivateRoute> }></Route>
+          <Route path='/home-admin/order' element={ <PrivateRoute element={Order}></PrivateRoute> }></Route>
         </Routes>
       </div>
       <ToastContainer></ToastContainer>
