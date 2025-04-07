@@ -65,9 +65,6 @@ export const login = createAsyncThunk(
         try {
             const response = await axios.get(`${ENDPOINT}/user/login?username=${username}&password=${password}`,{withCredentials: true});
             toast.success("Successfully logged in!")
-            // sessionStorage.setItem("user",JSON.stringify(response.data.data.user));
-            // sessionStorage.setItem("token",response.data.data.token);
-            // console.log(response.data.data);
             return response.data.data;
         } catch (error : any) {
             toast.error(error.response.data.message)

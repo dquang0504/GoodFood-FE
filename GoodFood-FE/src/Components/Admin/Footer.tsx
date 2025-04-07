@@ -9,7 +9,7 @@ const Footer = () => {
                     <div className="row text-muted">
                         <div className="col-6 text-start">
                             <p className="mb-0">
-                                <NavLink to={""} className="text-muted" target="_blank" style={{fontFamily: "Rancho"}}><strong>Five Food 24 Giờ</strong></NavLink> - <NavLink to={""} className="text-muted" target="_blank"><strong> Quản trị
+                                <NavLink to={""} className="text-muted" target="_blank" style={{fontFamily: "Rancho"}}><strong>Good Food 24h</strong></NavLink> - <NavLink to={""} className="text-muted" target="_blank"><strong> Management
                                     </strong></NavLink> &copy;
                             </p>
                         </div>

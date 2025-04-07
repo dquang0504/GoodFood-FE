@@ -11,10 +11,22 @@ import { Modal } from 'react-bootstrap';
 import Footer from './Footer';
 import ReactPaginate from 'react-paginate';
 import { formatVND } from '../../Services/FormatVND';
+import { toast } from 'react-toastify';
 
 type Cards = {
     TotalInvoice: number,
     TotalCanceled: number,
+}
+type InvoiceDetailResponse = {
+    InvoiceDetailID: number,
+    InvoiceID: number,
+    Price: number,
+    ProductID: number,
+    ProductName: string,
+    Quantity: number,
+    ReceiveAddress: string,
+    ReceiveName: string,
+    ReceivePhone: string
 }
 
 const Order = () => {
@@ -33,7 +45,7 @@ const Order = () => {
         TotalCanceled: 0,
     });
     const [invoices,setInvoices] = useState<Invoices[]>([]);
-    const [displayI,setDisplayI] = useState<InvoiceDetails[]>();
+    const [displayI,setDisplayI] = useState<InvoiceDetailResponse[]>();
     const initialInvoice = {
         accountID: user ? user.accountID : 0,
         cancelReason: "",
@@ -58,43 +70,62 @@ const Order = () => {
     }
     const [status,setStatus] = useState<InvoiceStatuses>(initialInvoiceStatus)
 
-    const fetchData = async(page: number,sort: string, search: string)=>{
+    const fetchData = async(page: number,sort: string, search: string, dateFrom: Date, dateTo: Date)=>{
         try {
-            const response = await axiosInstance.get(`admin/order?page=${page}&sort=${sort}&search=${search}`);
+            const response = await axiosInstance.get(`admin/order?page=${page}&sort=${sort}&search=${search}&dateFrom=${dateFrom.toISOString().slice(0, 10)}&dateTo=${dateTo.toISOString().slice(0,10)}`);
             setCards(response.data.cards);
             setInvoices(response.data.data);
             setToTalPage(response.data.totalPage);
             console.log(response.data);
-        } catch (error) {
+        } catch (error: any) {
             console.log(error)
+            toast.error(error.response.data.message);
         }
     }
 
     useEffect(()=>{
-        fetchData(pageNum,sort,search);
+        fetchData(pageNum,sort,search,ngayFrom,ngayTo);
     },[])
 
-    const handleShow = (invoiceID: number,statusName: string)=>{
-        if(statusName === "Đã Hủy"){
+    const handleShow = (invoiceID: number,status: InvoiceStatuses)=>{
+        console.log(status);
+        if (statusList[0].statusName === "Giao thành công" || statusList[0].statusName === "Đã Hủy"){
+            setEditting(false);
+            return;
+        }
+        if(status.statusName === "Đã Hủy"){
             setShow(true);
         }
         else{
-            updateOrder(invoiceID,statusName);
+            updateOrder(invoiceID,status.statusName);
         }
         
     }
 
     const updateOrder = async(invoiceID: number, statusName: string)=>{
+        const payload = {
+            statusName: statusName,
+            cancelReason: displayInvoice.cancelReason
+        }
+        if (statusList[0].statusName === "Giao thành công" || statusList[0].statusName === "Đã Hủy"){
+            return;
+        }
         try {
-            
+            const response = await axiosInstance.put(`admin/order/update?invoiceID=${invoiceID}`,payload)
+            console.log(response)
+            toast.success(response.data.message);
         } catch (error) {
-            
+            console.log(error);
+        }finally{
+            fetchData(pageNum,sort,search,ngayFrom,ngayTo)
+            fetchDetail(displayI ? displayI[0].InvoiceID : 0)
+            setShow(false);
         }
     }
 
-    const handleSend = (invoiceID: number,statusName: string)=>{
+    const handleSend = (invoiceID: number,status: InvoiceStatuses)=>{
         setShow(true);
-        updateOrder(invoiceID,statusName);
+        updateOrder(invoiceID,status.statusName);
     }
 
 
@@ -115,7 +146,6 @@ const Order = () => {
     const handleSortChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setSort(event.target.value);
         toggleSearchAndDateFields();
-        console.log(event.target.value)
     }
 
     const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -129,22 +159,35 @@ const Order = () => {
     }
 
     const fetchDetail = async(invoiceID: number)=>{
+        setEditting(true);
         try {
             const response = await axiosInstance.get(`admin/order/detail?invoiceID=${invoiceID}`)
-            setDisplayInvoice(response.data.data);
+            setDisplayI(response.data.listInvoiceDetails);
+            setStatusList(response.data.listStatus);
+            console.log(response);
         } catch (error) {
             console.log(error);
         }
+        
     }
+
+    useEffect(()=>{
+        if (statusList.length === 1){
+            setEditting(false);
+        }else if(statusList.length > 1){
+            setEditting(true);
+        }
+    },[editting,statusList])
+
 
     const handleSearchSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        fetchData(pageNum,sort,search);
+        fetchData(pageNum,sort,search,ngayFrom,ngayTo);
     }
 
     useEffect(() => {
         const delayDebounce = setTimeout(() => {
-            fetchData(pageNum, sort, search);
+            fetchData(pageNum, sort, search,ngayFrom,ngayTo);
         }, 500); // debounce 500ms tránh spam gọi API liên tục
     
         return () => clearTimeout(delayDebounce);
@@ -220,11 +263,11 @@ const Order = () => {
                                             <tbody className="text-center">
                                                 {displayI && displayI.map((detail,index)=>(
                                                     <tr key={index}>
-                                                        <td>{detail.product?.productName}</td>
-                                                        <td>{detail.quantity}</td>
-                                                        <td>{detail.invoice?.receiveName}</td>
-                                                        <td>{detail.invoice?.receiveAddress}</td>
-                                                        <td>{detail.invoice?.receivePhone}</td>
+                                                        <td>{detail.ProductName}</td>
+                                                        <td>{detail.Quantity}</td>
+                                                        <td>{detail.ReceiveName}</td>
+                                                        <td>{detail.ReceiveAddress}</td>
+                                                        <td>{detail.ReceivePhone}</td>
                                                     </tr>
                                                 ))}
                                             </tbody>
@@ -249,24 +292,23 @@ const Order = () => {
 
                                         <button 
                                             disabled={!editting}
-                                            onClick={() => handleShow(displayInvoice.invoiceID, displayInvoice.invoiceStatus?.statusName ? displayInvoice.invoiceStatus?.statusName : '')} 
+                                            onClick={() => displayI?.[0] && handleShow(displayI[0].InvoiceID, status)} 
                                             className="btn btn-primary" 
                                             type="button"
                                             >
                                             Cập nhật trạng thái đơn hàng
                                         </button>     
-                                        {/* updateOrder(displayHoaDon.maHoaDon,displayHoaDon.trangThaiHoaDon.tenTrangThai)          */}
                                         <Modal show={show} onHide={()=>setShow(false)} backdrop="static" aria-labelledby="contained-modal-title-vcenter" centered>
                                             <Modal.Header closeButton>
                                                 <Modal.Title id="contained-modal-title-vcenter">Lý do hủy</Modal.Title>
                                             </Modal.Header>
                                             <Modal.Body>
                                                 <div className='mb-3'>
-                                                    <textarea onChange={(event)=>setDisplayInvoice({...displayInvoice,})} placeholder='Nhập vào lý do hủy' className='form-control' name="" id="" cols={3} rows={6}></textarea>
+                                                    <textarea onChange={(event)=>setDisplayInvoice({...displayInvoice,cancelReason: event.target.value})} placeholder='Nhập vào lý do hủy' className='form-control' name="" id="" cols={3} rows={6}></textarea>
                                                 </div>
                                             </Modal.Body>
                                             <Modal.Footer>
-                                            <button className='btn btn-primary' onClick={()=>handleSend(displayInvoice.invoiceID,displayInvoice.invoiceStatus ? displayInvoice.invoiceStatus?.statusName : '')}>
+                                            <button className='btn btn-primary' onClick={()=>displayI?.[0] && handleSend(displayI[0].InvoiceID, status)}>
                                                 Gửi
                                             </button>
                                             </Modal.Footer>

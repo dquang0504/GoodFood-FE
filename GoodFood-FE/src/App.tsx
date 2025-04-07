@@ -5,6 +5,7 @@ import Home from './Components/Home'
 import Login from './Components/Login'
 import { ToastContainer } from 'react-toastify'
 import Product from './Components/Product'
+import ProductAdmin from './Components/Admin/Product'
 import ProductDetail from './Components/ProductDetail'
 import Cart from './Components/Cart'
 import { useSelector } from 'react-redux'
@@ -13,6 +14,9 @@ import Address from './Components/Address'
 import PaymentDetails from './Components/PaymentDetails'
 import Dashboard from './Components/Admin/Dashboard'
 import Order from './Components/Admin/Order'
+import User from './Components/Admin/User'
+import ProductType from './Components/Admin/ProductType'
+import Statistics from './Components/Admin/Statistics'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -49,6 +53,11 @@ function App() {
           <Route path='/home/payment-details' element={ <PrivateRoute element={PaymentDetails}></PrivateRoute> }></Route>
           <Route path='/home-admin' element={ <PrivateRoute element={Dashboard}></PrivateRoute> }></Route>
           <Route path='/home-admin/order' element={ <PrivateRoute element={Order}></PrivateRoute> }></Route>
+          <Route path='/home-admin/user' element={ <PrivateRoute element={User}></PrivateRoute> }></Route>
+          <Route path='/home-admin/product' element={ <PrivateRoute element={ProductAdmin}></PrivateRoute> }></Route>
+          <Route path='/home-admin/product-category' element={ <PrivateRoute element={ProductType}></PrivateRoute> }></Route>
+          <Route path='/home-admin/statistics' element={ <PrivateRoute element={Statistics}></PrivateRoute> }></Route>
+
         </Routes>
       </div>
       <ToastContainer></ToastContainer>

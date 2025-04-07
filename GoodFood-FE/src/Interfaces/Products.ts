@@ -1,3 +1,4 @@
+import { ProductImages } from "./ProductImages"
 import { ProductTypes } from "./ProductTypes"
 
 export interface Products{
@@ -10,4 +11,6 @@ export interface Products{
     insertDate: Date,
     productTypeID: number,
     weight: number,
+    productType: ProductTypes,
+    productImages: ProductImages
 }
