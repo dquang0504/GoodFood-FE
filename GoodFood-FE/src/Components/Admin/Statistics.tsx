@@ -1,8 +1,12 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import SideNav from './SideNav';
 import HorizontalNav from './HorizontalNav';
 import { StatisticalData } from '../../Interfaces/StatisticalData';
 import { toast } from 'react-toastify';
+import { formatVND } from '../../Services/FormatVND';
+import Footer from './Footer';
+import axiosInstance from '../../Services/AxiosInstance';
+import { access } from 'fs';
 
 const Statistics = () => {
 
@@ -21,16 +25,22 @@ const Statistics = () => {
         }
     }
 
-    const handleSearch = async()=>{
-        if(filter === ""){
+    const handleSearch = async(ngayFrom: Date, ngayTo: Date, filterString: string)=>{
+        if(filterString === ""){
             toast.error("Please choose a filter first!");
         }
         try {
-            
-        } catch (error) {
-            
+            const response = await axiosInstance.get(`/admin/statistic?filter=${filterString}&ngayFrom=${ngayFrom.toISOString().slice(0, 10)}&ngayTo=${ngayTo.toISOString().slice(0, 10)}`);
+            setStatistics(response.data.data);
+            if(response.data.data == null){
+                toast.info("There is no data within that time range!");
+            }
+        } catch (error: any) {
+            console.log(error);
+            toast.error(error.response.data.message)
         }
     }
+
 
     return (
         <div className="wrapper">
@@ -44,23 +54,21 @@ const Statistics = () => {
                             <form>
                                 <div className='row'>
                                     <div className="col-md-3">
-                                        <label className="form-label">Ngày bắt đầu:</label>
+                                        <label className="form-label">From date:</label>
                                         <input onChange={(e)=>handleDateChange(e)} 
                                             name="ngayFrom" className="form-control"
                                             type="date" placeholder="Nhập vào ngày bắt đầu"
-                                            value={ngayFrom.toDateString()}
                                         />
                                     </div>
                                     <div className="col-md-3">
-                                        <label className="form-label">Ngày kết thúc:</label>
+                                        <label className="form-label">To date:</label>
                                         <input onChange={(e)=>handleDateChange(e)} 
                                                name="ngayTo" className="form-control"
                                              type="date" placeholder="Nhập vào ngày kết thúc"
-                                                value={ngayTo.toDateString()}
                                              />
                                     </div>
                                     <div className="col-md-6">
-                                        <label className="form-label">Bộ lọc:</label>
+                                        <label className="form-label">Filter:</label>
                                         <div className="input-group mb-3">
                                             <select value={filter} onChange={(e) => setFilter(e.target.value)} name="select" className="form-select" aria-label="Default select example">
                                                 {filter ? (
@@ -68,16 +76,41 @@ const Statistics = () => {
                                                 ) : (
                                                     <option disabled value="" hidden>Choose a filter</option>
                                                 )}
-                                                <option value="Lọc theo doanh thu">Filter by revenue</option>
+                                                <option value="Filter by revenue">Filter by revenue</option>
                                             </select>
-                                            <button type='button' onClick={handleSearch} id="searchButton" className="btn btn-success">Tìm kiếm</button>
+                                            <button type='button' onClick={()=>handleSearch(ngayFrom,ngayTo,filter)} id="searchButton" className="btn btn-success">Search</button>
                                         </div>
                                     </div>
                                 </div>
                             </form>
+
+                            {statistics && statistics.length > 0 && (
+                                <div>
+                                    <table id="dataTable" className="table table-striped table-hover table-light">
+                                        <thead className="text-center" style={{ backgroundColor: '#067a38', color: '#fff',fontSize:'0.8rem' }}>
+                                            <th>Loại sản phẩm</th>
+                                            <th>Số lượng bán</th>
+                                            <th>Doanh thu</th>
+                                        </thead>
+                                        <tbody className="text-center">
+                                            {statistics.map((item,index)=>(
+                                                <tr key={index}>
+                                                    <td>{item.productType}</td>
+                                                    <td>{item.totalSale}</td>
+                                                    <td>{formatVND(item.totalRevenue)}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                    <h2 className="text-success">Total Revenue:<span> {formatVND(statistics.reduce((acc,total)=> acc + total.totalRevenue,0))}</span>
+                                    </h2>
+                                </div>
+                            )}
+
                         </div>
                     </div>
                 </main>
+                <Footer></Footer>
             </div>
         </div>
     );

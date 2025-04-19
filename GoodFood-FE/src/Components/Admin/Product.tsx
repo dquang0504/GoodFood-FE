@@ -79,7 +79,6 @@ const Product = () => {
             setProducts(response.data.data);
             setTotalPage(response.data.totalPage);
             setCards(response.data.cards);
-            console.log(response);
         } catch (error) {
             console.log(error);
         }

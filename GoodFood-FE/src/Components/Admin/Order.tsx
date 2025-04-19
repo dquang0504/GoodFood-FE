@@ -76,7 +76,6 @@ const Order = () => {
             setCards(response.data.cards);
             setInvoices(response.data.data);
             setToTalPage(response.data.totalPage);
-            console.log(response.data);
         } catch (error: any) {
             console.log(error)
             toast.error(error.response.data.message);

@@ -17,6 +17,7 @@ import Order from './Components/Admin/Order'
 import User from './Components/Admin/User'
 import ProductType from './Components/Admin/ProductType'
 import Statistics from './Components/Admin/Statistics'
+import Review from './Components/Admin/Review'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -57,6 +58,7 @@ function App() {
           <Route path='/home-admin/product' element={ <PrivateRoute element={ProductAdmin}></PrivateRoute> }></Route>
           <Route path='/home-admin/product-category' element={ <PrivateRoute element={ProductType}></PrivateRoute> }></Route>
           <Route path='/home-admin/statistics' element={ <PrivateRoute element={Statistics}></PrivateRoute> }></Route>
+          <Route path='/home-admin/reviews' element={ <PrivateRoute element={Review}></PrivateRoute> }></Route>
 
         </Routes>
       </div>

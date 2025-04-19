@@ -1,3 +1,4 @@
+import { Products } from "./Products";
 import { Users } from "./Users";
 
 export interface Reviews{
@@ -9,5 +10,6 @@ export interface Reviews{
     productID: number,
     accountID: number,
     invoiceID: number,
-    reviewAccount: Users
+    reviewAccount: Users,
+    reviewProduct: Products
 }
