@@ -21,7 +21,7 @@ const Review = () => {
     const [totalPage,setToTalPage] = useState(0);
     const [ngayFrom,setNgayFrom] = useState(new Date());
     const [ngayTo,setNgayTo] = useState(new Date());
-    const [sort,setSort] = useState("Tên sản phẩm");
+    const [sort,setSort] = useState("Product Name");
     const [search,setSearch] = useState("");
     const initialUser = {
         accountID: 0,
@@ -101,8 +101,9 @@ const Review = () => {
 
     const fetchDetail = async(reviewID: number)=>{
         try {
-            const response = await axiosInstance.get(`admin/review?reviewID=${reviewID}`);
+            const response = await axiosInstance.get(`admin/review/detail?reviewID=${reviewID}`);
             setDisplayR(response.data.data);
+            console.log(response);
         } catch (error) {
             console.log(error);
         }
@@ -253,7 +254,7 @@ const Review = () => {
                                                     {displayR.reviewAccount?.fullName}
                                                 </p>
                                                 <p style={{ color: "rgb(163,163,163)" }}>
-                                                    {displayR.reviewDate.toLocaleString()}
+                                                    {new Date(displayR.reviewDate).toLocaleString()}
                                                 </p>
                                             </div>
                                         </div>
@@ -407,14 +408,14 @@ const Review = () => {
                                                         {toggleSearchAndDateFields(); handleSortChange(e)}
                                                     }
                                                 >
-                                                    <option value="Tên sản phẩm">Tên sản phẩm</option>
-                                                    <option value="Ngày đánh giá">Ngày đánh giá</option>
-                                                    <option value="Số sao">Số sao</option>
-                                                    <option value="Trạng thái hiển thị">
-                                                    Trạng thái hiển thị
+                                                    <option value="Product Name">Product Name</option>
+                                                    <option value="Review Date">Review Date</option>
+                                                    <option value="Stars">Stars</option>
+                                                    <option value="Display Status">
+                                                    Display Status
                                                     </option>
-                                                    <option value="Trạng thái ẩn">Trạng thái ẩn</option>
-                                                    <option value="Bình luận">Bình luận</option>
+                                                    <option value="Hide Status">Hide Status</option>
+                                                    <option value="Comment">Comment</option>
                                                 </select>
                                                 <div id="searchField">
                                                     <input
