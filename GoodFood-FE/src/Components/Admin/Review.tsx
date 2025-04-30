@@ -8,10 +8,27 @@ import axiosInstance from '../../Services/AxiosInstance';
 import { Products } from '../../Interfaces/Products';
 import { ProductImages } from '../../Interfaces/ProductImages';
 import { ProductTypes } from '../../Interfaces/ProductTypes';
+import Lightbox, { SlideImage } from 'yet-another-react-lightbox';
+import { toast } from 'react-toastify';
+import ReactPaginate from 'react-paginate';
+import Footer from './Footer';
+import { Modal, ModalBody, ModalHeader, ModalTitle } from 'react-bootstrap';
 
 type Cards = {
     TotalReview: number,
     Total5S: number,
+}
+
+type ClauseAnalysis = {
+    clause: string,
+    sentiment: string
+}
+
+type AnalyzeStruct = {
+    review: string,
+    clauses: string[],
+    analysis: ClauseAnalysis[],
+    summary: string,
 }
 
 const Review = () => {
@@ -84,12 +101,17 @@ const Review = () => {
     const [err,setErr] = useState({
         errReply: "",
     })
+    const [slides,setSlides] = useState<SlideImage[]>([]);
+    const [open,setOpen] = useState(false);
+    const [analysis,setAnalysis] = useState<AnalyzeStruct[]>([]);
+    const [showModal,setShowModal] = useState(false);
 
     const fetchData = async(page: number, search: string, sort: string, ngayFrom: Date, ngayTo: Date)=>{
         try {
             const response = await axiosInstance(`admin/review?page=${page}&search=${search}&sort=${sort}&ngayFrom=${ngayFrom.toISOString().slice(0,10)}&ngayTo=${ngayTo.toISOString().slice(0,10)}`);
             setCards(response.data.cards);
             setReviews(response.data.data);
+            setToTalPage(response.data.totalPage);
         } catch (error) {
             console.log(error);
         }
@@ -103,6 +125,14 @@ const Review = () => {
         try {
             const response = await axiosInstance.get(`admin/review/detail?reviewID=${reviewID}`);
             setDisplayR(response.data.data);
+            setListHinhDG(response.data.listHinhDG);
+            setSlides(
+                (response.data.listHinhDG as ReviewImages[])?.map(item=> ({
+                    src: item.imageName
+                }))
+            )
+            setReply(response.data.reply);
+            setAnalysis(response.data.result)
             console.log(response);
         } catch (error) {
             console.log(error);
@@ -116,7 +146,7 @@ const Review = () => {
           } else {
             setErr({ ...err, errReply: "" });
           }
-          setReply({ ...reply, reply: e.target.value });
+          setReply({ ...reply, reply: e.target.value, reviewID: displayR.reviewID, accountID: displayR.accountID, });
         }
     };
 
@@ -143,7 +173,7 @@ const Review = () => {
         var searchField = document.getElementById("searchField") as HTMLInputElement;
         var dateFields = document.getElementById("dateFields") as HTMLDataElement;
 
-        if (sortSelect.value === "Ngày đánh giá") {
+        if (sortSelect.value === "Review Date") {
             searchField.style.display = "none";
             dateFields.style.display = "flex"; // Sử dụng flex để giữ các phần tử trong cùng một hàng
         } else {
@@ -162,11 +192,28 @@ const Review = () => {
     }
 
     const handlePost = async()=>{
-
+        try {
+            console.log("Hi")
+            const response = await axiosInstance.post("admin/review/reply",reply);
+            toast.success(response.data.message);
+            setReply(response.data.data);
+        } catch (error: any) {
+            console.log(error)
+            toast.error(error.response.data.message);
+        }finally{
+            
+        }
     }
 
     const handlePut = async()=>{
-        
+        try {
+            console.log("Hello")
+            const response = await axiosInstance.put(`admin/review/update?replyID=${reply.replyID}`,reply);
+            toast.success(response.data.message);
+        } catch (error: any) {
+            console.log(error);
+            toast.error(error.response.data.message);
+        }
     }
 
     return (
@@ -233,7 +280,7 @@ const Review = () => {
                                             right: "25%",
                                         }}
                                         >
-                                        Chọn dữ liệu để hiển thị
+                                        Choose a review to show
                                         </h2>
                                     </div>
 
@@ -260,7 +307,7 @@ const Review = () => {
                                         </div>
                                         <div className="row">
                                             <div className="col-md-4">
-                                                <p>{displayR.comment}</p>
+                                                <p style={{fontSize:"20px"}}>{displayR.comment}</p>
                                                 <span>
                                                     {[...Array(displayR.stars)].map((_, i) => (
                                                         <span key={i}>⭐</span>
@@ -275,7 +322,7 @@ const Review = () => {
                                                     name=""
                                                     id=""
                                                     cols={6}
-                                                    rows={4}
+                                                    rows={4}  
                                                 />
                                                 <em className="text-danger">{err.errReply}</em>
 
@@ -294,6 +341,7 @@ const Review = () => {
                                                         ? "Update Reply"
                                                         : "Reply"}
                                                     </button>
+                                                    <button onClick={()=>setShowModal(true)} className="btn btn-outline-secondary mx-2">Analysis</button>
                                                 </div>
                                             </div>
                                             <div className="col-md-8 text-center">
@@ -304,12 +352,6 @@ const Review = () => {
                                                     >
                                                         {listHinhDG &&
                                                             listHinhDG.map((hinh, index) => (
-                                                                <a
-                                                                key={index}
-                                                                href={hinh.imageName} // Đường dẫn ảnh từ imageUrls
-                                                                data-lightbox="review-images"
-                                                                data-title={hinh.imageName}
-                                                                >
                                                                 <img
                                                                     src={hinh.imageName} // Đường dẫn ảnh từ imageUrls
                                                                     alt={hinh.imageName}
@@ -320,34 +362,17 @@ const Review = () => {
                                                                     margin: "5px",
                                                                     border: "1px solid #ddd",
                                                                     padding: "5px",
+                                                                    cursor: 'pointer'
                                                                     }}
-                                                                />
-                                                                </a>
+                                                                    onClick={()=>setOpen(true)}
+                                                                />      
                                                         ))}
+                                                        {slides && slides.length > 0 &&(
+                                                            <Lightbox open={open} close={()=>setOpen(false)} slides={slides}></Lightbox>
+                                                        )}
                                                     </div>
                                                 </div>
                                             </div>
-
-                                            {/* Phân tích cảm xúc */}
-                                            {/* <div className="sentiment-analysis mt-4">
-                                                <h5>Phân tích cảm xúc:</h5>
-                                                {displayR?.phanTich?.analysis?.map((item, index) => (
-                                                    <div key={index} className="sentiment-item">
-                                                        <p>
-                                                        <span
-                                                            className={`sentiment-label ${item.sentiment.toLowerCase()}`}
-                                                        >
-                                                            {item.sentiment === "POS"
-                                                            ? "Tích cực"
-                                                            : item.sentiment === "NEG"
-                                                            ? "Tiêu cực"
-                                                            : "Trung lập"}
-                                                        </span>
-                                                        : {item.clause}
-                                                        </p>
-                                                    </div>
-                                                ))}
-                                            </div> */}
 
                                         </div>
                                     </div>
@@ -355,7 +380,7 @@ const Review = () => {
                             </div>
                         </div>
 
-                        <ul className="nav nav-tabs" id="myTab" role="tablist">
+                        <ul className="nav nav-tabs d-flex justify-content-center" id="myTab" role="tablist">
                             <li className="nav-item" role="presentation">
                                 <button
                                 className="nav-link active"
@@ -367,7 +392,7 @@ const Review = () => {
                                 aria-controls="home"
                                 aria-selected="true"
                                 >
-                                Đánh giá sản phẩm
+                                Product Review
                                 </button>
                             </li>
                             <li className="nav-item" role="presentation">
@@ -381,7 +406,7 @@ const Review = () => {
                                 aria-controls="profile"
                                 aria-selected="false"
                                 >
-                                Phân tích đánh giá
+                                Product Review Analysis
                                 </button>
                             </li>
                         </ul>
@@ -437,20 +462,21 @@ const Review = () => {
                                                 style={{ display: "none" }}
                                             >
                                                 <div className="input-group mb-3">
-                                                <input
-                                                    name="ngayFrom"
-                                                    type="date"
-                                                    className="form-control"
-                                                    placeholder="Từ"
-                                                    onChange={(e)=>handleDateChange(e)}
-                                                />
-                                                <input
-                                                    name="ngayTo"
-                                                    type="date"
-                                                    className="form-control"
-                                                    placeholder="Đến"
-                                                    onChange={(e)=>handleDateChange(e)}
-                                                />
+                                                    <input
+                                                        name="ngayFrom"
+                                                        type="date"
+                                                        className="form-control"
+                                                        placeholder="Từ"
+                                                        onChange={(e)=>handleDateChange(e)}
+                                                    />
+                                                    <input
+                                                        name="ngayTo"
+                                                        type="date"
+                                                        className="form-control"
+                                                        placeholder="Đến"
+                                                        onChange={(e)=>handleDateChange(e)}
+                                                    />
+                                                    <button type="submit" className="btn btn-success">Tìm kiếm</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -472,7 +498,7 @@ const Review = () => {
                                             {reviews && reviews.map((r, index) => (
                                                 <tr key={index}>
                                                 <td>{r.reviewID}</td>
-                                                <td>{r.reviewDate.toLocaleString()}</td>
+                                                <td>{new Date(r.reviewDate).toLocaleString()}</td>
                                                 <td>
                                                     <span
                                                     className={`badge ${
@@ -500,11 +526,76 @@ const Review = () => {
                                             </tbody>
                                     </table>
 
+                                    <div className="text-center" hidden={totalPage !== 0}>
+                                        <p className="fw-bold">Không tìm thấy đánh giá tương ứng</p>
+                                    </div>
+
+                                    <div hidden={totalPage===0} className="d-flex justify-content-between" style={{marginTop:"25px"}}>
+                                        {/* Vị trí hiển thị số trang */}
+                                        <p className="fw-bold">Đang xem trang {pageNum} / {totalPage}</p>
+
+                                        
+                                        {/* React Paginate */}
+                                        <ReactPaginate
+                                                breakLabel="..."
+                                                nextLabel={<i className="fa-solid fa-forward-step"></i>}
+                                                onPageChange={(event)=>setPageNum(event.selected + 1)}
+                                                pageRangeDisplayed={3}
+                                                pageCount={totalPage}
+                                                previousLabel={<i className="fa-solid fa-backward-step"></i>}
+                                                renderOnZeroPageCount={null}
+                                                pageClassName='page-item page-address'
+                                                pageLinkClassName='page-link'
+                                                previousClassName='page-item page-address mr-3'
+                                                previousLinkClassName='page-link'
+                                                nextClassName='page-item page-address'
+                                                nextLinkClassName='page-link'
+                                                breakClassName='page-item'
+                                                breakLinkClassName='page-link'
+                                                containerClassName='pagination'
+                                                activeClassName='active'
+                                                forcePage={pageNum - 1}
+                                            />
+                                        <p className="fw-bold">6 bản ghi / 1 trang</p>
+                                    </div>         
+
                                 </div>
                             </div>
                         </div>
                     </div>
                 </main>
+
+                <Modal show={showModal} onHide={()=>setShowModal(false)}>
+                    <ModalHeader closeButton className=''>
+                        <ModalTitle className='fw-bold fs-3 mx-auto'>Sentiment Analysis</ModalTitle>
+                    </ModalHeader>
+                    <ModalBody>
+                        {/* Sentiment Analysis */}
+                        <div className="sentiment-analysis mt-4">
+                            {analysis?.map((item, index) => (
+                                <div key={index} className="sentiment-item">
+                                    {item.analysis?.map(clauseOrSentiment => (
+                                        <p>
+                                        <span
+                                            className={`sentiment-label ${clauseOrSentiment.sentiment.toLowerCase()}`}
+                                        >
+                                            {clauseOrSentiment.sentiment === "POS"
+                                                ? "POSITIVE"
+                                                : clauseOrSentiment.sentiment === "NEG"
+                                                ? "NEGATIVE"
+                                                : "NEUTRAL"}
+                                        </span>
+                                            : {clauseOrSentiment.clause}
+                                        </p>
+                                    ))}
+                                </div>
+                            ))}
+                        </div>                        
+                    </ModalBody>
+                </Modal>
+
+                <Footer></Footer>
+
             </div>
         </div>
     );
