@@ -16289,3 +16289,19 @@ span.flatpickr-weekday {
 .main-admin{
 	margin-left: 260px;
 }
+
+/* Hover để hiển thị dropdown */
+.nav-item:hover .dropdown-menu,
+.nav-item.show .dropdown-menu {
+    display: block;
+}
+
+/* Đảm bảo dropdown menu không bị ẩn */
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    z-index: 1050; /* Đảm bảo menu không bị che khuất */
+}
+
+
+

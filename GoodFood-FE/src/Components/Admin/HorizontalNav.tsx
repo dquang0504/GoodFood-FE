@@ -1,75 +1,46 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../Store/store';
 import { NavLink } from 'react-router-dom';
 
 const HorizontalNav = () => {
+    const { user } = useSelector((state: RootState) => state.login);
 
-    const {user} = useSelector((state:RootState)=>state.login);
-
-    const clickDangXuat = ()=>{
-        
-    }
+    const clickDangXuat = () => {
+        // TODO: Handle logout logic here
+        console.log("Logging out...");
+    };
 
     return (
-        <nav className="navbar navbar-expand navbar-light navbar-bg nav-admin">
-                <NavLink to={"/home-admin"} style={{marginLeft:"20px"}} className="sidebar-toggle js-sidebar-toggle">
+        <nav className="navbar navbar-expand navbar-light navbar-bg nav-admin" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            {/* Sidebar toggle button */}
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+                <NavLink to="/home-admin" style={{ marginLeft: '20px' }} className="sidebar-toggle js-sidebar-toggle">
                     <i className="hamburger align-self-center"></i>
                 </NavLink>
+            </div>
 
-                {/* <div className="navbar-collapse collapse">
-                    <ul className="navbar-nav navbar-align">
-                        <li className="nav-item dropdown">
-                            <NavLink className="nav-icon dropdown-toggle d-inline-block d-sm-none" href="#" data-bs-toggle="dropdown"> <i
-                                    className="align-middle" data-feather="settings"></i></NavLink>
-                            <NavLink className="nav-link dropdown-toggle d-none d-sm-inline-block" href="#" data-bs-toggle="dropdown">
-                                <img src={hinhAnh}
-                                    className="avatar img-fluid rounded me-1" alt="avatar" /> <span
-                                    className="text-dark">{hoTen}
-                                </span>
-                            </NavLink>
-                            <div className="dropdown-menu dropdown-menu-end">
-                                <NavLink className="dropdown-item" to={"/home/edit-profile"}><i className="align-middle me-1"
-                                        data-feather="user"></i> Thông tin cá nhân</NavLink>
-                                <NavLink className="dropdown-item" to={"/home"}><i className="align-middle me-1"
-                                        data-feather="user"></i> Về trang người dùng</NavLink>
-                                <div className="dropdown-divider"></div>
-                                <NavLink className="dropdown-item" onClick={() => clickDangXuat()}>Đăng xuất</NavLink>
-                            </div>
-                        </li>
-                    </ul>
-                </div> */}
-
-                <div className="navbar-collapse collapse">
-                    <ul className="navbar-nav navbar-align">
-                        <li className="nav-item dropdown">
-                            {/* Icon cho mobile */}
-                            <NavLink to={""} className="nav-icon dropdown-toggle d-inline-block d-sm-none" data-bs-toggle="dropdown">
-                                <i className="align-middle" data-feather="settings"></i>
-                            </NavLink>
-
-                            {/* Avatar và tên người dùng cho desktop */}
-                            <NavLink to={""} className="custom-nav-link dropdown-toggle d-none d-sm-inline-block" data-bs-toggle="dropdown">
-                                <img src={user?.avatar} className="avatar img-fluid rounded me-1" alt="avatar" />
-                                <span className="text-dark">{user?.fullName}</span>
-                            </NavLink>
-
-                            {/* Menu drop-down */}
-                            <div className="dropdown-menu dropdown-menu-end" style={{ zIndex: 1050 }}>
-                                <NavLink className="dropdown-item" to="/home/edit-profile">
-                                    <i className="align-middle me-1" data-feather="user"></i> Thông tin cá nhân
-                                </NavLink>
-                                <NavLink className="dropdown-item" to="/home">
-                                    <i className="align-middle me-1" data-feather="user"></i> Về trang người dùng
-                                </NavLink>
-                                <div className="dropdown-divider"></div>
-                                <NavLink to={""} className="dropdown-item" onClick={() => clickDangXuat()}>Log out</NavLink>
-                            </div>
-                        </li>
-                    </ul>
+            {/* Dropdown Avatar */}
+            <div 
+                className="dropdown" 
+                style={{ marginRight: "125px",marginTop: "0px"}}
+            >
+                <button className="dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <img 
+                        src={user?.avatar || '/path/to/default-avatar.png'} 
+                        alt="Avatar" 
+                        className="avatar-img" 
+                        style={{ width: '50px', height: '50px', borderRadius: '50%' }}
+                    />
+                </button>
+                <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a className="dropdown-item" href="#">Thông tin cá nhân</a>
+                    <a className="dropdown-item" href="#">Đổi mật khẩu</a>
+                    <NavLink to={"/home"} className="dropdown-item">Về trang người dùng</NavLink>
+                    <button className="dropdown-item" onClick={clickDangXuat}>Đăng xuất</button>
                 </div>
-
-            </nav>
+            </div>
+        </nav>
     );
 };
 

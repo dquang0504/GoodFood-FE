@@ -25,6 +25,7 @@ type ClauseAnalysis = {
 }
 
 type AnalyzeStruct = {
+    reviewID: number,
     review: string,
     clauses: string[],
     analysis: ClauseAnalysis[],
@@ -36,9 +37,12 @@ const Review = () => {
     const [cards,setCards] = useState<Cards>({Total5S:0,TotalReview:0})
     const [pageNum,setPageNum] = useState(1);
     const [totalPage,setToTalPage] = useState(0);
+    const [pageNumAnalyze,setPageNumAnalyze] = useState(1);
+    const [totalPageAnalyze,setTotalPageAnalyze] = useState(0);
     const [ngayFrom,setNgayFrom] = useState(new Date());
     const [ngayTo,setNgayTo] = useState(new Date());
     const [sort,setSort] = useState("Product Name");
+    const [sortAnalyze,setSortAnalyze] = useState("Positive Sentiment");
     const [search,setSearch] = useState("");
     const initialUser = {
         accountID: 0,
@@ -104,11 +108,12 @@ const Review = () => {
     const [slides,setSlides] = useState<SlideImage[]>([]);
     const [open,setOpen] = useState(false);
     const [analysis,setAnalysis] = useState<AnalyzeStruct[]>([]);
+    const [analysisList,setAnalysisList] = useState<AnalyzeStruct[]>([]);
     const [showModal,setShowModal] = useState(false);
 
     const fetchData = async(page: number, search: string, sort: string, ngayFrom: Date, ngayTo: Date)=>{
         try {
-            const response = await axiosInstance(`admin/review?page=${page}&search=${search}&sort=${sort}&ngayFrom=${ngayFrom.toISOString().slice(0,10)}&ngayTo=${ngayTo.toISOString().slice(0,10)}`);
+            const response = await axiosInstance.get(`admin/review?page=${page}&search=${search}&sort=${sort}&ngayFrom=${ngayFrom.toISOString().slice(0,10)}&ngayTo=${ngayTo.toISOString().slice(0,10)}`);
             setCards(response.data.cards);
             setReviews(response.data.data);
             setToTalPage(response.data.totalPage);
@@ -117,8 +122,19 @@ const Review = () => {
         }
     }
 
+    const fetchAnalysis = async(page: number, sort: string)=>{
+        try {
+            const response = await axiosInstance.get(`admin/review/review-analysis?page=${page}&sort=${sort}`)
+            setAnalysisList(response.data.result);
+            console.log(response);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     useEffect(()=>{
-        fetchData(pageNum,search,sort,ngayFrom,ngayTo)
+        fetchData(pageNum,search,sort,ngayFrom,ngayTo);
+        fetchAnalysis(pageNumAnalyze,sortAnalyze);
     },[])
 
     const fetchDetail = async(reviewID: number)=>{
@@ -133,7 +149,7 @@ const Review = () => {
             )
             setReply(response.data.reply);
             setAnalysis(response.data.result)
-            console.log(response);
+            console.log(analysis);
         } catch (error) {
             console.log(error);
         }
@@ -155,12 +171,25 @@ const Review = () => {
         fetchData(pageNum,search,sort,ngayFrom,ngayTo);
     }
 
+    const handleSearchAnalysisSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        fetchAnalysis(pageNumAnalyze,sortAnalyze);
+        console.log("Hello trời ơi");
+    }
+
     useEffect(()=>{
         const delayDebounce = setTimeout(()=>{
             fetchData(pageNum,search,sort,ngayFrom,ngayTo)
         },500);
         return () => clearTimeout(delayDebounce)
     },[search,sort,pageNum])
+
+    useEffect(()=>{
+        const delayDebounce = setTimeout(()=>{
+            fetchAnalysis(pageNumAnalyze,sortAnalyze)
+        },500);
+        return () => clearTimeout(delayDebounce)
+    },[sortAnalyze,pageNumAnalyze])
 
     const handleSortChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setSort(event.target.value);
@@ -419,7 +448,7 @@ const Review = () => {
                                 aria-labelledby="home-tab"
                             >
                                 <div className="commentList" style={{ marginTop: "20px" }}>
-                                    <h4 className="text-center"> Đánh giá sản phẩm </h4>
+                                    <h4 className="text-center"> Product Reviews </h4>
                                     <form onSubmit={(e)=>handleSearchSubmit(e)}>
                                         <div className="row">
                                             <div className="col-md-6">
@@ -558,6 +587,87 @@ const Review = () => {
                                             />
                                         <p className="fw-bold">6 bản ghi / 1 trang</p>
                                     </div>         
+                                </div>
+                            </div>
+                            {/* SENTIMENT ANALYSIS SECTION HERE */}
+                            <div
+                                className='tab-pane'
+                                id='phantich'
+                                role='tabpanel'
+                                aria-labelledby='profile-tab'
+                            >
+                                <div className='commentList' style={{marginTop:"20px"}}>
+                                    <h4 className='text-center'>Sentiment Analysis</h4>
+                                    <form onSubmit={handleSearchAnalysisSubmit}>
+                                        <div className='row'>
+                                            <div className='col-md-6'>
+                                                <div className='input-group mb-3'>
+                                                    <select 
+                                                        name="sort" id="sortSelect"
+                                                        className='form-select' aria-label='Default select example'
+                                                        onChange={(e)=>setSortAnalyze(e.target.value)}>
+                                                        <option value="Positive Sentiment">Positive Sentiment</option>
+                                                        <option value="Negative Sentiment">Negative Sentiment</option>
+                                                        <option value="Neutral Sentiment">Neutral Sentiment</option>
+                                                        <option value="Mixed Sentiment">Mixed Sentiment</option>    
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+
+                                    <table className="table table-striped table-hover table-light">
+                                        <thead className="text-center" style={{ backgroundColor: '#067a38', color: '#fff' }}>
+                                            <tr>
+                                                <th>Mã đánh giá</th>
+                                                <th>Bình luận</th>
+                                                <th>Phân tích cảm xúc</th>
+                                                <th>Hành động</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className='text-center'>
+                                            {analysisList.map((item,index)=>{
+
+                                                const summary = item.summary
+                                                const test = ["Khen","Chê", "Ý kiến trung lập"]
+                                                let type = "";
+                                                if (summary.includes("Khen") && !summary.includes("Chê") && !summary.includes("Ý kiến trung lập")) type = "Khen";
+                                                else if (!summary.includes("Khen") && summary.includes("Chê") && !summary.includes("Ý kiến trung lập")) type = "Chê";
+                                                else if (!summary.includes("Khen") && !summary.includes("Chê") && summary.includes("Ý kiến trung lập")) type = "Ý kiến trung lập";
+                                                else type = "Mixed"
+
+                                                return(
+                                                    <tr key={index}>
+                                                        <td>{item.reviewID}</td>
+                                                        <td>{item.review}</td>
+                                                        <td>
+                                                            {test.map(t => (
+                                                                summary.includes(t) && (
+                                                                    <span
+                                                                        key={t}
+                                                                        className={`mx-2 badge ${
+                                                                            t === "Khen" ? "bg-success"
+                                                                            : t === "Chê" ? "bg-danger"
+                                                                            : t === "Ý kiến trung lập" ? "bg-secondary"
+                                                                            : "bg-warning"
+                                                                        }`}
+                                                                    >
+                                                                        {t}
+                                                                    </span>
+                                                                )
+                                                            ))}
+                                                        </td>
+                                                        <td>
+                                                            <i
+                                                            className="fa-solid fa-pen-to-square"
+                                                            onClick={()=>fetchDetail(item.reviewID)}
+                                                            ></i>
+                                                        </td>
+                                                    </tr>
+                                                )
+                                            })}
+                                        </tbody>
+                                    </table>
 
                                 </div>
                             </div>
