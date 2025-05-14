@@ -39,16 +39,16 @@ const Navbar = () => {
             <div className="navbar-collapse justify-content-center" id="navbarNav">
                 <ul className="navbar-nav">
                     <li className="nav-item active">
-                        <NavLink className="nav-link" to="/home">Trang Chủ</NavLink>
+                        <NavLink className="nav-link" to="/home">Home</NavLink>
                     </li>
                     <li className="nav-item">
-                        <NavLink className="nav-link" to="/home/product">Đồ Ăn</NavLink>
+                        <NavLink className="nav-link" to="/home/product">Products</NavLink>
                     </li>
                     <li className="nav-item">
-                        <NavLink to={"/"} className="nav-link">Về Chúng Tôi</NavLink>
+                        <NavLink to={"/"} className="nav-link">About</NavLink>
                     </li>
                     <li className="nav-item">
-                        <NavLink to={"/"} className="nav-link">Liên Hệ</NavLink>
+                        <NavLink to={"/"} className="nav-link">Contact</NavLink>
                     </li>
                 </ul>
             </div>

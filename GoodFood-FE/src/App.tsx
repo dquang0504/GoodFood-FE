@@ -20,6 +20,8 @@ import Review from './Components/Admin/Review'
 // index.tsx hoặc App.tsx
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import Register from './Components/Register'
+import OrderHistory from './Components/OrderHistory'
 
 
 
@@ -50,12 +52,15 @@ function App() {
         <Routes>
           <Route path='/' element={ <Navigate to="/home"></Navigate> }/>
           <Route path='/home' element={<Home></Home>}/>
+          <Route path='/register' element={<Register></Register>}/>
           <Route path='/login' element={<Login></Login>}/>
           <Route path='/home/product' element={<Product></Product>}></Route>
           <Route path='/home/product-details/:productID' element={<ProductDetail></ProductDetail>}></Route>
           <Route path='/home/cart' element={ <PrivateRoute element={Cart}/> }></Route>
           <Route path='/home/address' element={ <PrivateRoute element={Address}></PrivateRoute> }></Route>
           <Route path='/home/payment-details' element={ <PrivateRoute element={PaymentDetails}></PrivateRoute> }></Route>
+          <Route path='/home/order-history' element={ <PrivateRoute element={OrderHistory}></PrivateRoute> }></Route>
+
           <Route path='/home-admin' element={ <PrivateRoute element={Dashboard}></PrivateRoute> }></Route>
           <Route path='/home-admin/order' element={ <PrivateRoute element={Order}></PrivateRoute> }></Route>
           <Route path='/home-admin/user' element={ <PrivateRoute element={User}></PrivateRoute> }></Route>
