@@ -68,6 +68,7 @@ const Cart = () => {
                 checkboxAll.checked = false; // Uncheck nếu không có sản phẩm nào được chọn
             } else if (totalProductSelect === checkboxes.length) {
                 checkboxAll.checked = true; // Check nếu tất cả sản phẩm đã được chọn
+                setChosenItems(cart)
             }
         }
     }, [totalProductSelect]); // Theo dõi thay đổi của totalProductSelect
@@ -148,6 +149,7 @@ const Cart = () => {
     const navigate = useNavigate();
 
     const clickMuaHang = async()=>{
+        console.log(chosenItems);
         navigate("/home/payment-details",{state:{listChosenItems: chosenItems}});
     }
 

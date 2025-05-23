@@ -22,6 +22,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import Register from './Components/Register'
 import OrderHistory from './Components/OrderHistory'
+import ChangePassword from './Components/ChangePassword'
+import UpdateAccount from './Components/UpdateAccount'
+import ForgotPassword from './Components/ForgotPassword'
 
 
 
@@ -60,6 +63,10 @@ function App() {
           <Route path='/home/address' element={ <PrivateRoute element={Address}></PrivateRoute> }></Route>
           <Route path='/home/payment-details' element={ <PrivateRoute element={PaymentDetails}></PrivateRoute> }></Route>
           <Route path='/home/order-history' element={ <PrivateRoute element={OrderHistory}></PrivateRoute> }></Route>
+          <Route path='/home/change-password' element={ <PrivateRoute element={ChangePassword}></PrivateRoute> }></Route>
+          <Route path='/home/edit-profile' element={ <PrivateRoute element={UpdateAccount}></PrivateRoute> }></Route>
+          <Route path='/forgot-password' element={<ForgotPassword></ForgotPassword>}></Route>
+
 
           <Route path='/home-admin' element={ <PrivateRoute element={Dashboard}></PrivateRoute> }></Route>
           <Route path='/home-admin/order' element={ <PrivateRoute element={Order}></PrivateRoute> }></Route>

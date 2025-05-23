@@ -3,6 +3,7 @@ import axios from 'axios';
 import { ENDPOINT } from '../App';
 import { toast } from 'react-toastify';
 import { Users } from '../Interfaces/Users';
+import axiosInstance from '../Services/AxiosInstance';
 
 export interface LoginState{
     isAuthenticated: boolean,
@@ -30,6 +31,9 @@ const loginSlice = createSlice({
             state.user = null;
             state.accessToken = null
         },
+        setUser(state,action){
+            state.user = action.payload;
+        }
     },
     extraReducers(builder) {
         builder
@@ -80,7 +84,6 @@ export const refreshAccessToken = createAsyncThunk(
             const response = await axios.get(`${ENDPOINT}/user/refresh-token`, {
                 withCredentials: true, // Gửi refreshToken từ Cookie
             });
-
             return response.data.accessToken;
         } catch (error: any) {
             return rejectWithValue("Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại!");
@@ -90,3 +93,4 @@ export const refreshAccessToken = createAsyncThunk(
 
 export default loginSlice.reducer;
 export const {logout} = loginSlice.actions
+export const {setUser} = loginSlice.actions

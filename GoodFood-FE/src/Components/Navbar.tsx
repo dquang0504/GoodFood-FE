@@ -7,7 +7,7 @@ import { logout } from '../Slices/LoginSlice';
 import axiosInstance from '../Services/AxiosInstance';
 import { Carts } from '../Interfaces/Carts';
 import { formatVND } from '../Services/FormatVND';
-import { fetchCart } from '../Slices/CartSlice';
+import { clearCart, fetchCart } from '../Slices/CartSlice';
 
 const Navbar = () => {
 
@@ -16,7 +16,8 @@ const Navbar = () => {
     const dispatch = useDispatch<AppDispatch>();
 
     const clickDangXuat = ()=>{
-        dispatch(logout())
+        dispatch(logout());
+        dispatch(clearCart());
     }
 
     const getCart = ()=>{
@@ -68,7 +69,7 @@ const Navbar = () => {
                     {
                         !cart || cart.length === 0 ? (
                             <div className="cart-dropdown-content" style={{ borderRadius:5 }}>
-                                <p className='mt-3 ms-3'>Chưa Có Sản Phẩm</p>
+                                <p className='mt-3 ms-3'>Cart Is Empty...</p>
                             </div>
                         ) : (
                             <div className="cart-dropdown-content" style={{ width: "350px", borderRadius:5 }}>
@@ -106,21 +107,21 @@ const Navbar = () => {
                     <div className="cart-dropdown-content" style={{ borderRadius:5 }} aria-labelledby="userDropdown">
                         {user !== null ? (
                             <>
-                                <NavLink className="dropdown-item" to="/home/address">Địa chỉ</NavLink>
-                                <NavLink className="dropdown-item" to="/home/order-history">Đơn mua</NavLink>
-                                <NavLink className="dropdown-item" to="/home/change-password">Đổi mật khẩu</NavLink>
-                                <NavLink className="dropdown-item" to="/home/edit-profile">Cập nhật tài khoản</NavLink>
+                                <NavLink className="dropdown-item" to="/home/address">Delivery Address</NavLink>
+                                <NavLink className="dropdown-item" to="/home/order-history">Orders</NavLink>
+                                <NavLink className="dropdown-item" to="/home/change-password">Change Password</NavLink>
+                                <NavLink className="dropdown-item" to="/home/edit-profile">Update Info</NavLink>
                                 {user.role == true ? (
                                     <NavLink className="dropdown-item" to="/home-admin">Admin</NavLink>
                                 ):(
                                     <></>
                                 )}
-                                <NavLink to={""} className="dropdown-item" onClick={() => clickDangXuat()}>Đăng xuất</NavLink>
+                                <NavLink to={""} className="dropdown-item" onClick={() => clickDangXuat()}>Log out</NavLink>
                             </>
                         ) : (
                             <>
-                                <NavLink className="dropdown-item" to="/login">Đăng Nhập</NavLink>
-                                <NavLink className="dropdown-item" to="/register">Đăng Ký</NavLink>
+                                <NavLink className="dropdown-item" to="/login">Login</NavLink>
+                                <NavLink className="dropdown-item" to="/register">Register</NavLink>
                             </>
                         )}
                     </div>

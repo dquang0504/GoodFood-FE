@@ -1,0 +1,80 @@
+
+.main-update-account {
+    background-color: #F5F0DC;
+    min-height: 690px;
+}
+.row {
+    margin: 0px;
+}
+.hero-img {
+    max-width: 100%;
+    height: auto;
+    animation: fadeIn 1.5s ease-in-out;
+    height: 545px;
+    transform: rotate(-10deg);
+    /* Độ nghiêng -10 độ */
+
+
+}
+.main-update-account {
+    .card {
+        background-color: rgb(0, 0, 0, 0);
+        border: none;
+        width: 450px;
+
+        .card-body {
+            background-color: rgb(0, 0, 0, 0)  !important;
+            border: 2px solid rgba(0, 0, 0, 1);
+            border-radius: 25px;
+            div>form {
+                .div-input {
+                    height: 78px;
+                }
+                .div-button>div{
+                    width: 350px;
+                    button{
+                        width: 165px;
+                        font-size: 18px;
+                    }
+                }
+            }
+            .div-title{
+                margin-top:5px;
+            	height:78px;
+            	span{
+            		margin-left:35px;
+            	}
+
+            }
+
+        }
+    }
+}
+
+.input-box {
+    position: relative;
+
+    input {
+        width: 350px;
+        height: 50px;
+        padding-left: 50px;
+        padding-right: 15px;
+        background: transparent;
+        border: none;
+        outline: none;
+        border: 2px solid rgba(0, 0, 0, .5);
+        border-radius: 10px;
+    }
+
+    input::placeholder {
+        color: rgb(109, 109, 109);
+    }
+
+    i {
+        position: absolute;
+        font-size: 20px;
+        left: 20px;
+        top: calc(25px);
+        transform: translateY(-10px);
+    }
+}

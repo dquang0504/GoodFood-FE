@@ -108,7 +108,7 @@ const PaymentDetails = () => {
     }
 
     const calculateFee = async()=>{
-        console.log(address);
+        console.log(listItemClickChon);
         const totalWeight = listItemClickChon.reduce((acc,item)=> acc + (item.product.weight * item.quantity),0)
         try {
             const data = {
