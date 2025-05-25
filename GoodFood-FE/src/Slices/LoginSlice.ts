@@ -10,7 +10,8 @@ export interface LoginState{
     user: Users | null,
     accessToken: string | null
     error: string | null,
-    isLoading: boolean
+    isLoading: boolean,
+    resetToken: string | null,
 }
 
 const initialState: LoginState = {
@@ -19,7 +20,7 @@ const initialState: LoginState = {
     accessToken: null,
     error: null,
     isLoading: false,
-
+    resetToken: null,
 }
 
 const loginSlice = createSlice({
@@ -33,6 +34,9 @@ const loginSlice = createSlice({
         },
         setUser(state,action){
             state.user = action.payload;
+        },
+        setResetToken(state,action){
+            state.resetToken = action.payload;
         }
     },
     extraReducers(builder) {
@@ -94,3 +98,4 @@ export const refreshAccessToken = createAsyncThunk(
 export default loginSlice.reducer;
 export const {logout} = loginSlice.actions
 export const {setUser} = loginSlice.actions
+export const {setResetToken} = loginSlice.actions

@@ -3,13 +3,20 @@ import bgLogin from '../assets/images/backgrounddangnhap.png';
 import '../assets/css/Forgotpassword.css'
 import { Button, Card, Form } from 'react-bootstrap';
 import { NavLink } from 'react-router-dom';
+import axios from 'axios';
+import { ENDPOINT } from '../App';
+import { toast } from 'react-toastify';
+import { set } from 'date-fns';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../Store/store';
+import { setResetToken } from '../Slices/LoginSlice';
 
 interface ForgotPassword{
     email: string,
     codeOTP: string,
 }
 const ForgotPassword = () => {
-
+    const dispatch = useDispatch<AppDispatch>();
     const initialForgot: ForgotPassword = {
         codeOTP: "",
         email: "",
@@ -21,18 +28,23 @@ const ForgotPassword = () => {
     })
     const [isSent,setIsSent] = useState(false);
 
-    const clickSendOTP = async()=>{
+    const clickSendMail = async()=>{
         setIsSent(true);
-        try {
-            
-        } catch (error) {
-            
+        if(
+            err.errEmail === "" && err.errCodeOTP === ""
+        ){
+            try {
+                const response = await axios.post(`${ENDPOINT}/user/forgot-password/sendOTP`,forgot);
+                console.log(response)
+                toast.info(response.data.message);
+                dispatch(setResetToken(response.data.data));
+            } catch (error: any) {
+                console.log(error);
+                setErr({...err,errEmail: error.response.data.message})
+            }
         }
     }
 
-    const clickNext = ()=>{
-
-    }
 
     const basicValidation = (e:React.ChangeEvent<HTMLInputElement>, fieldName: string)=>{
         if (fieldName === "email"){
@@ -88,34 +100,22 @@ const ForgotPassword = () => {
                                         </div>
                                     </div>
                                     <div className="d-flex justify-content-center">
-                                        <div className="d-flex justify-content-between div-input" style={{ width: '320px' }}>
-                                            <div className="input-box">
-                                                <div className="input-dau">
-                                                    <i className="fa-solid fa-key"></i>
-                                                    <input 
-                                                        type="text" 
-                                                        placeholder="Mã xác nhận" 
-                                                        name="OTP" 
-                                                        className=""
-                                                        value={forgot.codeOTP}
-                                                        onChange={(e) => basicValidation(e,"codeOTP")}
-                                                    />
+                                        <div className="d-flex justify-content-center div-input" style={{ width: '320px' }}>
+                                            <div className="input-box mx-2">
+                                                <div className="input-return">
+                                                    <NavLink className="btn btn-secondary" to={"/login"}>Return</NavLink>
                                                 </div>
-                                                <span className="text-danger">{err.errCodeOTP}</span>
                                             </div>
-                                            <div className="input-box">
+                                            <div className="input-box mx-2">
                                                 <div className="input-dau">
-                                                    <Button className="btn btn-primary " onClick={clickSendOTP}>Send OTP</Button>
+                                                    <Button className="btn btn-primary " onClick={clickSendMail}>Reset</Button>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div className="d-flex justify-content-center mt-1 div-button">
                                         <div className="d-flex justify-content-center mt-3">
-                                            <Button type="button" className="btn btn-primary " onClick={clickNext} disabled={!isSent}>Tiếp tục</Button>
-                                        </div>
-                                        <div className="d-flex justify-content-center mt-3">
-                                            <NavLink className="btn btn-secondary " to={"/login"}>Trở lại</NavLink>
+                                            
                                         </div>
                                     </div>
                                 </Form>

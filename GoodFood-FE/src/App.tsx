@@ -25,6 +25,7 @@ import OrderHistory from './Components/OrderHistory'
 import ChangePassword from './Components/ChangePassword'
 import UpdateAccount from './Components/UpdateAccount'
 import ForgotPassword from './Components/ForgotPassword'
+import ResetPassword from './Components/ResetPassword'
 
 
 
@@ -66,7 +67,7 @@ function App() {
           <Route path='/home/change-password' element={ <PrivateRoute element={ChangePassword}></PrivateRoute> }></Route>
           <Route path='/home/edit-profile' element={ <PrivateRoute element={UpdateAccount}></PrivateRoute> }></Route>
           <Route path='/forgot-password' element={<ForgotPassword></ForgotPassword>}></Route>
-
+          <Route path='/reset-password' element={<ResetPassword></ResetPassword>}></Route>
 
           <Route path='/home-admin' element={ <PrivateRoute element={Dashboard}></PrivateRoute> }></Route>
           <Route path='/home-admin/order' element={ <PrivateRoute element={Order}></PrivateRoute> }></Route>
