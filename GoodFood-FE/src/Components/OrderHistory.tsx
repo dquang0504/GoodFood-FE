@@ -20,10 +20,10 @@ interface InvoiceList{
     cancelReason: string,
 }
 
-interface InvoiceDetailList{
+export interface InvoiceDetailList{
     invoiceID: number,
     image: string,
-    product: Products,
+    product: Products | null,
     quantity: number,
     totalMoney: number,
     shippingFee: number,
@@ -45,7 +45,7 @@ const OrderHistory = () => {
         { id: 4, reason: "I want to buy another product." },
         { id: 5, reason: "Other." },
     ]
-        const initialInvoice: InvoiceList = {
+    const initialInvoice: InvoiceList = {
         address: "",
         cancelReason: listReasons[0].reason,
         invoiceID: 0,
@@ -64,7 +64,6 @@ const OrderHistory = () => {
         try {
             const response = await axiosInstance.get(`order-history?tab=${tab}`)
             setInvoiceList(response.data.data);
-            console.log(response);
         } catch (error) {
             console.log(error)
         }
@@ -276,22 +275,25 @@ const OrderHistory = () => {
                                 invoiceDetailList.map((detail,index) => (
                                     <tr key={index}>
                                         <td>{detail.invoiceID}</td>
-                                        <td><img src={detail.image} alt={detail.product.productName} width="50" height="50" /></td>
-                                        <td>{detail.product.productName}</td>
+                                        <td><img src={detail.image} alt={detail.product?.productName} width="50" height="50" /></td>
+                                        <td>{detail.product?.productName}</td>
                                         <td>{detail.quantity}</td>
                                         <td style={{ color: 'red' }}>{formatVND(detail.totalMoney)}</td>
                                         <td className="align-content-center">
                                         {
                                             activeTab === "Giao thành công" ? (
                                             <>
-                                                <NavLink to={"#"} className="btn btn-sm btn-buy-again btn-success me-2" onClick={() => { clickMuaLai(detail.product.productID, detail.quantity) }}>Mua Lại</NavLink>
+                                                {detail.product?.productID !== undefined && (
+                                                    <NavLink to={"#"} className="btn btn-sm btn-buy-again btn-success me-2" onClick={() => { clickMuaLai(detail.product!.productID, detail.quantity) }}>Buy Again</NavLink>
+                                                )}
                                                 {!detail.reviewCheck ? 
                                                     (
                                                         <NavLink
                                                             className="btn btn-sm btn-review btn-warning"
-                                                            to={`/home/evaluate/${detail.product.productID}/${detail.quantity}/${detail.invoiceID}`}
+                                                            to={`/home/evaluate`}
+                                                            state={{invoiceID:detail.invoiceID,productID: detail.product?.productID}}
                                                         >
-                                                            Đánh giá
+                                                            Review
                                                         </NavLink>
                                                     ) : 
                                                     null

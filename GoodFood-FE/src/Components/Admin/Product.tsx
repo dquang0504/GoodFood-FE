@@ -403,7 +403,7 @@ const Product = () => {
                                         <div className="mb-3">
                                             <label className="form-label fw-bold">Loại:</label>
                                             <select 
-                                                value={displayP.productType.typeName} 
+                                                value={displayP.productType?.typeName} 
                                                 name="tenLoai" 
                                                 className="form-select" 
                                                 aria-label="Default select example"
@@ -425,7 +425,7 @@ const Product = () => {
                                 <div className="row">
                                     <div className="col-md-12">
                                         <div className="mb-3">
-                                            <label className="form-label fw-bold">Chọn ảnh:</label>
+                                            <label className="form-label fw-bold">Choose one or multiple images:</label>
                                             <UploadImgProduct
                                                 className='form-control'
                                                 inputClass='upload-instructions'

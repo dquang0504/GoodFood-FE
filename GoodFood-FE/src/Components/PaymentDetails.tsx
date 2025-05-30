@@ -1,7 +1,7 @@
 import React, { useEffect, useReducer, useRef, useState } from 'react';
 import '../assets/css/PaymentDetails.css'
 import Navbar from './Navbar';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { Addresses } from '../Interfaces/Addresses';
 import { useDispatch, useSelector } from 'react-redux';
 import { rootCertificates } from 'tls';
@@ -12,11 +12,12 @@ import { Invoices } from '../Interfaces/Invoices';
 import { Carts } from '../Interfaces/Carts';
 import { formatVND } from '../Services/FormatVND';
 import axios from 'axios';
-import { Modal } from 'react-bootstrap';
+import { Modal, NavItem } from 'react-bootstrap';
 import Footer from './Footer';
 import { format } from 'date-fns';
 import { InvoiceDetails } from '../Interfaces/InvoiceDetails';
 import { deleteCartItem } from '../Slices/CartSlice';
+import { Products } from '../Interfaces/Products';
 
 const PaymentDetails = () => {
 
@@ -24,7 +25,14 @@ const PaymentDetails = () => {
     const dispatch = useDispatch<AppDispatch>()
     const {state} = useLocation();
     const [listItemClickChon,setListItemClickChon] = useState<Carts[]>(state.listChosenItems)
-    console.log(listItemClickChon);
+    const [product, setProduct] = useState<Products[]>([]);
+    // Sau khi có `state.listChosenItems`, bạn có thể cập nhật:
+    useEffect(() => {
+    if (state.listChosenItems) {
+        const productArray = listItemClickChon.map(item => item.product);
+        setProduct(productArray);
+    }
+    }, [state.listChosenItems]);
     const {user} = useSelector((state:RootState)=>state.login);
     const initialInvoice = {
         accountID: user ? user.accountID : 0,
@@ -62,7 +70,7 @@ const PaymentDetails = () => {
         quantity: item.quantity,
         price: item.product.price * item.quantity,
         invoiceID: 0,
-        product: null,
+        product: item.product,
         invoice: null
     }))
     const [address,setAddress] = useState<Addresses>(initialAddress)
@@ -71,6 +79,7 @@ const PaymentDetails = () => {
     const totalTemp = useRef(listItemClickChon.reduce((acc,item) => acc + (item.product.price * item.quantity),0))
     const [showModal,setShowModal] = useState(false);
     const [listAddress, setListAddress] = useState<Addresses[]>([]);
+    const navigate = useNavigate();
 
     const fetchAddress = async()=>{
         try {
@@ -147,19 +156,22 @@ const PaymentDetails = () => {
     const clickDatHang = async()=>{
         const payload = {
             invoice: invoice,
-            invoiceDetails: invoiceDetails
+            invoiceDetails: invoiceDetails,
+            product: product
         }
-        console.log(invoiceDetails);
+        console.log(payload);
         try {
             const response = await axiosInstance.post(`invoice/pay`,payload);
             console.log(response);
             toast.success(response.data.message);
-        } catch (error) {
-            console.log(error)
-        }finally{
+            // deleting cart item using cart slice
             listItemClickChon.map(item=>(
                 dispatch(deleteCartItem({cartID: item.cartID,accountID: user ? user.accountID : 0}))
             ))
+            //navigating to page Pay.tsx
+            navigate("/home/payment",{state:response.data.data})
+        } catch (error) {
+            console.log(error)
         }
     }
 

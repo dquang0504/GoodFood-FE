@@ -10,6 +10,6 @@ export interface Reviews{
     productID: number,
     accountID: number,
     invoiceID: number,
-    reviewAccount: Users,
-    reviewProduct: Products
+    reviewAccount: Users | null,
+    reviewProduct: Products | null
 }

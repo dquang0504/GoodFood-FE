@@ -61,9 +61,9 @@ const UploadImgProduct: React.FC<UploadImgProductProps> = ({className, inputClas
             >
                 <input {...getInputProps()} />
                 {isDragActive ? (
-                <p className={inputClass}>Thả ảnh ở đây ...</p>
+                <p className={inputClass}>Drag your images here...</p>
                 ) : (
-                <p className={inputClass}>Kéo thả hoặc click vào để chọn ảnh</p>
+                <p className={inputClass}>Click here to choose images or drag them here</p>
                 )}
             </div>
 

@@ -11,6 +11,6 @@ export interface Products{
     insertDate: Date,
     productTypeID: number,
     weight: number,
-    productType: ProductTypes,
-    productImages: ProductImages
+    productType: ProductTypes | null,
+    productImages: ProductImages | null
 }

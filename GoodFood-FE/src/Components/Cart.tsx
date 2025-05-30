@@ -104,6 +104,9 @@ const Cart = () => {
                 setListCart(prev => prev.map(item =>
                     item.cartID === cartItem.cartID ? { ...item, quantity: response.payload.quantity } : item
                 ));
+                setChosenItems(prev => prev.map(item =>
+                    item.cartID === cartItem.cartID ? { ...item, quantity: response.payload.quantity } : item
+                ));
                 //checking if an item is chosen => update totalAmount
                 const checkbox = document.querySelector<HTMLInputElement>(`.checkboxClass[data-id="${cartItem.cartID}"]`);
                 if (checkbox?.checked) {
