@@ -13,25 +13,52 @@ import axiosInstance from '../Services/AxiosInstance';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../Store/store';
 import { addToCart } from '../Slices/CartSlice';
+import internal from 'stream';
+import { access } from 'fs';
+
+interface ProductDetailResponse{
+    product: Products
+    review: Reviews
+}
+interface Stars{
+    fiveStars: number,
+    fourStars: number,
+    threeStars: number,
+    twoStars: number,
+    oneStars: number,
+}
 
 const ProductDetail = () => {
     const dispatch = useDispatch<AppDispatch>();
     const {state} = useLocation();
     const [product,setProduct] = useState<Products | null>(null);
+    const [stars,setStars] = useState<Stars>({
+        fiveStars: 0,
+        fourStars: 0,
+        oneStars: 0,
+        threeStars: 0,
+        twoStars: 0
+    });
     const [products,setProducts] = useState<Products[]>([]);
-    const averageRating = useRef(5);
     const [quantity,setQuantity] = useState<number>(1);
     const [filteredEvaluates,setFilteredEvaluates] = useState<Reviews[]>([]);
     const [evaluates,setEvaluates] = useState<Reviews[]>([]);
-    const countStars = useRef(0);
     const {user} = useSelector((state:RootState)=>state.login);
+    const averageStars = useRef(0);
+    const [ratingFilter,setRatingFilter] = useState('All');
     const navigator = useNavigate();
 
     const fetchDetail = async()=>{
         try {
             const response = await axios.get(`${ENDPOINT}/products/detail?id=${state.productID}`)
-            setProduct(response.data.data);
-            console.log(response)
+            setProduct(response.data.data.product);
+            setStars(response.data.data.stars);
+            setEvaluates(response.data.data.review);
+            console.log(response);
+            //calculating average rating
+            const fetchedStars = response.data.data.stars
+            const totalVotes = fetchedStars.fiveStars + fetchedStars.fourStars + fetchedStars.threeStars + fetchedStars.twoStars + fetchedStars.oneStars
+            averageStars.current = totalVotes === 0 ? 0 : (5*fetchedStars.fiveStars + 4*fetchedStars.fourStars + 3*fetchedStars.threeStars + 2*fetchedStars.twoStars + 1*fetchedStars.oneStars) / totalVotes
         } catch (error) {
             console.log(error);
         }
@@ -84,7 +111,7 @@ const ProductDetail = () => {
     }
 
     const handleRatingFilter = (stars: number) => {
-
+        setRatingFilter(`${stars} stars`);
     }
 
     const clickProduct = (product: Products) => {
@@ -92,6 +119,24 @@ const ProductDetail = () => {
     }
 
     const clickMuaNgay = (product: Products) =>{
+
+    }
+
+    const renderStars = (rating: number) => {
+        const stars = [];
+        for (let i = 1; i <= 5; i++) {
+            if (rating >= i) {
+                stars.push(<i key={i} className="fa fa-star text-warning"></i>);
+            } else if (rating >= (i - 0.5)) {
+                stars.push(<i key={i} className="fa fa-star-half-alt text-warning"></i>);
+            } else {
+                stars.push(<i key={i} className="fa fa-star text-secondary"></i>);
+            }
+        }
+        return stars;
+    };
+
+    const clickEditReview = (reviewID: number)=>{
 
     }
 
@@ -109,18 +154,19 @@ const ProductDetail = () => {
                                 alt={product?.productName}
                             />
                         </div>
-
                         <div className="detail-product col-md-6">
                             <div className="name-product">{product?.productName}</div>
                             <div className="star">
-                                <b className="number-star" style={{ fontSize: '25px' }}>{averageRating.current}</b>
+                                <b className="number-star" style={{ fontSize: '25px' }}>
+                                    {averageStars.current}
+                                </b>
                                 <span style={{ fontSize: '20px' }}>
                                     <i className="fa fa-star text-warning"></i>
                                 </span>
                                 <span style={{ margin: '0 10px', color: '#979797' }}> |</span>
                                 {/* {totalAllStars} */}
                                 <span className="number-evaluate">5</span>
-                                <span className="text-number-evaluate"> Đánh giá</span>
+                                <span className="text-number-evaluate"> Review</span>
                             </div>
                             <div className="detail-product2">
                                 <div className="price">
@@ -162,81 +208,83 @@ const ProductDetail = () => {
                     <div className="evaluate mt-3">
                         <div className="mb-1" style={{ fontSize: '30px', paddingLeft:28 }}>ĐÁNH GIÁ SẢN PHẨM</div>
                         <div className="detail-evaluate-star">
-                            <span className="number-star">{averageRating.current}</span>
-                            <span style={{ color: '#FAA41A', fontSize: '24px', margin: '0 200px 0 0' }}> trên 5</span>
+                            <span className="number-star">
+                                {averageStars.current}/5 <i className="fa fa-star text-warning"></i>
+                            </span>
                             <form method="get">
-                                <button type="button" name="soSao" value="" className="btn btn-outline-success me-2" onClick={() => handleRatingFilter(0)}>Tất Cả</button>
-                                <button type="button" name="soSao" value="5" className="btn btn-outline-success me-2" onClick={() => handleRatingFilter(5)}>5 sao ({countStars.current})</button>
-                                <button type="button" name="soSao" value="4" className="btn btn-outline-success me-2" onClick={() => handleRatingFilter(4)}>4 sao ({countStars.current})</button>
-                                <button type="button" name="soSao" value="3" className="btn btn-outline-success me-2" onClick={() => handleRatingFilter(3)}>3 sao ({countStars.current})</button>
-                                <button type="button" name="soSao" value="2" className="btn btn-outline-success me-2" onClick={() => handleRatingFilter(2)}>2 sao ({countStars.current})</button>
-                                <button type="button" name="soSao" value="1" className="btn btn-outline-success" onClick={() => handleRatingFilter(1)}>1 sao ({countStars.current})</button>
+                                <button type="button" name="soSao" value="" className="btn btn-outline-success me-2" onClick={() => handleRatingFilter(0)}>All</button>
+                                <button type="button" name="soSao" value="5" className="btn btn-outline-success me-2" onClick={() => handleRatingFilter(5)}>5 stars ({stars.fiveStars == 0 ? 0 : stars.fiveStars})</button>
+                                <button type="button" name="soSao" value="4" className="btn btn-outline-success me-2" onClick={() => handleRatingFilter(4)}>4 stars ({stars.fourStars})</button>
+                                <button type="button" name="soSao" value="3" className="btn btn-outline-success me-2" onClick={() => handleRatingFilter(3)}>3 stars ({stars.threeStars})</button>
+                                <button type="button" name="soSao" value="2" className="btn btn-outline-success me-2" onClick={() => handleRatingFilter(2)}>2 stars ({stars.twoStars})</button>
+                                <button type="button" name="soSao" value="1" className="btn btn-outline-success" onClick={() => handleRatingFilter(1)}>1 stars ({stars.oneStars})</button>
                             </form>
                             <div style={{ fontSize: '30px', margin: '-20px 0 0 40px' }}>
-                                {/* {renderStars(parseFloat(averageRating))} */}
+                                {renderStars(averageStars.current)}
                             </div>
                         </div>
                         <div className="detail-evaluate">
                             <div className="detail-evaluate">
                                 <div className="card card-evaluate">
-                                    {filteredEvaluates.length > 0 ? (
-                                        Array.isArray(evaluates) && evaluates.length > 0 && evaluates.map(eva => (
+                                    {evaluates.length > 0 ? (
+                                        evaluates.map(eva => (
                                             <div className="card-body content row" key={eva.reviewID}>
                                                 <div className="col-md-1 mt-2 ms-3 me-3">
                                                     <img 
                                                         alt="" 
-                                                        src={eva.reviewAccount.avatar || 'https://cellphones.com.vn/sforum/wp-content/uploads/2023/10/avatar-trang-4.jpg'} 
+                                                        src={eva.reviewAccount?.avatar ??  'https://cellphones.com.vn/sforum/wp-content/uploads/2023/10/avatar-trang-4.jpg'} 
                                                         width="50px" 
                                                         height="50px" 
                                                         style={{ borderRadius: '50%' }} 
                                                     />
                                                 </div>
                                                 <div className="col-md-9 mt-2">
-                                                    <div className="name">{eva.reviewAccount.fullName}</div>
+                                                    <div className="name fw-bold">{eva.reviewAccount?.fullName}</div>
                                                     <div className="review-rating">
-                                                        {/*{renderStars(eva.soSao)}*/}
+                                                        {renderStars(eva.stars)}
                                                     </div>
-                                                    {/* <div className="time-date">{formatDate(eva.ngayDanhGia)}</div> */}
+                                                    <div className="time-date">{new Date(eva.reviewDate).toLocaleDateString()}</div>
                                                 </div>
                                                 <div className="body-content col-md-12" style={{ fontSize: '20px' }}>
                                                     <div className="mb-3">{eva.comment}</div>
-
-                                                    {/* {reviewImages.filter(image => image.maDanhGia === eva.maDanhGia).map(image => (
-                                                        <span key={image.tenHinhAnh}>
-                                                            <img 
-                                                                src={image.tenHinhAnh} 
-                                                                alt="" 
-                                                                width="75px" 
-                                                                height="75px" 
-                                                                style={{ marginRight: '10px' }} 
-                                                            />
-                                                        </span>
-                                                    ))} */}
+                                                    {eva.reviewImages ? (
+                                                        Array.isArray(eva.reviewImages) && eva.reviewImages.length > 0 && eva.reviewImages.map(img => (
+                                                           <span key={img.imageName}>
+                                                                <img 
+                                                                    src={img.imageName} 
+                                                                    alt="" 
+                                                                    width="75px" 
+                                                                    height="75px" 
+                                                                    style={{ marginRight: '10px' }} 
+                                                                />
+                                                            </span> 
+                                                        ))  
+                                                    ):(
+                                                        <></>
+                                                    )}
 
                                                     {/* Phản hồi của admin */}
-                                                    <div className="admin-replies mt-3">
-                                                        <h5 className="text-success">Phản hồi từ Admin:</h5>
-                                                        {/* {adminResponse && adminResponse.length > 0 ? (
-                                                            adminResponse
-                                                                .filter(reply => reply.maTaiKhoan?.maTaiKhoan === eva.taiKhoanDG?.maTaiKhoan) // Lọc phản hồi phù hợp
-                                                                .map((reply, index) => (
-                                                                    <div className="admin-reply" key={index}>
-                                                                        <strong>Admin:</strong> <span>{reply.noiDungPhanHoi}</span>
-                                                                    </div>
-                                                                ))
-                                                        ) : (
-                                                            <div className="no-replies text-muted">Chưa có phản hồi nào từ Admin</div>
-                                                        )} */}
-                                                    </div>
+                                                    {eva.reviewReply ? (
+                                                        Array.isArray(eva.reviewReply) && eva.reviewReply.length > 0 && eva.reviewReply.map(reply=>(
+                                                            <div className="admin-replies mt-3">
+                                                                <h5 className="text-success">Phản hồi từ Admin:</h5>
+                                                                <div className="admin-reply" key={reply.replyID}>
+                                                                    <strong>Admin:</strong> <span>{reply.reply}</span>
+                                                                </div>
+                                                            </div>
+                                                        ))
+                                                    ): (
+                                                        <></>
+                                                    )}
 
                                                     {/* Nút chỉnh sửa dành cho người dùng đang đăng nhập */}
-                                                    {/* {eva.taiKhoanDG?.maTaiKhoan === loggedInUserId && (
+                                                    {eva.reviewAccount?.username === user?.username && (
                                                         <div className='danhGiaBtn'>
-                                                            <a href="#" onClick={() => clickEdit(eva.maDanhGia)}>
+                                                            <a href="#" onClick={() => clickEditReview(eva.reviewID)}>
                                                                 <i className="fa-regular fa-pen-to-square"></i>
                                                             </a>
                                                         </div>
-                                                    )} */}
+                                                    )}
                                                 </div>
                                             </div>
                                         ))
