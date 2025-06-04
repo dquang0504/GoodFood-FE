@@ -80,7 +80,7 @@ const Review = () => {
         status: true,
         weight: 0
     }
-    const initialDisplayR = {
+    const initialDisplayR: Reviews = {
         accountID: 0,
         comment: "",
         invoiceID: 0,
@@ -90,7 +90,9 @@ const Review = () => {
         reviewID: 0,
         stars: 0,
         status: true,
-        reviewProduct: initialProduct
+        reviewProduct: initialProduct,
+        reviewImages: null,
+        reviewReply: null
     }
     const [displayR,setDisplayR] = useState<Reviews>(initialDisplayR);
     const [reviews,setReviews] = useState<Reviews[]>([]);

@@ -15,6 +15,8 @@ import { AppDispatch, RootState } from '../Store/store';
 import { addToCart } from '../Slices/CartSlice';
 import internal from 'stream';
 import { access } from 'fs';
+import ReactPaginate from 'react-paginate';
+import '../assets/css/Admin/pagination.css'
 
 interface ProductDetailResponse{
     product: Products
@@ -47,13 +49,16 @@ const ProductDetail = () => {
     const averageStars = useRef(0);
     const [ratingFilter,setRatingFilter] = useState('All');
     const navigator = useNavigate();
+    const [pageNum,setPageNum] = useState(1);
+    const [totalPage,setTotalPage] = useState(0);
 
-    const fetchDetail = async()=>{
+    const fetchDetail = async(filter:string,pageNum: number)=>{
         try {
-            const response = await axios.get(`${ENDPOINT}/products/detail?id=${state.productID}`)
+            const response = await axios.get(`${ENDPOINT}/products/detail?id=${state.productID}&filter=${filter}&page=${pageNum}`)
             setProduct(response.data.data.product);
             setStars(response.data.data.stars);
             setEvaluates(response.data.data.review);
+            setTotalPage(response.data.totalPage)
             console.log(response);
             //calculating average rating
             const fetchedStars = response.data.data.stars
@@ -74,10 +79,9 @@ const ProductDetail = () => {
     }
 
     useEffect(()=>{
-        window.scrollTo(0,0)
-        fetchDetail();
+        fetchDetail(ratingFilter, pageNum);
         fetchSimilar();
-    },[])
+    },[ratingFilter,pageNum])
 
     const clickAddProductCart = async(product: Products)=>{
         if (user === null){
@@ -108,10 +112,6 @@ const ProductDetail = () => {
         else{
             setQuantity(quantity-1);
         }
-    }
-
-    const handleRatingFilter = (stars: number) => {
-        setRatingFilter(`${stars} stars`);
     }
 
     const clickProduct = (product: Products) => {
@@ -211,13 +211,13 @@ const ProductDetail = () => {
                             <span className="number-star">
                                 {averageStars.current}/5 <i className="fa fa-star text-warning"></i>
                             </span>
-                            <form method="get">
-                                <button type="button" name="soSao" value="" className="btn btn-outline-success me-2" onClick={() => handleRatingFilter(0)}>All</button>
-                                <button type="button" name="soSao" value="5" className="btn btn-outline-success me-2" onClick={() => handleRatingFilter(5)}>5 stars ({stars.fiveStars == 0 ? 0 : stars.fiveStars})</button>
-                                <button type="button" name="soSao" value="4" className="btn btn-outline-success me-2" onClick={() => handleRatingFilter(4)}>4 stars ({stars.fourStars})</button>
-                                <button type="button" name="soSao" value="3" className="btn btn-outline-success me-2" onClick={() => handleRatingFilter(3)}>3 stars ({stars.threeStars})</button>
-                                <button type="button" name="soSao" value="2" className="btn btn-outline-success me-2" onClick={() => handleRatingFilter(2)}>2 stars ({stars.twoStars})</button>
-                                <button type="button" name="soSao" value="1" className="btn btn-outline-success" onClick={() => handleRatingFilter(1)}>1 stars ({stars.oneStars})</button>
+                            <form>
+                                <button type="button" name="soSao" value="All" className="btn btn-outline-success me-2" onClick={() => setRatingFilter("All")}>All</button>
+                                <button type="button" name="soSao" value="5" className="btn btn-outline-success me-2" onClick={() => setRatingFilter("5")}>5 stars ({stars.fiveStars == 0 ? 0 : stars.fiveStars})</button>
+                                <button type="button" name="soSao" value="4" className="btn btn-outline-success me-2" onClick={() => setRatingFilter("4")}>4 stars ({stars.fourStars})</button>
+                                <button type="button" name="soSao" value="3" className="btn btn-outline-success me-2" onClick={() => setRatingFilter("3")}>3 stars ({stars.threeStars})</button>
+                                <button type="button" name="soSao" value="2" className="btn btn-outline-success me-2" onClick={() => setRatingFilter("2")}>2 stars ({stars.twoStars})</button>
+                                <button type="button" name="soSao" value="1" className="btn btn-outline-success" onClick={() => setRatingFilter("1")}>1 stars ({stars.oneStars})</button>
                             </form>
                             <div style={{ fontSize: '30px', margin: '-20px 0 0 40px' }}>
                                 {renderStars(averageStars.current)}
@@ -303,6 +303,33 @@ const ProductDetail = () => {
                                 </form>
                             </div>
                         )} */}
+
+                        <div hidden={totalPage===0} className="d-flex justify-content-between" style={{marginTop:"25px"}}>
+                            {/* Vị trí hiển thị số trang */}
+                            <p className="fw-bold">Đang xem trang {pageNum} / {totalPage}</p>        
+                            {/* React Paginate */}
+                            <ReactPaginate
+                                breakLabel="..."
+                                nextLabel={<i className="fa-solid fa-forward-step"></i>}
+                                onPageChange={(event)=>setPageNum(event.selected + 1)}
+                                pageRangeDisplayed={3}
+                                pageCount={totalPage}
+                                previousLabel={<i className="fa-solid fa-backward-step"></i>}
+                                renderOnZeroPageCount={null}
+                                pageClassName='page-item page-address'
+                                pageLinkClassName='page-link'
+                                previousClassName='page-item page-address mr-3'
+                                previousLinkClassName='page-link'
+                                nextClassName='page-item page-address'
+                                nextLinkClassName='page-link'
+                                breakClassName='page-item'
+                                breakLinkClassName='page-link'
+                                containerClassName='pagination'
+                                activeClassName='active'
+                                forcePage={pageNum - 1}
+                            />
+                            <p className="fw-bold">3 records / page</p>
+                        </div>  
                     </div>
 
                     <div className="similar-product-details row">
