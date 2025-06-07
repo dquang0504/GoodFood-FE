@@ -28,6 +28,7 @@ import ForgotPassword from './Components/ForgotPassword'
 import ResetPassword from './Components/ResetPassword'
 import Pay from './Components/Pay'
 import ReviewProduct from './Components/ReviewProduct'
+import EditReviewProduct from './Components/EditReviewProduct'
 
 
 
@@ -68,6 +69,7 @@ function App() {
           <Route path='/home/payment' element={ <PrivateRoute element={Pay}></PrivateRoute> }></Route>
           <Route path='/home/order-history' element={ <PrivateRoute element={OrderHistory}></PrivateRoute> }></Route>
           <Route path='/home/evaluate' element={ <PrivateRoute element={ReviewProduct}></PrivateRoute> }></Route>
+          <Route path='/home/edit-evaluate' element={ <PrivateRoute element={EditReviewProduct}></PrivateRoute> }></Route>
           <Route path='/home/change-password' element={ <PrivateRoute element={ChangePassword}></PrivateRoute> }></Route>
           <Route path='/home/edit-profile' element={ <PrivateRoute element={UpdateAccount}></PrivateRoute> }></Route>
           <Route path='/forgot-password' element={<ForgotPassword></ForgotPassword>}></Route>

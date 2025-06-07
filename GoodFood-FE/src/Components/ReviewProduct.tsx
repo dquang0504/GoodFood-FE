@@ -53,7 +53,8 @@ const ReviewProduct = () => {
         reviewImages: initialReviewImages,
         reviewReply: null,
         stars: 0,
-        status: true
+        status: true,
+        reviewInvoice: null
     }
     const [review,setReview] = useState<Reviews>(initialReview);
     const [imageFile, setImageFile] = useState<File[]>([]);
@@ -81,6 +82,7 @@ const ReviewProduct = () => {
     const resetForm = ()=>{
         setResetPreview(false);
         setReview(initialReview);
+        setImageFile([]);
     }
 
     const basicValidation = (e:React.ChangeEvent<HTMLTextAreaElement>)=>{
@@ -138,6 +140,8 @@ const ReviewProduct = () => {
                 resetForm();
             } catch (error) {
                 console.log(error);
+            }finally{
+                fetchData();
             }
         }else{
             toast.error("Please check the displayed errors!");

@@ -1,3 +1,4 @@
+import { Invoices } from "./Invoices";
 import { Products } from "./Products";
 import { Replies } from "./Replies";
 import { ReviewImages } from "./ReviewImages";
@@ -15,5 +16,6 @@ export interface Reviews{
     reviewAccount: Users | null,
     reviewProduct: Products | null
     reviewImages: ReviewImages | null,
-    reviewReply: Replies | null
+    reviewReply: Replies | null,
+    reviewInvoice: Invoices | null,
 }

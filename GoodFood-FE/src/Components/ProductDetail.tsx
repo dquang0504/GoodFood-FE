@@ -17,11 +17,8 @@ import internal from 'stream';
 import { access } from 'fs';
 import ReactPaginate from 'react-paginate';
 import '../assets/css/Admin/pagination.css'
+import { Carts } from '../Interfaces/Carts';
 
-interface ProductDetailResponse{
-    product: Products
-    review: Reviews
-}
 interface Stars{
     fiveStars: number,
     fourStars: number,
@@ -32,6 +29,7 @@ interface Stars{
 
 const ProductDetail = () => {
     const dispatch = useDispatch<AppDispatch>();
+    const navigate = useNavigate()
     const {state} = useLocation();
     const [product,setProduct] = useState<Products | null>(null);
     const [stars,setStars] = useState<Stars>({
@@ -51,15 +49,25 @@ const ProductDetail = () => {
     const navigator = useNavigate();
     const [pageNum,setPageNum] = useState(1);
     const [totalPage,setTotalPage] = useState(0);
+    const [chosenItems,setChosenItems] = useState<Carts[]>([])
 
     const fetchDetail = async(filter:string,pageNum: number)=>{
         try {
             const response = await axios.get(`${ENDPOINT}/products/detail?id=${state.productID}&filter=${filter}&page=${pageNum}`)
             setProduct(response.data.data.product);
+            if (response.data.data.product?.productID !== undefined) {
+                const newItem: Carts = {
+                    accountID: user ? user.accountID : 0,
+                    cartID: 0,
+                    product: response.data.data.product,
+                    productID: response.data.data.product.productID,
+                    quantity: quantity > 0 ? quantity : 1,
+            };
+
+            setChosenItems([newItem])}
             setStars(response.data.data.stars);
             setEvaluates(response.data.data.review);
             setTotalPage(response.data.totalPage)
-            console.log(response);
             //calculating average rating
             const fetchedStars = response.data.data.stars
             const totalVotes = fetchedStars.fiveStars + fetchedStars.fourStars + fetchedStars.threeStars + fetchedStars.twoStars + fetchedStars.oneStars
@@ -81,7 +89,8 @@ const ProductDetail = () => {
     useEffect(()=>{
         fetchDetail(ratingFilter, pageNum);
         fetchSimilar();
-    },[ratingFilter,pageNum])
+    },[ratingFilter,pageNum,quantity])
+
 
     const clickAddProductCart = async(product: Products)=>{
         if (user === null){
@@ -105,12 +114,24 @@ const ProductDetail = () => {
     const changeQuantity = (value: number)=>{
         if (value > 0){
             setQuantity(quantity+1);
+            setChosenItems(
+                chosenItems.map(item => ({
+                    ...item,
+                    quantity: quantity+1,
+                }))
+            )
         }
         else if (quantity == 1){
             return;
         }
         else{
             setQuantity(quantity-1);
+            setChosenItems(
+                chosenItems.map(item => ({
+                    ...item,
+                    quantity: quantity+1,
+                }))
+            )
         }
     }
 
@@ -118,8 +139,8 @@ const ProductDetail = () => {
     
     }
 
-    const clickMuaNgay = (product: Products) =>{
-
+    const clickMuaNgay = () =>{
+        navigate("/home/payment-details",{state:{listChosenItems: chosenItems}});
     }
 
     const renderStars = (rating: number) => {
@@ -137,7 +158,7 @@ const ProductDetail = () => {
     };
 
     const clickEditReview = (reviewID: number)=>{
-
+        navigate(`/home/edit-evaluate?id=${reviewID}`)
     }
 
     return (
@@ -188,7 +209,7 @@ const ProductDetail = () => {
                                         <button className="btn btn-add-cart btn-outline-success" onClick={() => { product && clickAddProductCart(product) }}>
                                             <i className="fa-solid fa-cart-plus"></i> Thêm Vào giỏ hàng
                                         </button>
-                                        <button className="btn btn-buy btn-success" onClick={() => { product && clickPay(product) }}>Mua ngay</button>
+                                        <button className="btn btn-buy btn-success" onClick={clickMuaNgay}>Mua ngay</button>
                                     </div>
                                 </div>
                                 <div style={{ margin: '20px 0 0 0' }}>
@@ -280,9 +301,9 @@ const ProductDetail = () => {
                                                     {/* Nút chỉnh sửa dành cho người dùng đang đăng nhập */}
                                                     {eva.reviewAccount?.username === user?.username && (
                                                         <div className='danhGiaBtn'>
-                                                            <a href="#" onClick={() => clickEditReview(eva.reviewID)}>
+                                                            <button className='btn btn-info' onClick={() => clickEditReview(eva.reviewID)}>
                                                                 <i className="fa-regular fa-pen-to-square"></i>
-                                                            </a>
+                                                            </button>
                                                         </div>
                                                     )}
                                                 </div>
@@ -306,7 +327,7 @@ const ProductDetail = () => {
 
                         <div hidden={totalPage===0} className="d-flex justify-content-between" style={{marginTop:"25px"}}>
                             {/* Vị trí hiển thị số trang */}
-                            <p className="fw-bold">Đang xem trang {pageNum} / {totalPage}</p>        
+                            <p className="fw-bold">Currently viewing {pageNum} / {totalPage}</p>        
                             {/* React Paginate */}
                             <ReactPaginate
                                 breakLabel="..."
@@ -333,7 +354,7 @@ const ProductDetail = () => {
                     </div>
 
                     <div className="similar-product-details row">
-                        <div className='mb-2' style={{ fontSize: '30px' }}>SẢN PHẨM TƯƠNG TỰ</div>
+                        <div className='mb-2' style={{ fontSize: '30px' }}>SIMILAR PRODUCTS</div>
                         {products.length > 0 ? (
                             products.slice(0,8)
                             .map(product => (
@@ -345,7 +366,7 @@ const ProductDetail = () => {
                                             <h3 className="product-name">{product.productName}</h3>
                                             <div className="action row me-1">
                                                 <div className="product-price col-md-7 m-0 d-flex justify-content-center align-items-center">{formatVND(product.price)}</div>
-                                                <div className="btn btn-success col-md-5 m-0 d-flex justify-content-center text-center" style={{ cursor: 'pointer' }} onClick={() => clickMuaNgay(product)}>Mua ngay</div>
+                                                <div className="btn btn-success col-md-5 m-0 d-flex justify-content-center text-center" style={{ cursor: 'pointer' }} onClick={() => clickProduct(product)}>Mua ngay</div>
                                             </div>
                                         </div>
                                     </div>
