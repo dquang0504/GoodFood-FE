@@ -29,6 +29,7 @@ import ResetPassword from './Components/ResetPassword'
 import Pay from './Components/Pay'
 import ReviewProduct from './Components/ReviewProduct'
 import EditReviewProduct from './Components/EditReviewProduct'
+import ChatBot from './Components/ChatBot'
 
 
 
@@ -87,6 +88,7 @@ function App() {
         </Routes>
       </div>
       <ToastContainer></ToastContainer>
+      <ChatBot></ChatBot>
     </>
     
   )
