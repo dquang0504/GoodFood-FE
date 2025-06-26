@@ -11,8 +11,6 @@ import {
     Sidebar,
     TypingIndicator,
 } from "@chatscope/chat-ui-kit-react";
-import SockJS from "sockjs-client";
-import Stomp from "stompjs";
 import { useSelector } from 'react-redux';
 import { RootState } from '../Store/store';
 import adminAvatar from '../assets/images/software-engineer.png'
@@ -78,6 +76,9 @@ const ChatBot = () => {
                 timestamp: new Date().toLocaleTimeString(),
                 direction: "incoming",
             } as Message;
+            //user or admin send messages
+            const chatId = user.role ? `admin_${user.accountID}` : `user_${user.accountID}`;
+            addChatMessage(chatId, received);
 
             if (user.role) {
                 setAdminMessages((prev) => [...prev, received]);
@@ -112,7 +113,7 @@ const ChatBot = () => {
 
             const messages = querySnapshot.docs.map((doc) => {
                 const data = doc.data()
-                return{
+                return {
                     id: Number(doc.id),
                     sender: data.sender,
                     text: data.text,
@@ -140,7 +141,7 @@ const ChatBot = () => {
         };
 
         fetchMessages();
-    }, [user?.accountID]); // Khi maTaiKhoan thay đổi thì load lại tin nhắn
+    }, []); // Khi maTaiKhoan thay đổi thì load lại tin nhắn
 
     const handleChatSelection = (chatOption: string) => {
         setCurrentChat(chatOption);
@@ -221,6 +222,15 @@ const ChatBot = () => {
         }
     };
 
+    const callVertex = async () => {
+        try {
+            const response = await axios.post(`${ENDPOINT}/chatbot/call`, { prompt: "How do I view my orders?" })
+            console.log(response);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     const handleSendMessage = async () => {
         const trimmed = newMessage.trim();
         if (!trimmed) return;
@@ -255,11 +265,12 @@ const ChatBot = () => {
         }
         //user or admin send messages
         const chatId = isAdmin ? `admin_${accountID}` : `user_${accountID}`;
-        await addChatMessage(chatId, baseMessage);
+
         isAdmin
             ? setAdminMessages((prev) => [...prev, baseMessage])
             : setUserMessages((prev) => [...prev, baseMessage]);
         setNewMessage("");
+        addChatMessage(chatId, baseMessage);
 
         //Send to websocket
         if (socketRef.current) {
@@ -280,28 +291,6 @@ const ChatBot = () => {
                     timestamp: Date.now()
                 }))
             }
-            socketRef.current.onmessage = (event) => {
-                const data = JSON.parse(event.data);
-                console.log("Tin nhắn:", data);
-                if (!isAdmin) {
-                    baseMessage = {
-                        direction: "incoming",
-                        id: data.fromAdmin,
-                        sender: data.fromAdmin,
-                        text: data.message,
-                        timestamp: new Date().toLocaleTimeString(),
-                    }
-                    setUserMessages((prev) => [...prev, baseMessage]);
-                }
-                baseMessage = {
-                    direction: "incoming",
-                    id: data.from_id,
-                    sender: data.from_id,
-                    text: data.message,
-                    timestamp: new Date().toLocaleTimeString(),
-                }
-                setAdminMessages((prev) => [...prev, baseMessage]);
-            };
 
         }
     };
@@ -377,6 +366,7 @@ const ChatBot = () => {
         return 'unknown';  // Return 'unknown' if no product is found
     };
 
+    //tìm cách để có thể finetune lại model vertex theo format dưới đây
     const getBotResponse = async (input: string) => {
         setIsTyping(true);
         try {
