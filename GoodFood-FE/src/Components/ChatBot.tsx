@@ -96,6 +96,7 @@ const ChatBot = () => {
         };
     }, [user?.accountID]);
 
+    //đây là lý do
     const loadChatMessages = async () => {
         try {
             let chatId;
@@ -114,10 +115,10 @@ const ChatBot = () => {
             const messages = querySnapshot.docs.map((doc) => {
                 const data = doc.data()
                 return {
-                    id: Number(doc.id),
+                    id: data.id,
                     sender: data.sender,
                     text: data.text,
-                    timestamp: data.timestamp?.toDate().toLocaleTimeString() ?? "",
+                    timestamp: data.timestamp,
                     direction: data.direction,
                 } as Message;
             });
@@ -141,6 +142,8 @@ const ChatBot = () => {
         };
 
         fetchMessages();
+        console.log(adminMessages);
+        console.log(userMessages);
     }, []); // Khi maTaiKhoan thay đổi thì load lại tin nhắn
 
     const handleChatSelection = (chatOption: string) => {
@@ -179,6 +182,7 @@ const ChatBot = () => {
                 );
                 return [...prevMessages, ...newMessages]
             })
+            console.log(botWelcomeMessages)
         }
         else if (chatOption === 'User') {
             const adminWelcomeMessage = {
@@ -208,11 +212,12 @@ const ChatBot = () => {
 
             // Xác thực và chuẩn hóa dữ liệu tin nhắn
             const messageData = {
+                id: message.id,
                 text: message.text || "",
                 sender: message.sender || "unknown",
-                timestamp: Timestamp.now(),
+                timestamp: message.timestamp,
                 direction: message.direction || "outgoing",
-            };
+            } as Message;
             //đảm bảo khi lưu bao gồm luôn cả outgoing và incoming trong một collection
             // Lưu tin nhắn vào subcollection "messages"
             await addDoc(collection(db, "chats", chatId, "messages"), messageData);
@@ -222,10 +227,11 @@ const ChatBot = () => {
         }
     };
 
-    const callVertex = async () => {
+    const callVertex = async (message: string) => {
         try {
-            const response = await axios.post(`${ENDPOINT}/chatbot/call`, { prompt: "How do I view my orders?" })
+            const response = await axios.post(`${ENDPOINT}/chatbot/call`, { prompt: message})
             console.log(response);
+            return response.data.data
         } catch (error) {
             console.log(error);
         }
@@ -255,10 +261,10 @@ const ChatBot = () => {
             const botText = await getBotResponse(trimmed);
             const botMessage = {
                 id: Date.now(),
-                sender: user?.accountID || "Người dùng",
-                text: newMessage,
+                sender: "Chat Bot",
+                text: botText,
                 timestamp: new Date().toLocaleTimeString(),
-                direction: "outgoing",
+                direction: "incoming",
             } as Message;
             setBotMessages((prevMessages) => [...prevMessages, botMessage]);
             return;
@@ -370,34 +376,35 @@ const ChatBot = () => {
     const getBotResponse = async (input: string) => {
         setIsTyping(true);
         try {
-            const result = await model.generateContent(input);
-            let responseMessage = result.response?.text() || "Không thể tạo phản hồi!";
+            const result = await callVertex(input);
+            let responseMessage = result || "Không thể tạo phản hồi!";
 
-            // Gọi hàm tách giữa response và intent
-            const { response: botResponse, intent } = await parseResponse(responseMessage);
+            // // Gọi hàm tách giữa response và intent
+            // const { response: botResponse, intent } = await parseResponse(responseMessage);
 
-            if (intent === 'DYNAMIC' && (botResponse === 'CHECK_PRODUCT_AVAILABILITY' || botResponse === 'GET_PRODUCT_AVAILABILITY')) {
-                const extractedVariable = await extractProductName(input);
-                console.log("Đây là variable: ", extractedVariable);
-                if (extractedVariable === 'unknown') {
-                    return `Chúng tôi không có sản phẩm mà bạn đã yêu cầu`;
-                }
-                const callApi = await axios.get(`${ENDPOINT}/chat-bot/${botResponse}?keyword=${extractedVariable}`);
-                // Tạo đường dẫn với sản phẩm
-                const productLink = `/home/product-details/${callApi.data.data}`;
+            // if (intent === 'DYNAMIC' && (botResponse === 'CHECK_PRODUCT_AVAILABILITY' || botResponse === 'GET_PRODUCT_AVAILABILITY')) {
+            //     const extractedVariable = await extractProductName(input);
+            //     console.log("Đây là variable: ", extractedVariable);
+            //     if (extractedVariable === 'unknown') {
+            //         return `Chúng tôi không có sản phẩm mà bạn đã yêu cầu`;
+            //     }
+            //     const callApi = await axios.get(`${ENDPOINT}/chat-bot/${botResponse}?keyword=${extractedVariable}`);
+            //     // Tạo đường dẫn với sản phẩm
+            //     const productLink = `/home/product-details/${callApi.data.data}`;
 
-                // Trả về tin nhắn có đường dẫn
-                return `Bạn đã đặt câu hỏi về <a onClick=${handleNavigate(productLink)} style="color: blue; text-decoration: underline;">${extractedVariable}</a>`;
-            } else if (intent === 'DYNAMIC' && botResponse === 'GET_TOP_PRODUCT') {
-                const callApi = await axios.get(`${ENDPOINT}/chat-bot/${botResponse}`);
-                console.log(callApi.data.data);
-                // Tạo đường dẫn với sản phẩm
-                const productLink = `/home/product-details/${callApi.data.data[0]}`;
+            //     // Trả về tin nhắn có đường dẫn
+            //     return `Bạn đã đặt câu hỏi về <a onClick=${handleNavigate(productLink)} style="color: blue; text-decoration: underline;">${extractedVariable}</a>`;
+            // } else if (intent === 'DYNAMIC' && botResponse === 'GET_TOP_PRODUCT') {
+            //     const callApi = await axios.get(`${ENDPOINT}/chat-bot/${botResponse}`);
+            //     console.log(callApi.data.data);
+            //     // Tạo đường dẫn với sản phẩm
+            //     const productLink = `/home/product-details/${callApi.data.data[0]}`;
 
-                // Trả về tin nhắn có đường dẫn
-                return `Sản phẩm bán chạy nhất hiện tại là <a onClick=${handleNavigate(productLink)} style="color: blue; text-decoration: underline;">${callApi.data.data[1]}</a> với tổng ${callApi.data.data[2]} lượt bán`;
-            }
-            return botResponse;
+            //     // Trả về tin nhắn có đường dẫn
+            //     return `Sản phẩm bán chạy nhất hiện tại là <a onClick=${handleNavigate(productLink)} style="color: blue; text-decoration: underline;">${callApi.data.data[1]}</a> với tổng ${callApi.data.data[2]} lượt bán`;
+            // }
+            // return botResponse;
+            return responseMessage;
         } catch (error) {
             console.error("Lỗi khi gửi tin nhắn:", error);
             return "ChatBot gặp sự cố!";
