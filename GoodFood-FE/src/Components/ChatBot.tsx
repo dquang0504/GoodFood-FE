@@ -8,6 +8,8 @@ import {
     Message,
     MessageInput,
     MessageList,
+    MessagePayload,
+    MessageType,
     Sidebar,
     TypingIndicator,
 } from "@chatscope/chat-ui-kit-react";
@@ -22,6 +24,7 @@ import { addDoc, collection, doc, getDocs, orderBy, query, setDoc, Timestamp } f
 import { db } from './Firebase';
 import { useNavigate } from 'react-router-dom';
 import User from './Admin/User';
+import { resourceLimits } from 'worker_threads';
 
 type Message = {
     id: number;
@@ -30,6 +33,7 @@ type Message = {
     timestamp: string;
     direction: "incoming" | "outgoing";
     type?: string;
+    payload: MessagePayload
 };
 
 const ChatBot = () => {
@@ -52,6 +56,7 @@ const ChatBot = () => {
     const [newMessage, setNewMessage] = useState("");
     const socketRef = useRef<WebSocket | null>(null);
     const senderID = useRef(0);
+    const navigateID = useRef(0);
 
     useEffect(() => {
         if (!user?.accountID) return;
@@ -157,6 +162,7 @@ const ChatBot = () => {
                     text: "Hey! I'm your AI assistant. Let me know if you need any help with the website!",
                     timestamp: new Date().toLocaleTimeString(),
                     direction: "incoming",
+                    type: "text",
                 },
                 {
                     id: Date.now() + 1, // Đảm bảo id duy nhất
@@ -190,7 +196,8 @@ const ChatBot = () => {
                 sender: "Admin",
                 text: "Hello! Please feel free to reach out if you need any assistance from the admin teams!",
                 timestamp: new Date().toLocaleString(),
-                direction: "incoming"
+                direction: "incoming",
+                type: "text",
             } as Message
             setUserMessages((prevMessages) => {
                 //Checking if there's already been welcome messages
@@ -217,6 +224,7 @@ const ChatBot = () => {
                 sender: message.sender || "unknown",
                 timestamp: message.timestamp,
                 direction: message.direction || "outgoing",
+                type: message.type || "text",
             } as Message;
             //đảm bảo khi lưu bao gồm luôn cả outgoing và incoming trong một collection
             // Lưu tin nhắn vào subcollection "messages"
@@ -229,9 +237,9 @@ const ChatBot = () => {
 
     const callVertex = async (message: string) => {
         try {
-            const response = await axios.post(`${ENDPOINT}/chatbot/call`, { prompt: message})
+            const response = await axios.post(`${ENDPOINT}/chatbot/call`, { prompt: message })
             console.log(response);
-            return response.data.data
+            return response.data
         } catch (error) {
             console.log(error);
         }
@@ -258,15 +266,33 @@ const ChatBot = () => {
             setBotMessages((prevMessages) => [...prevMessages, baseMessage]);
             setNewMessage("");
 
-            const botText = await getBotResponse(trimmed);
+            const { responseMessage, responseImage } = await getBotResponse(trimmed);
             const botMessage = {
                 id: Date.now(),
                 sender: "Chat Bot",
-                text: botText,
+                text: responseMessage,
                 timestamp: new Date().toLocaleTimeString(),
                 direction: "incoming",
+                type: "text",
             } as Message;
-            setBotMessages((prevMessages) => [...prevMessages, botMessage]);
+            const botImageMessage: Message | null = responseImage
+                ? {
+                    id: Date.now() + 1,
+                    sender: "Chat Bot",
+                    text: responseImage,
+                    timestamp: new Date().toLocaleTimeString(),
+                    direction: "incoming",
+                    type: "image",
+                    payload: responseImage
+                }
+                : null;
+
+            setBotMessages((prevMessages) => [
+                ...prevMessages,
+                botMessage,
+                ...(botImageMessage ? [botImageMessage] : [])
+            ]);
+
             return;
         }
         //user or admin send messages
@@ -308,68 +334,38 @@ const ChatBot = () => {
             text: quickReplyMessage,
             timestamp: new Date().toLocaleTimeString(),
             direction: "outgoing",
+            type: "text"
         } as Message;
         setBotMessages((prevMessages) => [...prevMessages, newMessage]);
 
         // Phản hồi từ bot
-        const botResponse = await getBotResponse(quickReplyMessage);
-        console.log(botResponse)
+        const { responseMessage, responseImage } = await getBotResponse(quickReplyMessage);
         const botMessage = {
             id: Date.now() + 1,
             sender: "Chat Bot",
-            text: botResponse,
+            text: responseMessage,
             timestamp: new Date().toLocaleTimeString(),
             direction: "incoming",
+            type: responseImage ? "navigate" : 'text',
         } as Message;
-        setBotMessages((prevMessages) => [...prevMessages, botMessage]);
-    };
-
-    // Tách response và intent
-    const parseResponse = async (generatedResponse: string) => {
-        try {
-            const prompt = `
-                Analyze the following response and extract two components:
-                1. "Response" - The main content or answer.
-                2. "Intent" - The identified intent for the given query.
-
-                Response: "${generatedResponse}"
-
-                Ensure you return a single, concise JSON object in the format:
-                {
-                    "response": "Main content here",
-                    "intent": "Intent here"
-                }
-                Do not include any additional text or repetitions.
-            `;
-
-            const result = await model.generateContent(prompt);
-            const responseText = await result.response?.text();
-
-            console.log(responseText);
-
-            // Tìm JSON đầu tiên xuất hiện trong phản hồi
-            const match = responseText.match(/\{.*?\}/s);
-            if (match) {
-                return JSON.parse(match[0]);
-            } else {
-                throw new Error("Invalid response format");
+        //tiếp tục append vào cái image cho botMessages
+        const botImageMessage: Message | null = responseImage
+            ? {
+                id: Date.now() + 2,
+                sender: "Chat Bot",
+                text: '',
+                timestamp: new Date().toLocaleTimeString(),
+                direction: "incoming",
+                type: "image",
+                payload: responseImage
             }
-        } catch (error) {
-            console.error('Error parsing response:', error);
-            return { response: null, intent: null };
-        }
-    };
+            : null;
 
-    // Function to extract the product name from the user's input (e.g., "Cơm gà")
-    const extractProductName = async (userInput: string) => {
-        const productKeywords = await axios.get(`${ENDPOINT}/chat-bot/productNames`);  // Add more keywords as needed
-        console.log(userInput.toLowerCase());
-        for (const keyword of productKeywords.data.data) {
-            if (userInput.toLowerCase().includes(keyword.toLowerCase())) {
-                return keyword;  // Return the product name found in the user input
-            }
-        }
-        return 'unknown';  // Return 'unknown' if no product is found
+        setBotMessages((prev) => [
+            ...prev,
+            botMessage,
+            ...(botImageMessage ? [botImageMessage] : [])
+        ]);
     };
 
     //tìm cách để có thể finetune lại model vertex theo format dưới đây
@@ -377,44 +373,25 @@ const ChatBot = () => {
         setIsTyping(true);
         try {
             const result = await callVertex(input);
-            let responseMessage = result || "Không thể tạo phản hồi!";
+            let responseMessage = result.data || "Không thể tạo phản hồi!";
+            let responseImage = "";
+            navigateID.current = result.productID
 
-            // // Gọi hàm tách giữa response và intent
-            // const { response: botResponse, intent } = await parseResponse(responseMessage);
+            if (result.image !== "") {
+                responseImage = result.image;
+            }
 
-            // if (intent === 'DYNAMIC' && (botResponse === 'CHECK_PRODUCT_AVAILABILITY' || botResponse === 'GET_PRODUCT_AVAILABILITY')) {
-            //     const extractedVariable = await extractProductName(input);
-            //     console.log("Đây là variable: ", extractedVariable);
-            //     if (extractedVariable === 'unknown') {
-            //         return `Chúng tôi không có sản phẩm mà bạn đã yêu cầu`;
-            //     }
-            //     const callApi = await axios.get(`${ENDPOINT}/chat-bot/${botResponse}?keyword=${extractedVariable}`);
-            //     // Tạo đường dẫn với sản phẩm
-            //     const productLink = `/home/product-details/${callApi.data.data}`;
-
-            //     // Trả về tin nhắn có đường dẫn
-            //     return `Bạn đã đặt câu hỏi về <a onClick=${handleNavigate(productLink)} style="color: blue; text-decoration: underline;">${extractedVariable}</a>`;
-            // } else if (intent === 'DYNAMIC' && botResponse === 'GET_TOP_PRODUCT') {
-            //     const callApi = await axios.get(`${ENDPOINT}/chat-bot/${botResponse}`);
-            //     console.log(callApi.data.data);
-            //     // Tạo đường dẫn với sản phẩm
-            //     const productLink = `/home/product-details/${callApi.data.data[0]}`;
-
-            //     // Trả về tin nhắn có đường dẫn
-            //     return `Sản phẩm bán chạy nhất hiện tại là <a onClick=${handleNavigate(productLink)} style="color: blue; text-decoration: underline;">${callApi.data.data[1]}</a> với tổng ${callApi.data.data[2]} lượt bán`;
-            // }
-            // return botResponse;
-            return responseMessage;
+            return { responseMessage: responseMessage , responseImage };
         } catch (error) {
             console.error("Lỗi khi gửi tin nhắn:", error);
-            return "ChatBot gặp sự cố!";
+            return { responseMessage: "ChatBot gặp sự cố!", responseImage: "" };
         } finally {
             setIsTyping(false);
         }
     };
 
-    const handleNavigate = (productLink: string) => {
-        navigate(productLink);
+    const handleNavigate = (id: number) => {
+        navigate(`/home/product-details/${id}`,{state:{productID:id}});
     }
 
 
@@ -524,7 +501,7 @@ const ChatBot = () => {
                                 <MessageList typingIndicator={isTyping && currentChat === "Chatbot" && <TypingIndicator content="Chatbot đang gõ..." />}>
                                     {(currentChat === 'Chatbot' ? botMessages : (user?.role ? adminMessages : userMessages)).map(msg => (
                                         <Message
-                                            onClick={msg.type === 'function' ? (() => handleQuickReply(msg.text)) as React.MouseEventHandler<HTMLElement> : undefined}
+                                            onClick={msg.type === 'function' ? (() => handleQuickReply(msg.text)) as React.MouseEventHandler<HTMLElement> : msg.type==="navigate" ? (()=>handleNavigate(navigateID.current)) : undefined}
                                             key={msg.id}
                                             style={msg.type === 'function'
                                                 ? {
@@ -535,10 +512,18 @@ const ChatBot = () => {
                                                     padding: '5px 10px',  // Thêm khoảng cách bên trong
                                                     fontWeight: 'bold'  // In đậm để dễ nhận diện
                                                 }
-                                                : {}
+                                                : msg.type === 'navigate'
+                                                ? {
+                                                    cursor: 'pointer',
+                                                    backgroundColor: '#f0f8ff',  // Màu nền nhẹ để dễ nhận diện
+                                                    border: '1px solid #007bff',  // Viền màu xanh để làm nổi bật
+                                                    borderRadius: '10px',  // Góc bo tròn
+                                                    padding: '5px 10px',  // Thêm khoảng cách bên trong
+                                                    fontWeight: 'bold'  // In đậm để dễ nhận diện
+                                                } : {}
                                             }
                                             model={{
-                                                message: msg.text,
+                                                message: msg.text || (msg.payload ? "Xem chi tiết sản phẩm:" : ""),
                                                 sentTime: msg.timestamp,
                                                 sender: msg.sender,
                                                 direction: msg.direction,
@@ -557,6 +542,14 @@ const ChatBot = () => {
                                                 }
                                                 name={msg.sender}
                                             />
+                                            {/* Nếu là ảnh, render ImageContent */}
+                                            {msg.type === "image" && (
+                                                <Message.ImageContent
+                                                    src={msg.payload as string}
+                                                    alt="Ảnh món ăn"
+                                                    width={200}
+                                                />
+                                            )}
                                         </Message>
                                     ))}
                                 </MessageList>
