@@ -10,6 +10,8 @@ import Footer from './Footer';
 import { NavLink } from 'react-router-dom';
 import { access } from 'fs';
 import { Products } from '../Interfaces/Products';
+import { useSelector } from 'react-redux';
+import { RootState } from '../Store/store';
 
 interface InvoiceList{
     invoiceID: number,
@@ -31,7 +33,7 @@ export interface InvoiceDetailList{
 }
 
 const OrderHistory = () => {
-
+    const {user} = useSelector((state: RootState)=>state.login)
     const statusList = ['Đã đặt hàng', 'Đã xác nhận', 'Đang xử lý', 'Đang vận chuyển', 'Giao thành công', 'Đã hủy']
     const [activeTab,setActiveTab] = useState("Đã đặt hàng");
     const [invoiceList,setInvoiceList] = useState<InvoiceList[]>([])
@@ -62,7 +64,7 @@ const OrderHistory = () => {
 
     const fetchData = async(tab:string)=>{
         try {
-            const response = await axiosInstance.get(`order-history?tab=${tab}`)
+            const response = await axiosInstance.get(`order-history?tab=${tab}&accountID=${user?.accountID}`)
             setInvoiceList(response.data.data);
         } catch (error) {
             console.log(error)

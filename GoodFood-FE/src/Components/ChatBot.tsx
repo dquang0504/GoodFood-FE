@@ -25,6 +25,7 @@ import { db } from './Firebase';
 import { useNavigate } from 'react-router-dom';
 import User from './Admin/User';
 import { resourceLimits } from 'worker_threads';
+import axiosInstance from '../Services/AxiosInstance';
 
 type Message = {
     id: number;
@@ -176,7 +177,7 @@ const ChatBot = () => {
                     id: Date.now() + 2,
                     sender: "Function",
                     type: 'function',
-                    text: "How to view my orders ?",
+                    text: "Does the website has a section to view my orders ?",
                     timestamp: new Date().toLocaleTimeString(),
                     direction: "incoming",
                 },
@@ -237,7 +238,11 @@ const ChatBot = () => {
 
     const callVertex = async (message: string) => {
         try {
-            const response = await axios.post(`${ENDPOINT}/chatbot/call`, { prompt: message })
+            let response;
+            if (user == null){
+                response = await axios.post(`${ENDPOINT}/chatbot/call`, { prompt: message })
+            }
+            response = await axiosInstance.post(`${ENDPOINT}/chatbot/call`, { prompt: message })
             console.log(response);
             return response.data
         } catch (error) {
@@ -266,14 +271,14 @@ const ChatBot = () => {
             setBotMessages((prevMessages) => [...prevMessages, baseMessage]);
             setNewMessage("");
 
-            const { responseMessage, responseImage } = await getBotResponse(trimmed);
+            const { responseMessage, responseImage, responseCart } = await getBotResponse(trimmed);
             const botMessage = {
                 id: Date.now(),
                 sender: "Chat Bot",
                 text: responseMessage,
                 timestamp: new Date().toLocaleTimeString(),
                 direction: "incoming",
-                type: "text",
+                type: responseCart ? "function" : "text",
             } as Message;
             const botImageMessage: Message | null = responseImage
                 ? {
@@ -376,12 +381,13 @@ const ChatBot = () => {
             let responseMessage = result.data || "Không thể tạo phản hồi!";
             let responseImage = "";
             navigateID.current = result.productID
+            const responseCart = result.carts;
 
             if (result.image !== "") {
                 responseImage = result.image;
             }
 
-            return { responseMessage: responseMessage , responseImage };
+            return { responseMessage: responseMessage , responseImage, responseCart };
         } catch (error) {
             console.error("Lỗi khi gửi tin nhắn:", error);
             return { responseMessage: "ChatBot gặp sự cố!", responseImage: "" };
