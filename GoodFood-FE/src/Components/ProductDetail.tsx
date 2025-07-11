@@ -186,19 +186,19 @@ const ProductDetail = () => {
                                 </span>
                                 <span style={{ margin: '0 10px', color: '#979797' }}> |</span>
                                 {/* {totalAllStars} */}
-                                <span className="number-evaluate">5</span>
-                                <span className="text-number-evaluate"> Review</span>
+                                <span className="number-evaluate">{evaluates.length}</span>
+                                <span className="text-number-evaluate"> Review{evaluates.length >= 2 ? 's' : ''}</span>
                             </div>
                             <div className="detail-product2">
                                 <div className="price">
-                                    <span> {product ? formatVND(product.price) : "Đang tải..."}</span>
+                                    <span> {product ? formatVND(product.price) : "Loading..."}</span>
                                 </div>
                                 <div className="description">
                                     <span>{product?.description}</span>
                                 </div>
                                 <div>
                                     <div className="salary" >
-                                        <div>Số lượng</div>
+                                        <div>Quantity</div>
                                         <div className="box-add-salary">
                                             <button type="button" className="btn btn-sm" onClick={() => { changeQuantity(-1) }} >-</button>
                                             <input type="text" className="form-control" value={quantity} name="soLuong" min={1} max={5} style={{ width: '50px' }} id="soLuong" />
@@ -207,17 +207,17 @@ const ProductDetail = () => {
                                     </div>
                                     <div className="button-btn">
                                         <button className="btn btn-add-cart btn-outline-success" onClick={() => { product && clickAddProductCart(product) }}>
-                                            <i className="fa-solid fa-cart-plus"></i> Thêm Vào giỏ hàng
+                                            <i className="fa-solid fa-cart-plus"></i> Add to Cart
                                         </button>
-                                        <button className="btn btn-buy btn-success" onClick={clickMuaNgay}>Mua ngay</button>
+                                        <button className="btn btn-buy btn-success" onClick={clickMuaNgay}>Buy</button>
                                     </div>
                                 </div>
                                 <div style={{ margin: '20px 0 0 0' }}>
                                     <span style={{ margin: '0 40px 0 0' }}>
-                                        <i style={{ color: 'red' }} className="fa-solid fa-medal"></i> Hàng chất lượng 100%
+                                        <i style={{ color: 'red' }} className="fa-solid fa-medal"></i> Top quality product
                                     </span>
                                     <span style={{ margin: '0 40px 0 0' }}>
-                                        <i style={{ color: 'red' }} className="fa-solid fa-clock"></i> Giao hạng nhanh trong 30 phút
+                                        <i style={{ color: 'red' }} className="fa-solid fa-clock"></i> Guaranteed delivery within 30 minutes
                                     </span>
                                 </div>
 

@@ -169,26 +169,26 @@ const Product = () => {
                                     <input
                                         type="search"
                                         className="form-control"
-                                        placeholder="Tìm kiếm..."
+                                        placeholder="Search..."
                                         onChange={(event) => { handleSearch(event)}}
                                         value={text ? text : timKiem}
                                     />
                                     <button
-                                        className="btn btn-success"
+                                        className="btn btn-primary"
                                         type="button"
                                         onClick={() => { clickTimkiem(timKiem) }}
                                     >
                                         <i className="fa-solid fa-magnifying-glass"></i>
                                     </button>
                                     <button
-                                        className="btn btn-success"
+                                        className="btn btn-primary"
                                         type="button"
                                         onClick={timKiemBangGiongNoi}
                                     >
                                         <i className="fa-solid fa-microphone"></i>
                                     </button>
                                     {/* Nút upload hình ảnh */}
-                                    <label className="btn btn-success mb-0">
+                                    <label className="btn btn-primary mb-0">
                                         <i className="fa-solid fa-image"></i>
                                         <input
                                             type="file"
@@ -200,7 +200,7 @@ const Product = () => {
                                     </label>
                                 </div>
 
-                                <h3>Danh mục</h3>
+                                <h3>Category</h3>
                                 <ul className="categories">
                                     {loaiSanPhams.filter(item => item.status === true)
                                         .map(loai => (
@@ -209,25 +209,25 @@ const Product = () => {
                                         ))}
                                 </ul>
 
-                                {/* <h3>Giá</h3>
+                                <h3>Price</h3>
                                 <div className="form-group">
                                     <input type="number" className="form-control" name="minPrice" id="minPrice" placeholder="Min Price" />
                                     <input type="number" className="form-control" name="maxPrice" id="maxPrice" placeholder="Max Price" />
                                     <input type="range" className="form-control-range" id="priceRange" min="0" max="250000" step="1000" />
                                     <span id="priceRangeLabel">0 VND - 250000 VND</span>
                                 </div>
-                                <button type="submit" className="btn btn-primary">Lọc</button> */}
+                                <button type="submit" className="btn btn-primary">Filter</button>
                             </div>
                         </div>
                     </div>
                     <div className="col-md-10">
                         <div className="sort-options">
-                            <label htmlFor="sort">Sắp xếp theo: </label>
+                            <label htmlFor="sort">Order By: </label>
                             <div>
                                 <select className="form-control d-inline w-auto" id="sort" name="sort" value={valueSapXep} onChange={(event) => clickSapXep(event)} >
-                                    <option value="banchaynhat" >Vui lòng chọn</option>
-                                    <option value="giatangdan">Giá tăng dần</option>
-                                    <option value="giagiamdan">Giá giảm dần</option>
+                                    <option hidden={true} value="banchaynhat" >Choose...</option>
+                                    <option value="giatangdan">Low to high</option>
+                                    <option value="giagiamdan">High to low</option>
                                     {/* <option value="moinhat">Mới nhất</option> */}
                                 </select>
                             </div>
@@ -239,7 +239,7 @@ const Product = () => {
                                 <FourSquare color="#067A38" size="large" text="" textColor="" />
                             </div>
                             :
-                            products?.length === 0 ? <div className='px-5'>Không có sản phẩm để hiển thị.</div> :
+                            products?.length === 0 ? <div className='px-5'>No products to display...</div> :
                                 <div className="similar-product row container-center">
                                     {products.filter(item => item.status === true)
                                         .map(product => (
@@ -250,7 +250,7 @@ const Product = () => {
                                                         <h3 className="product-name">{product.productName}</h3>
                                                         <div className="action row">
                                                             <div className="product-price col-md-6">{formatVND(product.price)}</div>
-                                                            <div className="btn btn-success col-md-5" style={{ cursor: 'pointer' }} onClick={() => clickMuaNgay(product)}>Mua ngay</div>
+                                                            <div className="btn btn-success col-md-5" style={{ cursor: 'pointer' }} onClick={() => clickMuaNgay(product)}>Buy</div>
                                                         </div>
                                                     </div>
                                                 </div>

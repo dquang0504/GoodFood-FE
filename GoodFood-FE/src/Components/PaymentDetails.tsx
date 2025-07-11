@@ -18,6 +18,7 @@ import { format } from 'date-fns';
 import { InvoiceDetails } from '../Interfaces/InvoiceDetails';
 import { deleteCartItem } from '../Slices/CartSlice';
 import { Products } from '../Interfaces/Products';
+import { stat } from 'fs';
 
 const PaymentDetails = () => {
 
@@ -87,7 +88,7 @@ const PaymentDetails = () => {
             setAddress(response.data.data);
             const trimmed: string = response.data.data.specificAddress
             const addr = trimmed.trim() + ", " + response.data.data.address;
-            setInvoice({...invoice,receiveAddress: addr, receiveName: response.data.data.fullName, receivePhone: response.data.data.phoneNumber})
+            setInvoice({...invoice,receiveAddress: addr, receiveName: response.data.data.fullName, receivePhone: response.data.data.phoneNumber,paymentMethod: state.orderWay ? state.paymentMethod ? true : false : true})
         } catch (error: any) {
             toast.error(error.response.data.message)
         }
@@ -165,7 +166,7 @@ const PaymentDetails = () => {
             console.log(response);
             toast.success(response.data.message);
             // deleting cart item using cart slice
-            listItemClickChon.map(item=>(
+            state.orderWay ? '' : listItemClickChon.map(item=>(
                 dispatch(deleteCartItem({cartID: item.cartID,accountID: user ? user.accountID : 0}))
             ))
             //navigating to page Pay.tsx

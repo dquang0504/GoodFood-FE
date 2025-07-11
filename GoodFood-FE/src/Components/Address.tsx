@@ -282,7 +282,7 @@ const Address = () => {
                     <div className="col-md-8 d-flex justify-content-center mt-4">
                         <div className="card card-form">
                             <div className="card-body">
-                                <div className="text-center fs-2 fw-bold">Địa chỉ</div>
+                                <div className="text-center fs-2 fw-bold">Address</div>
                                 <div className="mt-4">
                                     <div>
                                         <div className="d-flex justify-content-center">
@@ -290,14 +290,14 @@ const Address = () => {
                                                 <div className="input-box-address">
                                                     <div className="input-dau">
                                                         <i className="fa-solid fa-user"></i>
-                                                        <input className='input-address' type="text" placeholder="Họ và tên" name="hoVaTen" value={addressForm?.fullName} onChange={(e)=>handleChangeInput("fullName",e)} /><br />
+                                                        <input className='input-address' type="text" placeholder="Fullname" name="hoVaTen" value={addressForm?.fullName} onChange={(e)=>handleChangeInput("fullName",e)} /><br />
                                                         <span className="text-danger">{errorMessages.fullNameError}</span>
                                                     </div>
                                                 </div>
                                                 <div className="input-box-address ">
                                                     <div className="input-dau">
                                                         <i className="fa-solid fa-phone"></i>
-                                                        <input className='input-address' type="text" placeholder="Số điện thoại" name="soDienThoai" value={addressForm?.phoneNumber} onChange={(e)=>handleChangeInput("phoneNumber",e)} /><br />
+                                                        <input className='input-address' type="text" placeholder="Phone number" name="soDienThoai" value={addressForm?.phoneNumber} onChange={(e)=>handleChangeInput("phoneNumber",e)} /><br />
                                                         <span className="text-danger">{errorMessages.phoneError}</span>
                                                     </div>
                                                 </div>
@@ -329,7 +329,7 @@ const Address = () => {
                                                 <div className="input-box-address ">
                                                     <div className="input-giua">
                                                         <select className="form-select" id="district" value={JSON.stringify({ "districtID": addressForm.districtID, "districtName": address.districtName })} onChange={(e)=>handleChangeSelect("districtID",e)} >
-                                                            <option selected hidden={true} value={JSON.stringify({ "districtID": "", "districtName": "" })}>Quận/Huyện</option>
+                                                            <option selected hidden={true} value={JSON.stringify({ "districtID": "", "districtName": "" })}>District</option>
                                                             {
                                                                 listDistrict.map((item, index) => {
                                                                     return (
@@ -350,7 +350,7 @@ const Address = () => {
                                                 <div className="input-box-address ">
                                                     <div className="input-giua">
                                                         <select className="form-select" id="ward" value={JSON.stringify({ "wardCode": addressForm.wardCode, "wardName": address.wardName })} onChange={(e)=>handleChangeSelect("wardCode",e)}>
-                                                            <option selected hidden={true} value={JSON.stringify({ "wardCode": "", "wardName": "" })}>Xã/Phường</option>
+                                                            <option selected hidden={true} value={JSON.stringify({ "wardCode": "", "wardName": "" })}>Commune/Ward</option>
                                                             {
                                                                 listWard.map((item, index) => {
                                                                     return (
@@ -366,7 +366,7 @@ const Address = () => {
                                                 <div className="input-box-address ">
                                                     <div className="input-dau">
                                                         <i className="fa-solid fa-house"></i>
-                                                        <input className='input-address' type="text" placeholder="Địa chỉ cụ thể" name="diaChiCuThe" value={addressForm.specificAddress} onChange={(e)=>handleChangeInput("specificAddress",e)} /><br />
+                                                        <input className='input-address' type="text" placeholder="Specific address..." name="diaChiCuThe" value={addressForm.specificAddress} onChange={(e)=>handleChangeInput("specificAddress",e)} /><br />
                                                         <span className="text-danger">{errorMessages.specificAddressError}</span>
                                                     </div>
                                                 </div>               
@@ -377,14 +377,14 @@ const Address = () => {
                                             <div style={{ width: '750px' }}>
                                                 <input id='checkDefault' type="checkbox" name="macDinhDC"
                                                    checked={addressForm.status === true} onChange={(e)=> setAddressForm({...addressForm,status:e.target.checked})}
-                                                /> <label htmlFor='checkDefault'>Đặt làm địa chỉ mặc định</label>
+                                                /> <label className='mx-3' htmlFor='checkDefault'>Set as default address</label>
                                             </div>
                                         </div>
                                         <div className="d-flex justify-content-center mt-3 mb-3 div-button">
                                             <div className="d-flex justify-content-start">
-                                                <button className="btn btn-success" disabled={editting} onClick={clickAddNewAddress}>Thêm mới</button>
-                                                <button className="btn btn-primary" disabled={!editting} onClick={clickUpdateAddress} >Cập nhật</button>
-                                                <button className="btn text-light" style={{ backgroundColor: '#656565' }} onClick={clickResetAddress}>Làm mới</button>
+                                                <button className="btn btn-success" disabled={editting} onClick={clickAddNewAddress}>Add</button>
+                                                <button className="btn btn-primary" disabled={!editting} onClick={clickUpdateAddress} >Update</button>
+                                                <button className="btn text-light" style={{ backgroundColor: '#656565' }} onClick={clickResetAddress}>Reset</button>
                                             </div>
 
                                         </div>
@@ -403,14 +403,14 @@ const Address = () => {
 
                     <div className="col-md-12 ms-5 me-4 p-0 mt-4 mb-5 d-flex justify-content-center">
                         <div className="card card-list">
-                            <div className="fs-2 d-flex  d-flex justify-content-center ">Danh sách địa chỉ </div>
+                            <div className="fs-2 d-flex  d-flex justify-content-center ">List of Addreses </div>
                             <div className="card-body">
                                 <table className="table table-address">
                                     <thead>
                                         <tr className="row">
-                                            <th className="col-md-3 text-center">Họ và Tên</th>
-                                            <th className="col-md-2 text-center">Số điện thoại</th>
-                                            <th className="col-md-4 text-center">Địa chỉ</th>
+                                            <th className="col-md-3 text-center">Fullname</th>
+                                            <th className="col-md-2 text-center">Phone number</th>
+                                            <th className="col-md-4 text-center">Address</th>
                                             <th className="col-md-1 text-center"></th>
                                             <th className="col-md-2 text-center"></th>
                                         </tr>
@@ -426,7 +426,7 @@ const Address = () => {
                                                             <td className="col-md-2 text-center ">{item.phoneNumber}</td>
                                                             <td className="col-md-4 text-center ">{item.specificAddress + ", " + item.address}</td>
                                                             <td className="col-md-1 text-center ">
-                                                                {item.status ? (<button className="btn btn-success">Mặc định</button>) : ''}
+                                                                {item.status ? (<button className="btn btn-success">Default</button>) : ''}
 
                                                             </td>
                                                             <td className="col-md-2 text-center ">

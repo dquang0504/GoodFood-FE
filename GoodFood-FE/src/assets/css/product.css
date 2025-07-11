@@ -105,7 +105,7 @@
     width: 20px;
     height: 20px;
     background: #fff;
-    border: 2px solid #067A38;
+    border: 2px solid #D95D39;
     border-radius: 50%;
     cursor: pointer;
 }
@@ -114,7 +114,7 @@
     width: 20px;
     height: 20px;
     background: #fff;
-    border: 2px solid #067A38;
+    border: 2px solid #D95D39;
     border-radius: 50%;
     cursor: pointer;
 }
@@ -143,7 +143,7 @@
 }
 
 .search-container .search-button {
-    background-color: #067A38;
+    background-color: #D95D39;
     border: none;
     border-radius: 25px;
     color: white;
@@ -171,7 +171,7 @@
 
 /* Style for filter button */
 .filters .btn-primary {
-    background-color: #067A38;
+    background-color: #D95D39;
     border: none;
     color: white;
     font-size: 14px;
@@ -204,7 +204,7 @@
 
 .filters .min-max-container input[type="number"]:focus {
     background-color: #fff;
-    border-color: #067A38;
+    border-color: #D95D39;
     outline: none;
 }
 
@@ -305,7 +305,7 @@
     appearance: none;
     width: 100%;
     height: 25px;
-    background: #067A38;
+    background: #D95D39;
     /* Màu cho thanh giá */
     outline: none;
     opacity: 1;

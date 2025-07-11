@@ -1,6 +1,7 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import loginReducer from '../Slices/LoginSlice'
 import cartReducer from "../Slices/CartSlice";
+import chatbotReducer from "../Slices/ChatbotSlice"
 import updateAccountReducer from "../Slices/UpdateAccountSlice"
 import storage from 'redux-persist/lib/storage'
 import persistReducer from "redux-persist/es/persistReducer";
@@ -18,6 +19,7 @@ const rootReducer = combineReducers({
     login: loginReducer,
     cart: cartReducer,
     update: updateAccountReducer,
+    chatbot: chatbotReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

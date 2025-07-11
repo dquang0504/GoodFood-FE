@@ -13,7 +13,7 @@ import {
     Sidebar,
     TypingIndicator,
 } from "@chatscope/chat-ui-kit-react";
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../Store/store';
 import adminAvatar from '../assets/images/software-engineer.png'
 import '@chatscope/chat-ui-kit-styles/dist/default/styles.min.css';
@@ -23,11 +23,11 @@ import { ENDPOINT } from '../App';
 import { addDoc, collection, doc, getDocs, orderBy, query, setDoc, Timestamp } from 'firebase/firestore';
 import { db } from './Firebase';
 import { useNavigate } from 'react-router-dom';
-import User from './Admin/User';
-import { resourceLimits } from 'worker_threads';
 import axiosInstance from '../Services/AxiosInstance';
+import { Carts } from '../Interfaces/Carts';
+import { addMessage, closeChatbot, openChatbot } from '../Slices/ChatbotSlice';
 
-type Message = {
+export type Message = {
     id: number;
     sender: string;
     text: string;
@@ -36,6 +36,12 @@ type Message = {
     type?: string;
     payload: MessagePayload
 };
+
+type function_place_order = {
+    carts: Carts[],
+    address: string,
+    paymentMethod: boolean
+}
 
 const ChatBot = () => {
     const navigate = useNavigate();
@@ -48,16 +54,21 @@ const ChatBot = () => {
         }
     });
     const { user } = useSelector((state: RootState) => state.login);
-    const [isOpen, setIsOpen] = useState(false);
+    const {isOpen, message} = useSelector((state:RootState)=>state.chatbot);
+    const dispatch = useDispatch();
     const [currentChat, setCurrentChat] = useState("Chatbot");
     const [botMessages, setBotMessages] = useState<Message[]>([]);
     const [adminMessages, setAdminMessages] = useState<Message[]>([]);
     const [userMessages, setUserMessages] = useState<Message[]>([]);
     const [isTyping, setIsTyping] = useState(false);
-    const [newMessage, setNewMessage] = useState("");
     const socketRef = useRef<WebSocket | null>(null);
     const senderID = useRef(0);
     const navigateID = useRef(0);
+    const [placeOrderState,setPlaceOrderState] = useState<function_place_order>({
+        carts: [],
+        address: "",
+        paymentMethod: false,
+    })
 
     useEffect(() => {
         if (!user?.accountID) return;
@@ -211,6 +222,10 @@ const ChatBot = () => {
         }
     }
 
+    useEffect(()=>{
+        handleChatSelection(currentChat);
+    },[currentChat])
+
     // Hàm thêm tin nhắn vào Firestore
     const addChatMessage = async (chatId: string, message: Message) => {
         try {
@@ -251,7 +266,7 @@ const ChatBot = () => {
     }
 
     const handleSendMessage = async () => {
-        const trimmed = newMessage.trim();
+        const trimmed = message.trim();
         if (!trimmed) return;
 
         const isAdmin = !!user?.role;
@@ -269,7 +284,7 @@ const ChatBot = () => {
         // Nếu đang trò chuyện với ChatBot
         if (isChatbot) {
             setBotMessages((prevMessages) => [...prevMessages, baseMessage]);
-            setNewMessage("");
+            dispatch(addMessage(""));
 
             const { responseMessage, responseImage, responseCart } = await getBotResponse(trimmed);
             const botMessage = {
@@ -278,7 +293,7 @@ const ChatBot = () => {
                 text: responseMessage,
                 timestamp: new Date().toLocaleTimeString(),
                 direction: "incoming",
-                type: responseCart ? "function" : "text",
+                type: responseCart ? "navigatePlaceOrder" : "text",
             } as Message;
             const botImageMessage: Message | null = responseImage
                 ? {
@@ -306,7 +321,7 @@ const ChatBot = () => {
         isAdmin
             ? setAdminMessages((prev) => [...prev, baseMessage])
             : setUserMessages((prev) => [...prev, baseMessage]);
-        setNewMessage("");
+        dispatch(addMessage(""));
         addChatMessage(chatId, baseMessage);
 
         //Send to websocket
@@ -316,7 +331,7 @@ const ChatBot = () => {
                     from_id: user.accountID,
                     to_id: senderID.current,
                     sender: `admin_${user.accountID}`,
-                    message: newMessage.trim(),
+                    message: message.trim(),
                     timestamp: Date.now()
                 }))
             }
@@ -324,7 +339,7 @@ const ChatBot = () => {
                 socketRef.current.send(JSON.stringify({
                     from_id: user?.accountID,
                     sender: `user_${user?.accountID}`,
-                    message: newMessage.trim(),
+                    message: message.trim(),
                     timestamp: Date.now()
                 }))
             }
@@ -382,6 +397,7 @@ const ChatBot = () => {
             let responseImage = "";
             navigateID.current = result.productID
             const responseCart = result.carts;
+            setPlaceOrderState({...placeOrderState,carts: result.carts,paymentMethod: result.paymentMethod == "COD" ? true : false})
 
             if (result.image !== "") {
                 responseImage = result.image;
@@ -398,6 +414,10 @@ const ChatBot = () => {
 
     const handleNavigate = (id: number) => {
         navigate(`/home/product-details/${id}`,{state:{productID:id}});
+    }
+
+    const handleNavigateToOrder = () => {
+        navigate("/home/payment-details",{state:{listChosenItems: placeOrderState.carts,paymentMethod: placeOrderState.paymentMethod, orderWay: true}});
     }
 
 
@@ -426,7 +446,7 @@ const ChatBot = () => {
                     boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
                     position: "relative",
                 }}
-                onClick={() => setIsOpen(true)}
+                onClick={() => dispatch(openChatbot())}
             >
                 {!isOpen && (
                     <motion.div
@@ -468,7 +488,7 @@ const ChatBot = () => {
                                 }}
                                 onClick={(e) => {
                                     e.stopPropagation();
-                                    setIsOpen(false);
+                                    dispatch(closeChatbot());
                                 }}
                             >
                                 ➖
@@ -507,7 +527,7 @@ const ChatBot = () => {
                                 <MessageList typingIndicator={isTyping && currentChat === "Chatbot" && <TypingIndicator content="Chatbot đang gõ..." />}>
                                     {(currentChat === 'Chatbot' ? botMessages : (user?.role ? adminMessages : userMessages)).map(msg => (
                                         <Message
-                                            onClick={msg.type === 'function' ? (() => handleQuickReply(msg.text)) as React.MouseEventHandler<HTMLElement> : msg.type==="navigate" ? (()=>handleNavigate(navigateID.current)) : undefined}
+                                            onClick={msg.type === 'function' ? (() => handleQuickReply(msg.text)) as React.MouseEventHandler<HTMLElement> : msg.type==="navigate" ? (()=>handleNavigate(navigateID.current)) : msg.type==='navigatePlaceOrder' ? (()=>handleNavigateToOrder()) : undefined}
                                             key={msg.id}
                                             style={msg.type === 'function'
                                                 ? {
@@ -561,8 +581,8 @@ const ChatBot = () => {
                                 </MessageList>
                                 <MessageInput
                                     placeholder="Type your message..."
-                                    value={newMessage}
-                                    onChange={(value) => setNewMessage(value)}
+                                    value={message}
+                                    onChange={(value) => dispatch(addMessage(value))}
                                     onSend={handleSendMessage}
                                     attachButton={false}
                                 />

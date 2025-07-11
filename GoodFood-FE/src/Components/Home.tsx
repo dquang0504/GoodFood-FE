@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import Navbar from './Navbar';
 import comImg from '../assets/images/comga.png'
 import aboutImg from '../assets/images/about.png';
+import placeOrderImg from '../assets/images/place_order.png'
+import shippingImg from '../assets/images/shipping.png'
+import enjoyImg from '../assets/images/enjoy_review.png'
 import '../assets/css/main.css'
 import Footer from './Footer';
 import axios, { AxiosResponse } from 'axios';
@@ -9,9 +12,14 @@ import { ENDPOINT } from '../App';
 import { Products } from '../Interfaces/Products';
 import { formatVND } from '../Services/FormatVND';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../Store/store';
+import { addMessage, openChatbot } from '../Slices/ChatbotSlice';
 
 const Home = () => {
     const navigate = useNavigate();
+    const {isOpen} = useSelector((state:RootState)=>state.chatbot);
+    const dispatch = useDispatch();
     const [products,setProducts] = useState<Products[]>([]);
     const [loading,setLoading] = useState(true);
     const [formData,setFormData] = useState({
@@ -57,6 +65,12 @@ const Home = () => {
         fetchProduct();
     },[])
 
+    const handleTestBot = ()=>{
+        dispatch(openChatbot());
+        dispatch(addMessage("Can you help me place an order ?"));
+
+    }
+
     return (
         <div>
             <Navbar></Navbar>
@@ -67,10 +81,21 @@ const Home = () => {
                     <div className="row">
                         <div className="col-md-6">
                             <h1>
-                                Món Ăn Vặt Tốt Nhất Dành <a style={{ color: '#FAA41A' }}>Cho Bạn</a>
+                                <a style={{ color: '#FAA41A' }}>Your best</a> Food Ordering Website
                             </h1>
-                            <p>Bạn có thể dễ dàng đặt hàng tại đây rất dễ dàng và đơn giản.</p>
-                            <a href="/home/cart" className="btn btn-primary ">Đặt Hàng Ngay</a>
+                            <span>
+                                Placing an order becomes so much easier with our personal AI assistant.
+                                <div className="btn-icon-wrapper mx-3">
+                                    <button onClick={handleTestBot} className="btn btn-success d-flex align-items-center">
+                                        <i className="fa-solid fa-robot"></i>
+                                    </button>
+                                    <div className="info-tooltip">
+                                        Click to try!
+                                    </div>
+                                </div>    
+                            </span>
+
+                            <a href="/home/cart" className="btn btn-primary ">Place your order now!</a>
                         </div>
                         <div className="col-md-6 text-center">
                             <img src={comImg} alt="Chips" className="hero-img" />
@@ -82,10 +107,40 @@ const Home = () => {
             {/* Services Section */}
             <section className="services py-5 text-center">
                 <div className="container">
-                    <h3 className="pb-3" style={{ color: 'red' }}>Nó Hoạt Động Như Thế Nào</h3>
-                    <h2 className="pb-3">Dịch Vụ Của Chúng Tôi Gồm</h2>
-                    <h5 style={{ width: '1100px', textAlign: 'center' }}>
-                        Chất lượng sản phẩm là ưu tiên hàng đầu của chúng tôi và luôn được đảm bảo đạt tiêu chuẩn Halal, an toàn cho đến khi đến tay bạn.
+                    <h3 className="pb-3" style={{ color: 'red' }}>How It Works</h3>
+                    <div className="row">
+                        <div className="col-md-4">
+                            <img
+                                src={placeOrderImg}
+                                alt="Order"
+                                className='mx-auto'
+                            />
+                            <h4 className="my-3">Place An Order</h4>
+                            <p>You can place your order either through manual browsing or with our AI assistant.</p>
+                            </div>
+                            <div className="col-md-4">
+                            <img
+                                src={shippingImg}
+                                alt="Delivery"
+                                className='mx-auto'
+                            />
+                            <h4 className="my-3">Wait For Delivery</h4>
+                            <p>Always on time!</p>
+                        </div>
+                        <div className="col-md-4">
+                            <img
+                                src={enjoyImg}
+                                alt="Quality"
+                                className='mx-auto'
+                            />
+                            <h4 className="my-3">Enjoy Your Food!</h4>
+                            <p>Enjoy your food and give us a review!</p>
+                        </div>
+                    </div>
+
+                    <h2 className="pb-3">Our Service Includes</h2>
+                    <h5 style={{textAlign: 'center' }}>
+                         Product quality is our top priority, and we always ensure that everything meets strict safety standards until it reaches you.
                     </h5>
                     <br />
                     <div className="row">
@@ -95,8 +150,8 @@ const Home = () => {
                                 alt="Order"
                                 className='mx-auto'
                             />
-                            <h4 className="my-3">Đặt Hàng Một Cách Dễ Dàng</h4>
-                            <p>Bạn chỉ cần đặt hàng qua ứng dụng</p>
+                            <h4 className="my-3">Easy Ordering</h4>
+                            <p>Simply place your order through our website.</p>
                             </div>
                             <div className="col-md-4">
                             <img
@@ -104,8 +159,8 @@ const Home = () => {
                                 alt="Delivery"
                                 className='mx-auto'
                             />
-                            <h4 className="my-3">Giao Hàng Nhanh Nhất</h4>
-                            <p>Giao hàng luôn đúng giờ</p>
+                            <h4 className="my-3">Fast Delivery</h4>
+                            <p>Your order arrives right on time.</p>
                         </div>
                         <div className="col-md-4">
                             <img
@@ -113,15 +168,15 @@ const Home = () => {
                                 alt="Quality"
                                 className='mx-auto'
                             />
-                            <h4 className="my-3">Chất Lượng Tốt Nhất</h4>
-                            <p>Món ăn chất lượng nhất dành cho bạn</p>
+                            <h4 className="my-3">Best Quality</h4>
+                            <p>The finest dishes prepared just for you.</p>
                         </div>
                     </div>
                 </div>
             </section>
 
             {/* Menu Section */}
-            {loading ? <div>Loading...</div> :
+            {/* {loading ? <div>Loading...</div> :
                 products.length === 0 ? <div>Không có sản phẩm để hiển thị.</div> :
                 <div className="similar-product1 row container-center ">
                     {products.map(product => (
@@ -139,21 +194,25 @@ const Home = () => {
                         </div>
                     ))}
                 </div>
-            }
+            } */}
 
             {/* About Us Section */}
             <section id="about-us" className="about-us d-flex align-items-center">
                 <div className="container">
-                    <h2 style={{ textAlign: 'center' }}>Về Chúng Tôi</h2>
-                    <h3 style={{ textAlign: 'center' }}>Tóm tắt nền tảng của công ty chúng tôi</h3>
+                    <h2 style={{ textAlign: 'center' }}>About Us</h2>
+                    <h3 style={{ textAlign: 'center' }}>Summary of Our Website Background</h3>
                     <br />
                     <div className="row">
                         <div className="col-md-6">
                             {/* Nội dung sẽ thay đổi dựa trên trạng thái showFullText */}
                             <p>
                                 {showFullText
-                                ? "Chào mừng bạn đến với Đồ Ăn Vặt Ngon – nơi thỏa mãn vị giác của bạn với những món ăn vặt độc đáo và hấp dẫn! Chúng tôi tự hào là địa chỉ uy tín, mang đến trải nghiệm ẩm thực tuyệt vời với đa dạng các món ngon miệng và chất lượng. Với niềm đam mê sâu sắc về ẩm thực đường phố, chúng tôi đã tạo ra một không gian ấm cúng và thân thiện, nơi mà bạn có thể thưởng thức những món ăn vặt phong phú và độc đáo. Tại Đồ Ăn Vặt Ngon, chúng tôi cam kết sử dụng nguyên liệu tươi ngon nhất và tuân thủ nghiêm ngặt các tiêu chuẩn vệ sinh an toàn thực phẩm, để mang lại cho bạn trải nghiệm ẩm thực an toàn và ngon miệng nhất. Hãy đến và khám phá hương vị đặc trưng của các món ăn vặt được chế biến tinh tế từ đội ngũ đầu bếp tài năng của chúng tôi. Chúng tôi tin rằng, với không gian thoải mái, dịch vụ chuyên nghiệp và hương vị độc đáo, Đồ Ăn Vặt Ngon sẽ là điểm đến lý tưởng cho tất cả những ai yêu thích ẩm thực đường phố và muốn tận hưởng những khoảnh khắc ẩm thực đặc biệt."
-                                : "Chào mừng bạn đến với Đồ Ăn Vặt Ngon – nơi thỏa mãn vị giác của bạn với những món ăn vặt độc đáo và hấp dẫn!"}
+                                ? <div>
+                                    Welcome to <b>GoodFood24h</b> – where your taste buds are delighted by a variety of unique and irresistible dishes! We take pride in being a trusted destination that offers an exceptional culinary experience with a wide selection of delicious, high-quality food, from tempting snacks to satisfying main courses.
+                                <br />  Driven by a deep passion for street food and diverse cuisine, we have created a warm and friendly online space where you can explore an abundance of distinctive dishes. At <b>GoodFood24h</b>, we are committed to using only the freshest ingredients and strictly adhering to food safety and hygiene standards to bring you the safest and most enjoyable culinary experience.
+                                <br /> Come and discover the signature flavors of our carefully prepared dishes crafted by our talented team of chefs. We believe that with a comfortable browsing experience, professional service, and unique tastes, <b>GoodFood24h</b> will be the ideal destination for all food lovers who want to enjoy special culinary moments.
+                                </div>
+                                : "Welcome to GoodFood24h – where your taste buds are delighted by a variety of unique and irresistible dishes! We take pride in being a trusted destination that offers an exceptional culinary experience with a wide selection of delicious, high-quality food, from tempting snacks to satisfying main courses."}
                             </p>
                             <button className="btn btn-primary" onClick={toggleText}>
                                 {showFullText ? "Thu gọn" : "Đọc Thêm"}
@@ -165,13 +224,13 @@ const Home = () => {
                     </div>
                 </div>
             </section>
-
+ 
             {/* Contact Section */}
             <section id="contact" className="contact py-5">
                 <div className="container">
                     <div className="text-center mb-3">
-                        <h1 className="contact-title">Liên Hệ</h1>
-                        <p className="contact-subtitle">Nếu bạn cần giúp đỡ, chúng tôi ở đây</p>
+                        <h1 className="contact-title">Contacts</h1>
+                        <p className="contact-subtitle">If you ever need help, please reach out to us</p>
                     </div>
                     <div className="row justify-content-center align-items-center">
                         <div className="col-md-8 d-flex justify-content-center">
@@ -183,7 +242,7 @@ const Home = () => {
                                         className="form-control input-lien-he"
                                         id="name"
                                         name="name"
-                                        placeholder="Họ và tên"
+                                        placeholder="Fullname"
                                         value={formData.name}
                                         onChange={handleChange}
                                         required
@@ -207,7 +266,7 @@ const Home = () => {
                                         id="content"
                                         name="content"
                                         rows={3}
-                                        placeholder="Tin Nhắn"
+                                        placeholder="Message"
                                         value={formData.content}
                                         onChange={handleChange}
                                         
@@ -216,7 +275,7 @@ const Home = () => {
                                     </div>
                                 </div>
                                 <div className='mt-3 d-flex justify-content-end'>
-                                    <button type="submit" className="btn btn-primary d-flex align-items-center" onClick={()=>handleSubmit()}>Gửi</button>
+                                    <button type="submit" style={{backgroundColor: '#D95D39'}} className="btn btn-primary d-flex align-items-center" onClick={()=>handleSubmit()}>Send</button>
                                 </div>
                             </div>
                         </div>
