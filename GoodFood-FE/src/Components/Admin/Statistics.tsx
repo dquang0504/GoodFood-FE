@@ -57,14 +57,14 @@ const Statistics = () => {
                                         <label className="form-label">From date:</label>
                                         <input onChange={(e)=>handleDateChange(e)} 
                                             name="ngayFrom" className="form-control"
-                                            type="date" placeholder="Nhập vào ngày bắt đầu"
+                                            type="date" placeholder="Input starting date"
                                         />
                                     </div>
                                     <div className="col-md-3">
                                         <label className="form-label">To date:</label>
                                         <input onChange={(e)=>handleDateChange(e)} 
                                                name="ngayTo" className="form-control"
-                                             type="date" placeholder="Nhập vào ngày kết thúc"
+                                             type="date" placeholder="Input ending date"
                                              />
                                     </div>
                                     <div className="col-md-6">
@@ -88,9 +88,9 @@ const Statistics = () => {
                                 <div>
                                     <table id="dataTable" className="table table-striped table-hover table-light">
                                         <thead className="text-center" style={{ backgroundColor: '#067a38', color: '#fff',fontSize:'0.8rem' }}>
-                                            <th>Loại sản phẩm</th>
-                                            <th>Số lượng bán</th>
-                                            <th>Doanh thu</th>
+                                            <th>Product type</th>
+                                            <th>Total sales</th>
+                                            <th>Revenue</th>
                                         </thead>
                                         <tbody className="text-center">
                                             {statistics.map((item,index)=>(

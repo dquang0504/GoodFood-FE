@@ -66,7 +66,7 @@ const Dashboard = () => {
                 <main className="content">
                     <div className="container-fluid p-0">
                         <h1 className="h3 mb-3">
-                            <strong>Số liệu tổng quát</strong>
+                            <strong>Analytics</strong>
                         </h1>
 
                         <div className="row">
@@ -78,7 +78,7 @@ const Dashboard = () => {
                                                 <div className="card-body"  style={{borderRadius:8}}>
                                                     <div className="row">
                                                         <div className="col mt-0">
-                                                            <h5 className="card-title">Số lượng sản phẩm bán ra</h5>
+                                                            <h5 className="card-title">Total product sales</h5>
                                                         </div>
 
                                                         <div className="col-auto">
@@ -98,7 +98,7 @@ const Dashboard = () => {
                                                 <div className="card-body"  style={{borderRadius:8}}>
                                                     <div className="row">
                                                         <div className="col mt-0">
-                                                            <h5 className="card-title">Lượng khách đăng ký</h5>
+                                                            <h5 className="card-title">Registered users</h5>
                                                         </div>
 
                                                         <div className="col-auto">
@@ -120,7 +120,7 @@ const Dashboard = () => {
                                                 <div className="card-body"  style={{borderRadius:8}}>
                                                     <div className="row">
                                                         <div className="col mt-0">
-                                                            <h5 className="card-title">Doanh thu</h5>
+                                                            <h5 className="card-title">Revenue</h5>
                                                         </div>
 
                                                         <div className="col-auto">
@@ -141,7 +141,7 @@ const Dashboard = () => {
                                                 <div className="card-body" style={{borderRadius:8}}>
                                                     <div className="row">
                                                         <div className="col mt-0">
-                                                            <h5 className="card-title">Số đơn hàng đã bán</h5>
+                                                            <h5 className="card-title">Total orders placed</h5>
                                                         </div>
 
                                                         <div className="col-auto">
@@ -166,7 +166,7 @@ const Dashboard = () => {
                                 <div className="card flex-fill w-100">
                                     <div className="card-header">
 
-                                        <h5 className="card-title mb-0">Biến động doanh thu</h5>
+                                        <h5 className="card-title mb-0">Sales revenue chart</h5>
                                     </div>
                                     <div className="card-body py-3" style={{borderRadius:8}}>
                                         <div className="chart chart-sm">
@@ -181,7 +181,7 @@ const Dashboard = () => {
                             <div className="col-12 col-md-6 col-xxl-3 d-flex order-2 order-xxl-3">
                                 <div className="card flex-fill w-100">
                                     <div className="card-header">
-                                        <h5 className="card-title mb-0">Phân bố lượt mua loại sản phẩm</h5>
+                                        <h5 className="card-title mb-0">Distribution of purchases by product type</h5>
                                     </div>
                                     <div className="card-body d-flex" style={{borderRadius:8}}>
                                         <div className="align-self-center w-100">
@@ -208,7 +208,7 @@ const Dashboard = () => {
                                 <div className="card flex-fill w-100">
                                     <div className="card-header">
 
-                                        <h5 className="card-title mb-0">Số lượng sản phẩm bán ra hằng tháng</h5>
+                                        <h5 className="card-title mb-0">Monthly product sales</h5>
                                     </div>
                                     <div className="card-body d-flex w-100" style={{borderRadius:8}}>
                                         <div className="align-self-center chart chart-lg">
@@ -221,7 +221,7 @@ const Dashboard = () => {
                                 <div className="card flex-fill">
                                     <div className="card-header">
 
-                                        <h5 className="card-title mb-0">Lịch</h5>
+                                        <h5 className="card-title mb-0">Calendar</h5>
                                     </div>
                                     <div className="card-body d-flex" style={{borderRadius:8}}>
                                         <div className="align-self-center w-100">

@@ -12,6 +12,7 @@ import { formatVND } from '../Services/FormatVND';
 import { useNavigate } from 'react-router-dom';
 import ReactPaginate from 'react-paginate';
 import Footer from './Footer';
+import { number } from 'framer-motion';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -26,6 +27,11 @@ const Product = () => {
     const [valueSapXep,setValueSapXep] = useState("");
     const [totalPage,setToTalPage] = useState(0);
     const [pageNum,setPageNum] = useState(1);
+    const [price,setPrice] = useState<{minPrice: number,maxPrice: number}>({
+        minPrice: 0,
+        maxPrice: 250000,
+    })
+    const [orderBy,setOrderBy] = useState("ASC");
     
     const [text,setText] = useState("");
     //state isListening để xác định xem micro còn đang lắng nghe không
@@ -53,7 +59,7 @@ const Product = () => {
     const fetchProductsByPage = async (page: number,searchQuery: string, loai?: ProductTypes | null) => {
         try {
             const typeQuery = loai ? `&type=${loai.typeName}` : '';
-            const response = await axios.get(`${ENDPOINT}/products?page=${page}${typeQuery}&search=${searchQuery}`);
+            const response = await axios.get(`${ENDPOINT}/products?page=${page}${typeQuery}&search=${searchQuery}&minPrice=${price.minPrice}&maxPrice=${price.maxPrice}&orderBy=${orderBy}`);
             setProducts(response.data.data || []);
             setToTalPage(response.data.totalPage);
             console.log(response);
@@ -129,8 +135,12 @@ const Product = () => {
     }
 
     const clickSapXep = (event: React.ChangeEvent<HTMLSelectElement>)=>{
-
+        
     }
+
+    useEffect(()=>{
+        fetchProductsByPage(pageNum,timKiem,loai);
+    },[orderBy])
 
     const clickMuaNgay = (product: Products)=>{
 
@@ -211,12 +221,15 @@ const Product = () => {
 
                                 <h3>Price</h3>
                                 <div className="form-group">
-                                    <input type="number" className="form-control" name="minPrice" id="minPrice" placeholder="Min Price" />
-                                    <input type="number" className="form-control" name="maxPrice" id="maxPrice" placeholder="Max Price" />
-                                    <input type="range" className="form-control-range" id="priceRange" min="0" max="250000" step="1000" />
-                                    <span id="priceRangeLabel">0 VND - 250000 VND</span>
+                                    {/* <input type="number" className="form-control" name="minPrice" id="minPrice" placeholder="Min Price" onChange={(e)=>setPrice({...price,minPrice:e.target.valueAsNumber})} />
+                                    <input type="number" className="form-control" name="maxPrice" id="maxPrice" placeholder="Max Price" c /> */}
+                                    <label htmlFor="" className='form-label'>Min price: <span>{price.minPrice.toLocaleString()} VND</span></label>
+                                    <input value={price.minPrice} type="range" className="form-control-range" id="priceRange" min="0" max="250000" step="1000" onChange={(e)=>setPrice({...price,minPrice:e.target.valueAsNumber})} />
+                                    
+                                    <label htmlFor="" className='form-label'>Max price: <span>{price.maxPrice.toLocaleString()} VND</span></label>
+                                    <input value={price.maxPrice} type="range" className="form-control-range" id="priceRange" min="0" max="250000" step="1000" onChange={(e)=>setPrice({...price,maxPrice:e.target.valueAsNumber})} />
                                 </div>
-                                <button type="submit" className="btn btn-primary">Filter</button>
+                                <button onClick={()=>fetchProductsByPage(pageNum,timKiem,loai)} type="button" className="btn btn-primary">Filter</button>
                             </div>
                         </div>
                     </div>
@@ -224,10 +237,9 @@ const Product = () => {
                         <div className="sort-options">
                             <label htmlFor="sort">Order By: </label>
                             <div>
-                                <select className="form-control d-inline w-auto" id="sort" name="sort" value={valueSapXep} onChange={(event) => clickSapXep(event)} >
-                                    <option hidden={true} value="banchaynhat" >Choose...</option>
-                                    <option value="giatangdan">Low to high</option>
-                                    <option value="giagiamdan">High to low</option>
+                                <select className="form-control d-inline w-auto" id="sort" name="sort" value={orderBy} onChange={(event) => setOrderBy(event.target.value)} >
+                                    <option value="ASC">Low to high</option>
+                                    <option value="DESC">High to low</option>
                                     {/* <option value="moinhat">Mới nhất</option> */}
                                 </select>
                             </div>

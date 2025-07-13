@@ -129,7 +129,7 @@ const ProductType = () => {
                                             <label className="form-label fw-bold">Type name:</label>
                                             <input type="text" value={displayT.typeName || ''}
                                                 className="form-control"
-                                                placeholder="Nhập vào tên loại sản phẩm"
+                                                placeholder="Input product type name"
                                                 onChange={(e) => basicValidation(e, "typeName")}
                                             />
                                             <em className='text-danger'>{err.errTypeName}</em>
@@ -143,30 +143,30 @@ const ProductType = () => {
                                                     className="form-check-input" name="trangThai"
                                                     id="flexRadioDefault1"
                                                     onChange={() => setDisplayT({...displayT,status: true})}
-                                                />Hiển thị
+                                                />Displayed
                                             </div>
                                             <div className="form-check">
                                                 <input checked={!displayT.status}
                                                     className="form-check-input" type="radio" name="trangThai"
                                                     id="flexRadioDefault2"
-                                                    onChange={() => setDisplayT({...displayT,status: false})} />Ẩn
+                                                    onChange={() => setDisplayT({...displayT,status: false})} />Hidden
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <button onClick={handlePost} type='button' disabled={editting} className="btn btn-success me-2">Thêm</button>
-                                <button onClick={handlePut} type='button' disabled={!editting} className="btn btn-primary me-2">Cập nhật</button>
-                                <button onClick={resetForm} type='button' className="btn me-2" style={{ backgroundColor: '#656565' }}>Làm mới</button>
+                                <button onClick={handlePost} type='button' disabled={editting} className="btn btn-success me-2">Create</button>
+                                <button onClick={handlePut} type='button' disabled={!editting} className="btn btn-primary me-2">Update</button>
+                                <button onClick={resetForm} type='button' className="btn me-2" style={{ backgroundColor: '#656565' }}>Reset</button>
                             </form>
                         </div>
 
                         <div className="userList" style={{ marginTop: "20px" }}>
-                            <h4 className="text-center"> Danh sách loại sản phẩm </h4>
+                            <h4 className="text-center"> Product type list </h4>
                             <form>
                                 <div className="row">
                                     <div className="col-md-4">
                                         <div className="input-group mb-3">
-                                            <input value={search} name="search" type="search" className="form-control" placeholder="Tìm kiếm" onChange={(e)=>setSearch(e.target.value)} />
+                                            <input value={search} name="search" type="search" className="form-control" placeholder="Search" onChange={(e)=>setSearch(e.target.value)} />
                                         </div>
                                     </div>
                                 </div>
@@ -174,11 +174,11 @@ const ProductType = () => {
 
                             <table className="table table-striped table-hover table-light">
                                 <thead className="text-center" style={{ backgroundColor: '#067a38', color: '#fff',fontSize:'0.8rem' }}>
-                                    <th>Mã loại sản phẩm</th>
-                                    <th>Tên loại sản phẩm</th>
-                                    <th>Tổng sản phẩm</th>
-                                    <th>Trạng thái</th>
-                                    <th>Hành động</th>
+                                    <th>Type ID</th>
+                                    <th>Type name</th>
+                                    <th>Total products</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
                                 </thead>
                                 <tbody className="text-center">
                                     {types && types.map((item, index) => (
@@ -188,7 +188,7 @@ const ProductType = () => {
                                             <td>{item.TotalProduct}</td>
                                             <td>
                                                 <span className={`badge ${item.status === false ? 'bg-danger' : 'bg-success'}`}>
-                                                    {item.status === true ? 'Hiển thị' : 'Ẩn'}
+                                                    {item.status === true ? 'Displayed' : 'Hidden'}
                                                 </span>
                                             </td>
                                             <td>
@@ -200,12 +200,12 @@ const ProductType = () => {
                             </table>
 
                             <div className="text-center" hidden={totalPage !== 0}>
-                                <p className="fw-bold">Không tìm thấy loại sản phẩm tương ứng</p>
+                                <p className="fw-bold">No matching product type found.</p>
                             </div>
 
                             <div hidden={totalPage === 0} className="d-flex justify-content-between" style={{ marginTop: "25px" }}>
                                 {/* Vị trí hiển thị số trang */}
-                                <p className="fw-bold">Đang xem trang {pageNum} / {totalPage}</p>
+                                <p className="fw-bold">Currently viewing {pageNum} / {totalPage}</p>
 
                                 {/* React Paginate */}
                                 <ReactPaginate
@@ -228,7 +228,7 @@ const ProductType = () => {
                                     activeClassName='active'
                                     forcePage={pageNum - 1}
                                 />
-                                <p className="fw-bold">6 sản phẩm / 1 trang</p>
+                                <p className="fw-bold">6 records / page</p>
                             </div>
 
                         </div>

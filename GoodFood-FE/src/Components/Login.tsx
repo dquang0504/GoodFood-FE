@@ -1,125 +1,96 @@
-import React, { useContext, useEffect, useState } from 'react';
-import '../assets/css/Login.css'
-import bgLogin from '../assets/images/backgrounddangnhap.png';
-import { NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../Store/store';
-import { login } from '../Slices/LoginSlice';
-
+import React, { useState, useEffect } from "react";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../Store/store";
+import { login } from "../Slices/LoginSlice";
+import "../assets/css/Login.css";
+import bgLogin from "../assets/images/GoodFood24h_logo.png";
+import Navbar from "./Navbar";
 
 const Login = () => {
-    
-    //local states
-    const [username,setUsername] = useState("");
-    const [password,setPassword] = useState("");
-    const [message,setMessage] = useState("");
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+
     const dispatch = useDispatch<AppDispatch>();
-    const {error,isAuthenticated,isLoading,user} = useSelector((state:RootState)=>state.login)
-
-    // const { updateTaiKhoan } = useContext(AuthContext);
-
     const navigate = useNavigate();
     const location = useLocation();
-    const toUrl = location.state?.from?.pathname || '/home';
-    // const googleClientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
+    const toUrl = location.state?.from?.pathname || "/home";
 
-    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>)=>{
-        if (event.key == "Enter"){
-            clickDangNhap(username,password);
+    const { isAuthenticated } = useSelector((state: RootState) => state.login);
+
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === "Enter") {
+            clickDangNhap(username, password);
         }
-    }
+    };
 
-    const clickDangNhap = async(username: string, password: string)=>{
-        dispatch(login({username,password}))
-    }
+    const clickDangNhap = (username: string, password: string) => {
+        dispatch(login({ username, password }));
+    };
 
-    useEffect(()=>{
-        if(isAuthenticated){
-            navigate('/home')
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate("/home");
         }
-    })
+    }, [isAuthenticated, navigate]);
 
     return (
-        <>
-            <div className='login'>
-                <div className='div-image'>
-                    <img src={bgLogin} alt='Logo Login' />
+        <div className="login-container">
+            <Navbar></Navbar>
+            <div className="login-left">
+                <div className="login-image-wrapper">
+                    <img src={bgLogin} alt="Login Visual" className="login-image" />
                 </div>
-                <div className="div-main">
-                    <div className="d-flex justify-content-center">
-                        <div className="card">
-                            <div className="card-body">
-                                <div className="text-center fs-2 fw-bold">Đăng nhập</div>
-                                <div className="mt-4">
-                                    <div>
-                                        <div className="d-flex justify-content-center div-input">
-                                            <div className="input-box" >
-                                                <div className='d-flex justify-content-center'>
-                                                    <i className="fa-solid fa-user"></i>
-                                                    <input type="text"
-                                                        placeholder="Tài khoản"
-                                                        className=''
-                                                        value={username !== undefined ? username : ''}
-                                                        onChange={(event) => { setUsername(event.target.value); setMessage(""); }}
-                                                    />
-                                                </div>
-                                                <span className='text-danger'>{message}</span>
-                                            </div>
-                                        </div>
-                                        <div className="d-flex justify-content-center div-input">
-                                            <div className="input-box" >
-                                                <div className='d-flex justify-content-center'>
-                                                    <i className="fa-solid fa-lock"></i>
-                                                    <input type="password"
-                                                        placeholder="Mật khẩu"
-                                                        className=''
-                                                        value={password !== undefined ? password : ''}
-                                                        onChange={(event) => { setPassword(event.target.value); setMessage(""); }}
-                                                        onKeyDown={(event) => handleKeyDown(event)}
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="d-flex justify-content-center mt-1">
-                                            <div className="row div-cuoi">
-                                                <div className="col-md-6">
-                                                </div>
-                                                <div className="col-md-6 d-flex justify-content-end">
-                                                    <NavLink className="nav-link" to={"/forgot-password"}>Quên mật khẩu</NavLink>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="d-flex justify-content-center mt-2 div-button">
-                                            <div className="d-flex justify-content-center mt-1">
-                                                <button className="btn btn-primary " onClick={() => clickDangNhap(username,password)}>Đăng nhập</button>
-                                            </div>
-                                        </div>
-                                        <div className="d-flex justify-content-center mt-1">
-                                            Hoặc
-                                        </div>
-                                        <div className="d-flex justify-content-center mt-1 div-button">
-                                            <div className="d-flex justify-content-center">
-                                                {/* <GoogleOAuthProvider clientId={googleClientId}>
-                                                    <GoogleLogin
-                                                        onSuccess={handleSuccess}
-                                                        onError={handleFailure}
-                                                        style={{ width: "210px" }}
-                                                    />
-                                                </GoogleOAuthProvider> */}
-                                            </div>
-                                        </div>
-                                        <div className="d-flex justify-content-center mt-3 div-button">
-                                            Bạn chưa có tài khoản? &nbsp;<NavLink className="nav-link" to={"/register"}>Đăng ký</NavLink>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+            </div>
+            <div className="login-right">
+                <div className="login-tabs">
+                    <NavLink
+                        to="/login"
+                        className={({ isActive }) =>
+                            isActive ? "tab active" : "tab"
+                        }
+                    >
+                        Sign In
+                    </NavLink>
+                    <NavLink
+                        to="/register"
+                        className={({ isActive }) =>
+                            isActive ? "tab active" : "tab"
+                        }
+                    >
+                        Register
+                    </NavLink>
+                </div>
+                <div className="login-form">
+                    <input
+                        type="text"
+                        placeholder="Username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                    />
+                    <input
+                        type="password"
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                    />
+                    <button
+                        className="submit-button"
+                        onClick={() => clickDangNhap(username, password)}
+                    >
+                        SUBMIT
+                    </button>
+                    <NavLink to="/forgot-password" className="forgot-password">
+                        Forgot Password?
+                    </NavLink>
+                    <div className="social-login">
+                        <span><i className="fa-brands fa-facebook text-lg" style={{color:"#6068e2"}}></i> Facebook</span>
+                        <span><i className="fa-brands fa-google"></i> Google+</span>
                     </div>
                 </div>
             </div>
-
-        </>
+        </div>
     );
 };
 

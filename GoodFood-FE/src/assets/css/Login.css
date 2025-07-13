@@ -1,81 +1,117 @@
-.login{
-    .div-image {
-        position: relative;
-        z-index: -1;
+.login-container {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  background: #fff;
+}
 
-        img {
-            width: 100%;
-            height: 100vh;
-        }
-    }
-    .div-main {
-        position: absolute;
-        top: calc((100vh - 450px)/2);
-        left: calc((100vw - 400px)/2);
-        z-index: 1;
-        height: 450px;
-    }
+.login-left {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #FAF3EB;
+  position: relative;
+}
 
-    .card {
-        background-color: rgb(0, 0, 0, 0);
-        border: none;
-        width: 400px;
-        height: 450px !important;
+.login-image-wrapper {
+  position: relative;
+  width: 80%;
+  height: 80%;
+}
 
-        .card-body {
-            background-color: rgb(0, 0, 0, 0) !important;
-            border: 2px solid rgba(0, 0, 0, 1);
-            border-radius: 25px;
+.login-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  clip-path: polygon(
+    0% 0%, 10% 0%, 10% 100%, 0% 100%,
+    15% 0%, 25% 0%, 25% 100%, 15% 100%,
+    30% 0%, 40% 0%, 40% 100%, 30% 100%,
+    45% 0%, 55% 0%, 55% 100%, 45% 100%,
+    60% 0%, 70% 0%, 70% 100%, 60% 100%,
+    75% 0%, 85% 0%, 85% 100%, 75% 100%,
+    90% 0%, 100% 0%, 100% 100%, 90% 100%
+  );
+}
 
-            div>div {
-                .div-input {
-                    height: 78px;
-                }  
+.login-image-text {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  font-size: 36px;
+  font-weight: bold;
+  color: #fff;
+}
 
-                .div-button>div {
-                    width: 320px;
-                    height: 45px;
-                    button {
-                        width: 210px;
-                        font-size: 18px;
-                    }
-                }
-                div>.div-cuoi{
-                    width: 320px;
-                    div{
-                        padding: 0px;
-                    }  
-                }
-            }
+.login-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 60px;
+}
 
-        }
-    }
+.login-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-bottom: 30px;
+  text-decoration: none;
+}
 
-    .input-box {
-        position: relative;
+.login-tabs .tab {
+  font-size: 18px;
+  color: #777;
+  font-weight: bold;
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  padding-bottom: 5px;
+}
 
-        input {
-            width: 320px;
-            height: 50px;
-            padding-left: 50px;
-            padding-right: 15px;
-            background: transparent;
-            border: none;
-            outline: none;
-            border: 2px solid rgba(0, 0, 0, .5);
-            border-radius: 10px;
-        }
+.tab.active {
+  color: #D95D39;
+  border-bottom: 2px solid #D95D39;
+}
 
-        input::placeholder {
-            color: rgb(109, 109, 109);
-        }
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
 
-        i {
-            font-size: 20px;
-            position: absolute;
-            left: 20px;
-            top: calc(25px);
-            transform: translateY(-10px);
-        }
-    }
+.login-form input {
+  border: none;
+  border-bottom: 1px solid #ccc;
+  padding: 10px 5px;
+  font-size: 16px;
+  outline: none;
+}
+
+.submit-button {
+  background: #D95D39;
+  color: #fff;
+  padding: 12px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.submit-button:hover {
+  background: #045A2A;
+}
+
+.forgot-password {
+  text-align: center;
+  color: #555;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.social-login {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
+  font-size: 18px;
 }

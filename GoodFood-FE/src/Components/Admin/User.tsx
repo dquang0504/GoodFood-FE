@@ -246,7 +246,7 @@ const User = () => {
                                             <div className="mb-3">
                                                 <label className="form-label fw-bold">Fullname:</label>
                                                 <input value={displayU?.fullName || ''} name="hoVaTen" type="text"
-                                                    className="form-control" placeholder="Nhập vào họ và tên"
+                                                    className="form-control" placeholder="Input your fullname"
                                                     onChange={(e)=>(basicValidation(e,"fullname"))}
                                                     />
                                                 <em className='text-danger'>{err?.errName}</em>
@@ -257,7 +257,7 @@ const User = () => {
                                                 <label className="form-label fw-bold">Username:</label>
                                                 <input id="tenDangNhap" disabled={editting} name="tenDangNhap"
                                                     value={displayU?.username || ''} type="text"
-                                                    className="form-control" placeholder="Nhập vào tên tài khoản"
+                                                    className="form-control" placeholder="Input your username"
                                                     onChange={(e)=>(basicValidation(e,"username"))}
                                                     />
                                                 <em className='text-danger'>{err?.errUsername}</em>
@@ -287,15 +287,15 @@ const User = () => {
                                                 <label className="form-label fw-bold">Status:</label>
                                                 <div className="form-check">
                                                     <input checked={displayU.status === true} className="form-check-input"
-                                                        type="radio" value={"Hoạt động"} name="trangThai" id="flexRadioDefault3"
-                                                        onChange={(e)=>setDisplayU({...displayU,status: e.target.value === 'Hoạt động'})}
-                                                        />Hoạt động
+                                                        type="radio" value={"Active"} name="trangThai" id="flexRadioDefault3"
+                                                        onChange={(e)=>setDisplayU({...displayU,status: e.target.value === 'Active'})}
+                                                        />Active
                                                 </div>
                                                 <div className="form-check">
                                                     <input checked={displayU.status === false} className="form-check-input"
-                                                        type="radio" value={"Bị khóa"} name="trangThai" id="flexRadioDefault4"
-                                                        onChange={(e)=>setDisplayU({...displayU,status: e.target.value === 'Hoạt động'})}
-                                                        />Bị khóa
+                                                        type="radio" value={"Banned"} name="trangThai" id="flexRadioDefault4"
+                                                        onChange={(e)=>setDisplayU({...displayU,status: e.target.value === 'Active'})}
+                                                        />Banned
                                                 </div>
                                             </div>
                                         </div>
@@ -313,7 +313,7 @@ const User = () => {
                                                         name="gioiTinh"
                                                         id="flexRadioDefault5"
                                                         onChange={(e) => setDisplayU({ ...displayU, gender: e.target.value === 'Male' })}
-                                                    />Nam
+                                                    />Male
                                                 </div>
                                                 <div className="form-check">
                                                     <input
@@ -324,7 +324,7 @@ const User = () => {
                                                         name="gioiTinh"
                                                         id="flexRadioDefault6"
                                                         onChange={(e) => setDisplayU({ ...displayU, gender: e.target.value === 'Male' })}
-                                                    />Nữ
+                                                    />Female
                                                 </div>
                                             </div>
                                         </div>
@@ -333,7 +333,7 @@ const User = () => {
                                                 <label className="form-label fw-bold">Email:</label>
                                                 <input id="email" disabled={editting} name="email"
                                                     value={displayU?.email || ''} type="email" className="form-control"
-                                                    placeholder="Nhập vào email"
+                                                    placeholder="Input your email"
                                                     onChange={(e)=>(basicValidation(e,"email"))}
                                                     />
                                                 <em className='text-danger'>{err?.errEmail}</em>
@@ -347,21 +347,21 @@ const User = () => {
                                                 <input id="soDienThoai" disabled={editting}
                                                     value={displayU?.phoneNumber || ''} name="soDienThoai"
                                                     type="text" className="form-control"
-                                                    placeholder='Nhập vào số điện thoại'
+                                                    placeholder='Input your phone number'
                                                     onChange={(e)=>(basicValidation(e,"phone"))}
                                                     />
                                                 <em className='text-danger'>{err?.errPhone}</em>
                                             </div>
                                         </div>
                                     </div>
-                                    <button type='button' disabled={editting} className="btn btn-success me-2" onClick={handlePost}>Thêm</button>
-                                    <button type="button" onClick={handlePut} disabled={!editting} className="btn btn-primary me-2">Cập nhật</button>
-                                    <button type='button' onClick={resetForm} className="btn me-2" style={{ backgroundColor: '#656565' }}>Làm mới</button>
+                                    <button type='button' disabled={editting} className="btn btn-success me-2" onClick={handlePost}>Create</button>
+                                    <button type="button" onClick={handlePut} disabled={!editting} className="btn btn-primary me-2">Update</button>
+                                    <button type='button' onClick={resetForm} className="btn me-2" style={{ backgroundColor: '#656565' }}>Reset</button>
                                 </form>
                             </div>
 
                             <div className="userList" style={{marginTop:"20px"}}>
-                                <h4 className="text-center">Danh sách người dùng</h4>
+                                <h4 className="text-center">User list</h4>
                                 <form onSubmit={(event)=>handleSearchSubmit(event)}>
                                     <div className="row">
                                         <div className="col-md-4 col-xxl-8">
@@ -373,7 +373,7 @@ const User = () => {
                                                     <option value="Full name">Full name</option>
                                                 </select>
                                                 <input value={search} name="search" type="search" className="form-control"
-                                                    placeholder="Tìm kiếm" aria-describedby="basic-addon2" onChange={handleSearchChange}/>
+                                                    placeholder="Search" aria-describedby="basic-addon2" onChange={handleSearchChange}/>
                                             </div>
                                         </div>
                                     </div>
@@ -381,15 +381,15 @@ const User = () => {
 
                                 <table className="table table-striped table-hover table-light">
                                     <thead className="text-center" style={{ backgroundColor: '#067a38', color: '#fff',fontSize:'0.8rem' }}>
-                                        <th>Mã tài khoản</th>
-                                        <th>Tên tài khoản</th>
-                                        <th>Họ và tên</th>
+                                        <th>Account ID</th>
+                                        <th>Username</th>
+                                        <th>Fullname</th>
                                         <th>Email</th>
-                                        <th>Số ĐT</th>
-                                        <th>Vai trò</th>
-                                        <th>Trạng thái</th>
-                                        <th>Giới tính</th>
-                                        <th>Hành động</th>
+                                        <th>Phone number</th>
+                                        <th>Role</th>
+                                        <th>Status</th>
+                                        <th>Gender</th>
+                                        <th>Action</th>
                                     </thead>
                                     <tbody className='text-center'>
                                         {users && users.length > 0 && users.map((user) => (
@@ -413,11 +413,11 @@ const User = () => {
                                     </tbody>
                                 </table>
                                 <div className="text-center" hidden={totalPage!==0}>
-                                    <p className="fw-bold">Không tìm thấy người dùng tương ứng</p>
+                                    <p className="fw-bold">No matching account found.</p>
                                 </div>
                                 <div hidden={totalPage===0} className="d-flex justify-content-between" style={{marginTop:"25px"}}>
                                     {/* Vị trí hiển thị số trang */}
-                                    <p className="fw-bold">Đang xem trang {pageNum} / {totalPage}</p>
+                                    <p className="fw-bold">Currently viewing {pageNum} / {totalPage}</p>
 
                                     
                                     {/* React Paginate */}
@@ -441,7 +441,7 @@ const User = () => {
                                             activeClassName='active'
                                             forcePage={pageNum - 1}
                                         />
-                                    <p className="fw-bold">6 bản ghi / 1 trang</p>
+                                    <p className="fw-bold">6 records / page</p>
                                 </div> 
                             </div>
                     </div>

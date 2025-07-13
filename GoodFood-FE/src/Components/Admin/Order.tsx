@@ -35,7 +35,7 @@ const Order = () => {
     const [ngayTo,setNgayTo] = useState(new Date());
     const [pageNum,setPageNum] = useState(1);
     const [totalPage,setToTalPage] = useState(0);
-    const [sort,setSort] = useState("Mã hóa đơn");
+    const [sort,setSort] = useState("Invoice ID");
     const [search,setSearch] = useState("");
     const {user} = useSelector((state:RootState)=>state.login);
     const [editting,setEditting] = useState(false);
@@ -204,14 +204,14 @@ const Order = () => {
                 <HorizontalNav></HorizontalNav>
                 <main className="content">
                     <div className="container-fluid p-0">
-                        <h1 className="h3 mb-3">Danh sách hóa đơn</h1>
+                        <h1 className="h3 mb-3">Invoice Management</h1>
                         <div className="row">
                             <div className="col-md-6">
                                 <div className="card">
                                     <div className="card-body" style={{borderRadius:8}}>
                                         <div className="row">
                                             <div className="col mt-0">
-                                                <h5 className="card-title">Tổng số hóa đơn</h5>
+                                                <h5 className="card-title">Total invoices</h5>
                                             </div>
 
                                             <div className="col-auto">
@@ -230,7 +230,7 @@ const Order = () => {
                                     <div className="card-body" style={{borderRadius:8}}>
                                         <div className="row">
                                             <div className="col mt-0">
-                                                <h5 className="card-title">Số hóa đơn bị hủy</h5>
+                                                <h5 className="card-title">Total cancelled invoices</h5>
                                             </div>
 
                                             <div className="col-auto">
@@ -246,17 +246,17 @@ const Order = () => {
                         </div>
 
                         <div className="invoiceDetail" style={{marginTop:"20px"}}>
-                            <h4> Hóa đơn chi tiết </h4>
+                            <h4> Detailed invoices </h4>
                             <form>
                                 <div className="row">
                                     <div className="col-md-8 col-xxl-8">
                                         <table className="table table-striped table-hover table-light">
                                             <thead className="text-center" style={{ backgroundColor: '#067a38', color: '#fff',fontSize: '0.8rem' }}>                                                
-                                                <th>Tên sản phẩm</th>
-                                                <th>Số lượng</th>
-                                                <th>Tên khách hàng</th>
-                                                <th>Địa chỉ</th>
-                                                <th>Số điện thoại</th>
+                                                <th>Product name</th>
+                                                <th>Quantity</th>
+                                                <th>Customer name</th>
+                                                <th>Delivery address</th>
+                                                <th>Phone number</th>
                                             </thead>
 
                                             <tbody className="text-center">
@@ -275,7 +275,7 @@ const Order = () => {
 
                                     <div className="col-md-4">
                                         <div className="mb-3">
-                                            <label className="form-label fw-bold">Trạng thái:</label>
+                                            <label className="form-label fw-bold">Status:</label>
                                             <select value={status.statusName} onChange={(e)=>setStatus({...status,statusName: e.target.value})} name="trangThaiHoaDon.tenTrangThai" className="form-select"
                                                 aria-label="Default select example">
                                                     {statusList!==null ? (
@@ -295,11 +295,11 @@ const Order = () => {
                                             className="btn btn-primary" 
                                             type="button"
                                             >
-                                            Cập nhật trạng thái đơn hàng
+                                            Update invoice status
                                         </button>     
                                         <Modal show={show} onHide={()=>setShow(false)} backdrop="static" aria-labelledby="contained-modal-title-vcenter" centered>
                                             <Modal.Header closeButton>
-                                                <Modal.Title id="contained-modal-title-vcenter">Lý do hủy</Modal.Title>
+                                                <Modal.Title id="contained-modal-title-vcenter">Reason for cancelling</Modal.Title>
                                             </Modal.Header>
                                             <Modal.Body>
                                                 <div className='mb-3'>
@@ -308,7 +308,7 @@ const Order = () => {
                                             </Modal.Body>
                                             <Modal.Footer>
                                             <button className='btn btn-primary' onClick={()=>displayI?.[0] && handleSend(displayI[0].InvoiceID, status)}>
-                                                Gửi
+                                                Send
                                             </button>
                                             </Modal.Footer>
                                         </Modal>
@@ -318,21 +318,21 @@ const Order = () => {
                         </div>
 
                         <div className="invoiceList" style={{marginTop:"20px"}}>
-                            <h4 className="text-center"> Danh sách hóa đơn </h4>
+                            <h4 className="text-center"> Invoice list </h4>
                             <form onSubmit={(event)=>handleSearchSubmit(event)}>
                                 <div className="row">
                                     <div className="col-md-4 col-xxl-6">
                                         <div className="input-group mb-3">
                                             <select id="sortSelect" name="sort" onChange={(event)=> {toggleSearchAndDateFields(); handleSortChange(event)}}
                                                 className="form-select" aria-label="Default select example">
-                                                <option value="Mã hóa đơn">Mã hóa đơn</option>
-                                                <option value="Tên khách hàng">Tên khách hàng</option>
-                                                <option value="Ngày thanh toán">Ngày thanh toán</option>
-                                                <option value="Trạng thái">Trạng thái</option>
+                                                <option value="Invoice ID">Invoice ID</option>
+                                                <option value="Customer name">Customer name</option>
+                                                <option value="Payment date">Payment date</option>
+                                                <option value="Invoice status">Invoice status</option>
                                             </select>
                                             <div id="searchField">
                                                 <input name="search" type="search" className="form-control"
-                                                    placeholder="Tìm kiếm" value={search} onChange={handleSearchChange}></input>
+                                                    placeholder="Search" value={search} onChange={handleSearchChange}></input>
                                             </div>
                                         </div>
                                     </div>
@@ -340,10 +340,10 @@ const Order = () => {
                                     <div id="dateFields" className="col-md-8 col-xxl-6" style={{display:"none"}}>
                                         <div className="input-group mb-3">
                                             <input name="ngayFrom" type="date"
-                                                className="form-control" placeholder="Từ" onChange={(event)=>handleDateChange(event)}></input> 
+                                                className="form-control" placeholder="From" onChange={(event)=>handleDateChange(event)}></input> 
                                             <input name="ngayTo" type="date"
-                                                className="form-control" placeholder="Đến" onChange={(event)=>handleDateChange(event)}></input>
-                                            <button type="submit" className="btn btn-success">Tìm kiếm</button>
+                                                className="form-control" placeholder="To" onChange={(event)=>handleDateChange(event)}></input>
+                                            <button type="submit" className="btn btn-success">Search</button>
                                         </div>
                                     </div>                
                                 </div>
@@ -351,15 +351,15 @@ const Order = () => {
 
                             <table className="table table-striped table-hover table-light">
                                 <thead className="text-center align-middle" style={{ backgroundColor: '#067a38', color: '#fff',fontSize:'0.8rem' }}>
-                                    <th>Mã hóa đơn</th>
-                                    <th>Ngày thanh toán</th>
-                                    <th>Trạng thái</th>
-                                    <th>Tổng tiền sản phẩm</th>
-                                    <th>Trạng thái thanh toán</th>
-                                    <th>Ghi chú</th>
-                                    <th>Phí vận chuyển</th>
-                                    <th>Phương thức thanh toán</th>
-                                    <th>Hành động</th>
+                                    <th>Invoice ID</th>
+                                    <th>Payment date</th>
+                                    <th>Invoice status</th>
+                                    <th>Invoice total</th>
+                                    <th>Payment status</th>
+                                    <th>Notes</th>
+                                    <th>Shipping fee</th>
+                                    <th>Payment method</th>
+                                    <th>Action</th>
                                 </thead>    
 
                                 <tbody className="text-center">
@@ -368,19 +368,23 @@ const Order = () => {
                                             <td>{invoice.invoiceID}</td>
                                             <td>{invoice.paymentDate.toLocaleString()}</td>
                                             <td>
-                                                <span className={`badge ${invoice.invoiceStatus?.statusName === 'Đã Hủy' ? 'bg-danger' : invoice.invoiceStatus?.statusName === 'Đang xử lý' ? 'bg-warning' : invoice.invoiceStatus?.statusName === 'Đang vận chuyển' ? 'bg-info' : 'bg-success'}`}>
+                                                <span className={`badge ${invoice.invoiceStatus?.statusName === 'Đã hủy' ? 'bg-danger' : invoice.invoiceStatus?.statusName === 'Đang xử lý' ? 'bg-warning' : invoice.invoiceStatus?.statusName === 'Đang vận chuyển' ? 'bg-info' : 'bg-success'}`}>
                                                     {invoice.invoiceStatus?.statusName}
                                                 </span>
                                             </td>
                                             <td>
                                                 <span>{formatVND(invoice.totalPrice)}</span>
                                             </td>
-                                            <td>{invoice.status ? 'Đã thanh toán' : 'Chưa thanh toán'}</td>
-                                            <td>{invoice.note !== null ? invoice.note : 'Không có'}</td>
+                                            <td>
+                                                <span className={`badge ${invoice.status ? 'bg-success' : 'bg-danger'}`}>
+                                                    {invoice.status ? 'Paid' : 'Not paid'}
+                                                </span>
+                                            </td>
+                                            <td>{invoice.note !== "" ? invoice.note : 'None'}</td>
                                             <td>
                                                 <span>{formatVND(invoice.shippingFee)}</span>
                                             </td>
-                                            <td>{invoice.paymentMethod ? 'Thanh toán khi nhận hàng' : 'Thanh toán online'}</td>
+                                            <td>{invoice.paymentMethod ? 'COD' : 'ONLINE'}</td>
                                             <td>
                                                 <i className="fa-solid fa-pen-to-square" onClick={()=>fetchDetail(invoice.invoiceID)}></i>
                                             </td>
@@ -390,12 +394,12 @@ const Order = () => {
                             </table>  
 
                             <div className="text-center" hidden={totalPage !== 0}>
-                                <p className="fw-bold">Không tìm thấy hóa đơn tương ứng</p>
+                                <p className="fw-bold">No matching invoice found.</p>
                             </div>
 
                             <div hidden={totalPage===0} className="d-flex justify-content-between" style={{marginTop:"25px"}}>
                                 {/* Vị trí hiển thị số trang */}
-                                <p className="fw-bold">Đang xem trang {pageNum} / {totalPage}</p>
+                                <p className="fw-bold">Currently viewing {pageNum} / {totalPage}</p>
 
                                 
                                 {/* React Paginate */}
@@ -419,7 +423,7 @@ const Order = () => {
                                         activeClassName='active'
                                         forcePage={pageNum - 1}
                                     />
-                                <p className="fw-bold">6 bản ghi / 1 trang</p>
+                                <p className="fw-bold">6 records / page</p>
                             </div>                      
 
                         </div>

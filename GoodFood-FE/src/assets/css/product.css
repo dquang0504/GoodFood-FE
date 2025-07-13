@@ -388,3 +388,18 @@
 .search-container .search-button:hover i {
     transform: scale(1.2);
 }
+
+.similar-product .btn-success {
+    background-color: #D95D39;
+    border: none;
+    color: white;
+    font-size: 14px;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.similar-product .btn-success:hover {
+    background-color: #04582c;
+}

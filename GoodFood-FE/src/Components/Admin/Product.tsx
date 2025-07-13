@@ -335,7 +335,7 @@ const Product = () => {
                         </div>
 
                         <div className="userDetail" style={{marginTop:"20px"}}>
-                            <h4>Chi tiết sản phẩm</h4>
+                            <h4>Product details</h4>
                             <form id="productForm">
                                 <input type="text" readOnly hidden name="idForUpdate" value="${idForUpdate}"></input>
                                 <div className="row">
@@ -345,7 +345,7 @@ const Product = () => {
                                             <input value={displayP?.productName || ''} type="text" 
                                                 name="tenSanPham" 
                                                 className="form-control" 
-                                                placeholder="Nhập vào tên sản phẩm"
+                                                placeholder="Input product name"
                                                 onChange={(event)=>basicValidation(event,null,"productName")}
                                                 />
                                             <em className="text-danger">{err?.errProductName}</em>
@@ -401,7 +401,7 @@ const Product = () => {
                                 <div className="row">
                                     <div className="col-md-12">
                                         <div className="mb-3">
-                                            <label className="form-label fw-bold">Loại:</label>
+                                            <label className="form-label fw-bold">Type:</label>
                                             <select 
                                                 value={displayP.productType?.typeName} 
                                                 name="tenLoai" 
@@ -409,7 +409,7 @@ const Product = () => {
                                                 aria-label="Default select example"
                                                 onChange={(event)=>basicValidation(null,event,"productType")}
                                             >
-                                                <option value="" hidden>Chọn loại</option>
+                                                <option value="" hidden>Choose a type...</option>
                                                 {listLoaiSP.map((loaiSP, index) => (
                                                     <option key={index} value={loaiSP.typeName}>
                                                         {loaiSP.typeName}
@@ -461,18 +461,18 @@ const Product = () => {
                                 <div className="row">
                                     <div className="col-md-12">
                                         <div className="mb-3">
-                                            <label className="form-label fw-bold">Mô tả:</label>
-                                            <textarea name="moTa" className="form-control" rows={4} cols={5} value={displayP?.description || ''}
+                                            <label className="form-label fw-bold">Description:</label>
+                                            <textarea name="moTa" className="form-control" rows={3} cols={4} value={displayP?.description || ''}
                                                 onChange={(event)=>setDisplayP({...displayP,description:event.target.value})}></textarea>
                                         </div>
                                     </div>
                                 </div>
 
                                 <button type='button' disabled={editting} onClick={handlePost}
-                                    className="btn btn-success me-2">Thêm</button>
+                                    className="btn btn-success me-2">Create</button>
                                 <button disabled={!editting}
-                                    type='button' className="btn btn-primary me-2" onClick={handlePut}>Cập nhật</button>
-                                <button type='button' onClick={resetForm} className="btn me-2" style={{ backgroundColor: '#656565' }}>Làm mới</button>
+                                    type='button' className="btn btn-primary me-2" onClick={handlePut}>Update</button>
+                                <button type='button' onClick={resetForm} className="btn me-2" style={{ backgroundColor: '#656565' }}>Reset</button>
 
                                 <input type="hidden" name="hinhAnh" id="hinhAnh"></input>
 
@@ -480,7 +480,7 @@ const Product = () => {
                         </div>
 
                         <div className="userList" style={{marginTop:"20px"}}>
-                            <h4 className="text-center"> Danh sách sản phẩm </h4>
+                            <h4 className="text-center"> Product list </h4>
                             <form>
                                 <div className="row">
                                     <div className="col-md-4 col-xxl-8">
@@ -494,7 +494,7 @@ const Product = () => {
                                                 <option value="Active Status">Active Status</option>
                                                 <option value="Inactive Status">Inactive Status</option>
                                             </select>
-                                            <input value={search} name="search" type="search" className="form-control" placeholder="Tìm kiếm" onChange={(e)=>setSearch(e.target.value)}/>
+                                            <input value={search} name="search" type="search" className="form-control" placeholder="Search" onChange={(e)=>setSearch(e.target.value)}/>
                                         </div>
                                     </div>
                                 </div>
@@ -502,14 +502,14 @@ const Product = () => {
 
                             <table className="table table-striped table-hover table-light">
                                 <thead className="text-center" style={{ backgroundColor: '#067a38', color: '#fff',fontSize:'0.8rem' }}>
-                                    <th>Mã sản phẩm</th>
-                                    <th>Tên sản phẩm</th>
-                                    <th>Giá</th>
-                                    <th>Khối lượng</th>
-                                    <th>Loại</th>
-                                    <th>Trạng thái</th>
-                                    <th>Mô tả</th>
-                                    <th>Hành động</th>
+                                    <th>Product ID</th>
+                                    <th>Product name</th>
+                                    <th>Price</th>
+                                    <th>Weight</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Description</th>
+                                    <th>Action</th>
                                 </thead>
                                 <tbody className="text-center">
                                     {products && products.map((p,index)=>(
@@ -532,11 +532,11 @@ const Product = () => {
                             </table>
 
                             <div className="text-center" hidden={totalPage!==0}>
-                                <p className="fw-bold">Không tìm thấy sản phẩm tương ứng</p>
+                                <p className="fw-bold">No matching product found</p>
                             </div>
                             <div hidden={totalPage===0} className="d-flex justify-content-between" style={{marginTop:"25px"}}>
                                 {/* Vị trí hiển thị số trang */}
-                                <p className="fw-bold">Đang xem trang {pageNum} / {totalPage}</p>
+                                <p className="fw-bold">Currently viewing {pageNum} / {totalPage}</p>
 
                                     
                                 {/* React Paginate */}
@@ -560,7 +560,7 @@ const Product = () => {
                                     activeClassName='active'
                                     forcePage={pageNum - 1}
                                 />
-                                <p className="fw-bold">6 bản ghi / 1 trang</p>
+                                <p className="fw-bold">6 records / page</p>
                             </div> 
 
                         </div>

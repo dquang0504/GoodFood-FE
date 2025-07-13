@@ -9,7 +9,7 @@ const Footer = () => {
                     <div className="col-md-3">
                         <h5 style={{ fontFamily: 'Rancho' }}>Good Food 24 Giờ</h5>
                         <address>
-                            Tòa nhà FPT Polytechnic, Đ. Số 22,<br /> Thường Thạnh, Cái Răng, Cần Thơ
+                            FPT Polytechnic Building, 22 Street,<br /> Thuong Thanh ward, Cai Rang district, Can Tho
                         </address>
                         <div className="social-icons">
                             <a href="#"><img src="https://img.icons8.com/?size=100&id=Xy10Jcu1L2Su&format=png&color=000000" alt="Instagram" /></a>
@@ -17,28 +17,28 @@ const Footer = () => {
                         </div>
                     </div>
                     <div className="col-md-3">
-                        <h5>Công Ty</h5>
+                        <h5>Company</h5>
                         <ul className="list-unstyled">
-                            <li><a href="#about-us">Về chúng tôi</a></li>
-                            <li><a href="#contact">Liên Hệ</a></li>
+                            <li><a href="#about-us">About Us</a></li>
+                            <li><a href="#contact">Contact</a></li>
                         </ul>
                     </div>
                     <div className="col-md-3">
-                        <h5>Chính Sách</h5>
+                        <h5>Policy</h5>
                         <ul className="list-unstyled">
-                            <li><a href="#">Hỏi & đáp</a></li>
-                            <li><a href="#">Sự riêng tư</a></li>
-                            <li><a href="#">Quyền lợi</a></li>
+                            <li><a href="#">FAQ</a></li>
+                            <li><a href="#">Privacy</a></li>
+                            <li><a href="#">Rights</a></li>
                         </ul>
                     </div>
                     <div className="col-md-3">
-                        <h5>Liên Hệ</h5>
+                        <h5>Contact</h5>
                         <p>+91 123 4567 8900</p>
-                        <p>food@example.com</p>
+                        <p>goodfood24h@example.com</p>
                     </div>
                 </div>
                 <div className="text-center mt-3">
-                    <p>&copy; 2024 Good Food 24 Giờ. Tất cả các quyền lợi được đảm bảo.</p>
+                    <p>&copy; 2024 GoodFood24h. All rights reserved.</p>
                 </div>
             </div>
         </footer>

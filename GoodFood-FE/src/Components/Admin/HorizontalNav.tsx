@@ -34,10 +34,10 @@ const HorizontalNav = () => {
                     />
                 </button>
                 <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a className="dropdown-item" href="#">Thông tin cá nhân</a>
-                    <a className="dropdown-item" href="#">Đổi mật khẩu</a>
-                    <NavLink to={"/home"} className="dropdown-item">Về trang người dùng</NavLink>
-                    <button className="dropdown-item" onClick={clickDangXuat}>Đăng xuất</button>
+                    <NavLink className="dropdown-item" to={"/home/edit-profile"} >Account info</NavLink>
+                    <NavLink className="dropdown-item" to={"/home/change-password"}>Change password</NavLink>
+                    <NavLink to={"/home"} className="dropdown-item">Back</NavLink>
+                    <button className="dropdown-item" onClick={clickDangXuat}>Log out</button>
                 </div>
             </div>
         </nav>
