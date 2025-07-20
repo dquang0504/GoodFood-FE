@@ -4,7 +4,7 @@ import Navbar from './Navbar';
 import axiosInstance from '../Services/AxiosInstance';
 import { Products } from '../Interfaces/Products';
 import { formatVND } from '../Services/FormatVND';
-import { NavLink, useLocation } from 'react-router-dom';
+import { Navigate, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { InvoiceDetails } from '../Interfaces/InvoiceDetails';
 import { InvoiceDetailList } from './OrderHistory';
 import { Reviews } from '../Interfaces/Reviews';
@@ -19,9 +19,10 @@ import { storage } from './Firebase';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { toast } from 'react-toastify';
 import { ReviewImages } from '../Interfaces/ReviewImages';
+import { ProductTypes } from '../Interfaces/ProductTypes';
 
 const ReviewProduct = () => {
-
+    const navigate = useNavigate();
     const {user} = useSelector((state:RootState)=>state.login);
     const {state} = useLocation();
     const invoiceID = state?.invoiceID ?? 0;
@@ -108,38 +109,31 @@ const ReviewProduct = () => {
     },[review.stars])
 
     const handleSubmit = async()=>{
-        let newUniqueFileName = ""
-        let imageURL: ReviewImages[] = [];
-        if(imageFile.length > 0){
-            for(const file of imageFile){
-                //split the extension of the file
-                let fileExtension = file.name.split('.').pop();
-                let fileNameWithoutExtension = file.name.split('.').join('.');
-                //create a new file name with v4 library
-                newUniqueFileName = `${fileNameWithoutExtension}_${v4()}.${fileExtension}`;
-                //create a reference to firebase storage
-                const storageRef = ref(storage,`AnhDanhGia/${newUniqueFileName}`);
-                await uploadBytes(storageRef,file); //upload the image to firebase
-                imageURL.push({
-                    imageName: await getDownloadURL(storageRef) || "",
-                    reviewID: 0,
-                    reviewImageID: 0
-                })
-            }
-        }
-        const newReview = {
+        const formData = new FormData()
+
+        formData.append("review",JSON.stringify({
             ...review,
-            reviewImages: imageURL
+            reviewImages: []
+        }))
+        
+        for (const file of imageFile){
+            formData.append("images",file)
         }
+        
         if(err.errReview === "" && review.stars > 0){
             try {
-                console.log(newReview);
-                const response = await axiosInstance.post(`review/create`,newReview);
+                const response = await axiosInstance.post(`review/create`,formData,{
+                    headers: {
+                        "Content-Type": "multipart/form-data"
+                    }
+                });
                 console.log(response);
                 toast.success(response.data.message);
                 resetForm();
-            } catch (error) {
+                navigate(`/home/product-details/${productID}`,{state:{productID:productID,productType:review.reviewProduct?.productTypeID}})
+            } catch (error: any) {
                 console.log(error);
+                toast.error(error.response.data.message)
             }finally{
                 fetchData();
             }

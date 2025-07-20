@@ -41,7 +41,6 @@ const ProductDetail = () => {
     });
     const [products,setProducts] = useState<Products[]>([]);
     const [quantity,setQuantity] = useState<number>(1);
-    const [filteredEvaluates,setFilteredEvaluates] = useState<Reviews[]>([]);
     const [evaluates,setEvaluates] = useState<Reviews[]>([]);
     const {user} = useSelector((state:RootState)=>state.login);
     const averageStars = useRef(0);
@@ -72,6 +71,7 @@ const ProductDetail = () => {
             const fetchedStars = response.data.data.stars
             const totalVotes = fetchedStars.fiveStars + fetchedStars.fourStars + fetchedStars.threeStars + fetchedStars.twoStars + fetchedStars.oneStars
             averageStars.current = totalVotes === 0 ? 0 : (5*fetchedStars.fiveStars + 4*fetchedStars.fourStars + 3*fetchedStars.threeStars + 2*fetchedStars.twoStars + 1*fetchedStars.oneStars) / totalVotes
+            console.log(response);
         } catch (error) {
             console.log(error);
         }
@@ -227,7 +227,7 @@ const ProductDetail = () => {
 
                     {/* Review */}
                     <div className="evaluate mt-3">
-                        <div className="mb-1" style={{ fontSize: '30px', paddingLeft:28 }}>ĐÁNH GIÁ SẢN PHẨM</div>
+                        <div className="mb-1" style={{ fontSize: '30px', paddingLeft:28 }}>PRODUCT REVIEWS</div>
                         <div className="detail-evaluate-star">
                             <span className="number-star">
                                 {averageStars.current}/5 <i className="fa fa-star text-warning"></i>

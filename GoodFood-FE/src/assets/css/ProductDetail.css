@@ -132,21 +132,35 @@
 	margin: 30px 0 0 0;
 }
 
-.btn-add-cart {
+.button-btn .btn-outline-success {
 	width: 209px;
 	height: 47px;
 	border-radius: 13px;
 	background-color: #D95D39;
-	color: #D95D39;
+	color: #fff;
+	transition: background-color 0.3s;
+	border: none;
 }
 
-.btn-buy {
+.button-btn .btn-outline-success:hover {
+	background-color: #198754;
+    color: #fff;
+}
+
+.button-btn .btn-success {
 	margin: 0 0 0 10px;
 	width: 161px;
 	height: 47px;
 	border-radius: 13px;
 	background-color: #D95D39;
-	color:  #D95D39;
+	color: #fff;
+	transition: background-color 0.3s;
+	border: none;
+}
+
+.button-btn .btn-success:hover {
+	background-color: #198754;
+    color: #fff;
 }
 
 /* Detail Evaluate Star */

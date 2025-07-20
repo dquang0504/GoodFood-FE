@@ -34,8 +34,8 @@ export interface InvoiceDetailList{
 
 const OrderHistory = () => {
     const {user} = useSelector((state: RootState)=>state.login)
-    const statusList = ['Đã đặt hàng', 'Đã xác nhận', 'Đang xử lý', 'Đang vận chuyển', 'Giao thành công', 'Đã hủy']
-    const [activeTab,setActiveTab] = useState("Đã đặt hàng");
+    const statusList = ['Order Placed', 'Order Confirmed', 'Order Processing', 'Shipping', 'Delivered', 'Cancelled']
+    const [activeTab,setActiveTab] = useState("Order Placed");
     const [invoiceList,setInvoiceList] = useState<InvoiceList[]>([])
     const [invoiceDetailList,setInvoiceDetailList] = useState<InvoiceDetailList[]>([]);
     const [showModal,setShowModal] = useState(false);
@@ -283,7 +283,7 @@ const OrderHistory = () => {
                                         <td style={{ color: 'red' }}>{formatVND(detail.totalMoney)}</td>
                                         <td className="align-content-center">
                                         {
-                                            activeTab === "Giao thành công" ? (
+                                            activeTab === "Delivered" ? (
                                             <>
                                                 {detail.product?.productID !== undefined && (
                                                     <NavLink to={"#"} className="btn btn-sm btn-buy-again btn-success me-2" onClick={() => { clickMuaLai(detail.product!.productID, detail.quantity) }}>Buy Again</NavLink>
@@ -318,15 +318,15 @@ const OrderHistory = () => {
                     </div>
                     <div className='row'>
                         <div className='col-md-6'></div>
-                        <div className='col-md-3'>Tổng tiền sản phẩm:</div>
+                        <div className='col-md-3'>Subtotal:</div>
                         <div className='col-md-3 text-end'>{formatVND(invoiceDetailList.reduce((acc,item)=> item.totalMoney + acc,0))}</div>
 
                         <div className='col-md-6'></div>
-                        <div className='col-md-3'>Phí vận chuyển:</div>
+                        <div className='col-md-3'>Shipping fee:</div>
                         <div className='col-md-3 text-end'>{formatVND(invoiceDetailList[0]?.shippingFee)}</div>
 
                         <div className='col-md-6'></div>
-                        <div className='col-md-3'>Tổng tiền:</div>
+                        <div className='col-md-3'>Invoice total:</div>
                         <div className='col-md-3 text-end fw-medium text-danger'>{formatVND(invoiceDetailList[0]?.shippingFee + invoiceDetailList.reduce((acc,item)=> acc + item.totalMoney,0))}</div>
 
                     </div>

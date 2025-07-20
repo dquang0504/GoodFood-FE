@@ -473,19 +473,19 @@ const Address = () => {
 
             <Modal show={showModal} onHide={()=>setShowModal(false)}>
                 <Modal.Header closeButton className='d-flex justify-content-end '>
-                    <Modal.Title className='fw-bold fs-3'>Xóa địa chỉ</Modal.Title>
+                    <Modal.Title className='fw-bold fs-3'>Delete address</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <div className='ms-4 me-4 mt-2 mb-2'>
-                        Bạn có chắc muốn xóa địa chỉ <span className='fw-bold'>{addressForm.address + ", " + addressForm.specificAddress}</span> này không?
+                        Are you sure you want to delete the address <span className='fw-bold'>{addressForm.address + ", " + addressForm.specificAddress}</span> ?
                     </div>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={()=>setShowModal(false)} style={{ width: '80px' }}>
-                        Không
+                        No
                     </Button>
                     <Button variant="danger" onClick={() => clickDeleteAddress()} style={{ width: '80px' }}>
-                        Có
+                        Yes
                     </Button>
                 </Modal.Footer>
                 {/* {
