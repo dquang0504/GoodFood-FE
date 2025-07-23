@@ -411,3 +411,27 @@
     visibility: visible;
     transform: translate(0, -50%);
 }
+
+.featured-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #FAA41A;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 1rem;
+  position: relative;
+  display: inline-block;
+}
+
+.featured-title::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -6px;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 3px;
+  background-color: #FAA41A;
+  border-radius: 2px;
+  opacity: 0.8;
+}
