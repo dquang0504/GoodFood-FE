@@ -40,6 +40,7 @@ const Home = () => {
         try {
             const response = await axios.get(`${ENDPOINT}/products/getFeaturings`)
             setProducts(response.data.data);
+            console.log(response);
         } catch (error) {
             console.log(error)
         }
@@ -53,9 +54,6 @@ const Home = () => {
         setShowFullText(!showFullText);
     };
 
-    const clickMuaNgay = (item: Products) => {
-
-    }
 
     const basicValidation = (event: React.ChangeEvent<HTMLInputElement> | null, event2: React.ChangeEvent<HTMLTextAreaElement> | null, fieldName: string) => {
         if (fieldName === "fullname") {
@@ -291,7 +289,7 @@ const Home = () => {
             <section id="contact" className="contact py-5">
                 <div className="container">
                     <div className="text-center mb-3">
-                        <h1 className="contact-title">Contacts</h1>
+                        <h1 className="contact-title">Contact</h1>
                         <p className="contact-subtitle">If you ever need help, please reach out to us</p>
                     </div>
                     <div className="row justify-content-center align-items-center">

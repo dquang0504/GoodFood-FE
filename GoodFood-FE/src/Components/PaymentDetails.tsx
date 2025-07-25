@@ -183,35 +183,35 @@ const PaymentDetails = () => {
                 <div className="container pt-2 pb-5">
                     <nav aria-label="breadcrumb">
                         <ol className="breadcrumb">
-                            <li className="breadcrumb-item"><NavLink to={"/home/cart"}>Giỏ hàng</NavLink></li>
-                            <li className="breadcrumb-item"><span>Chi tiết thanh toán</span></li>
+                            <li className="breadcrumb-item"><NavLink to={"/home/cart"}>Cart</NavLink></li>
+                            <li className="breadcrumb-item"><span>Order Details</span></li>
                         </ol>
                     </nav>
 
-                    <h3 className="section-header">Thông tin thanh toán</h3>
+                    <h3 className="section-header">Order Details</h3>
 
                     <div className="row">
                         <div className="col-md-8">
                             <div className="order-details">
-                                <h4>Thông Tin Thanh Toán</h4>
-                                <span>Thay đổi địa chỉ <span className='text-danger fw-bold' style={{ cursor: 'pointer' }} onClick={() => setShowModal(true)}>Tại đây</span> </span>
+                                <h4>Delivery Information</h4>
+                                <span>Change your address <span className='text-danger fw-bold' style={{ cursor: 'pointer' }} onClick={() => setShowModal(true)}>HERE</span> </span>
                                 <div className='mt-1'>
                                     <div className="form-group">
-                                        <label>Số điện thoại</label>
-                                        <input type="text" className="form-control" id="soDienThoai" value={address.phoneNumber} placeholder="Nhập địa chỉ số điện thoại" disabled={true} />
+                                        <label>Phone number</label>
+                                        <input type="text" className="form-control" id="soDienThoai" value={address.phoneNumber} placeholder="Input your phone number" disabled={true} />
                                     </div>
                                     <div className="form-group">
-                                        <label>Họ và Tên</label>
-                                        <input type="text" className="form-control" id="name" value={address.fullName} placeholder="Nhập họ và tên" disabled={true} />
+                                        <label>Fullname</label>
+                                        <input type="text" className="form-control" id="name" value={address.fullName} placeholder="Input your fullname" disabled={true} />
                                     </div>
                                     <div className="form-group">
-                                        <label>Địa chỉ</label>
-                                        <input type="text" className="form-control" id="address" value={address.address + ", " + address.specificAddress} placeholder="Nhập địa chỉ" disabled={true} />
+                                        <label>Address</label>
+                                        <input type="text" className="form-control" id="address" value={address.address + ", " + address.specificAddress} placeholder="Input your address" disabled={true} />
                                     </div>
-                                    <h4 className='mt-2'>Thông Tin Bổ Sung</h4>
+                                    <h4 className='mt-2'>Additional Information</h4>
                                     <div className="form-group">
-                                        <label>Ghi chú đơn hàng (tùy chọn)</label>
-                                        <textarea className="form-control" id="note" rows={3} placeholder="Nhập ghi chú về đơn hàng" onChange={(event) => setInvoice({...invoice,note: event.target.value})} ></textarea>
+                                        <label>Order notice (optional)</label>
+                                        <textarea className="form-control" id="note" rows={3} placeholder="Input order notice" onChange={(event) => setInvoice({...invoice,note: event.target.value})} ></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -219,7 +219,7 @@ const PaymentDetails = () => {
                         
                         <div className="col-md-4">
                             <div className="order-summary">
-                                <h4>Đơn Hàng Của Bạn</h4>
+                                <h4>Your order</h4>
                                 <table className="table table-borderless">
                                     <tbody>
                                         {
@@ -234,15 +234,15 @@ const PaymentDetails = () => {
                                         }
 
                                         <tr>
-                                            <td>Tổng tiền sản phẩm</td>
+                                            <td>Total product price</td>
                                             <td className="text-right"><span className='d-flex justify-content-end me-2'>{formatVND(totalTemp.current)}</span></td>
                                         </tr>
                                         <tr>
-                                            <td>Phí vận chuyển</td>
+                                            <td>Shipping fee</td>
                                             <td className="text-right"><span className='d-flex justify-content-end me-2'>{formatVND(invoice.shippingFee)}</span></td>
                                         </tr>
                                         <tr>
-                                            <td className="total-amount">Tổng thanh toán</td>
+                                            <td className="total-amount">Order total</td>
                                             <td className="text-right total-amount"><span className='d-flex justify-content-end me-2'>{formatVND(totalTemp.current + invoice.shippingFee)}</span></td>
                                         </tr>
                                     </tbody>
@@ -251,14 +251,14 @@ const PaymentDetails = () => {
                                 <div className="form-check">
                                     <input className="form-check-input" type="radio" name="paymentMethod" id="cod" value="cod" checked={invoice.paymentMethod} onChange={() => setInvoice({...invoice,paymentMethod: true})} />
                                     <label className="form-check-label" htmlFor="cod">
-                                        Thanh toán khi nhận hàng (COD)
+                                        Cash on Delivery (COD)
                                     </label>
                                 </div>
 
                                 <div className="form-check">
                                     <input className="form-check-input" type="radio" name="paymentMethod" id="online" checked={!invoice.paymentMethod} value="online" onChange={() => setInvoice({...invoice,paymentMethod: false})} />
                                     <label className="form-check-label" htmlFor="online">
-                                        Thanh toán online
+                                        Online payment
                                     </label>
                                     {
                                         invoice.paymentMethod === false ? (
@@ -282,8 +282,8 @@ const PaymentDetails = () => {
                                     }
 
                                 </div>
-                                <button type="button" className="btn btn-success btn-block mt-4" id="xac-nhan-dat-hang" disabled={invoice.shippingFee === 0 ? true : false} onClick={() => clickDatHang()}>Đặt Hàng</button>
-                                <p className="note mt-3">Bằng cách nhấp vào Đặt hàng, bạn đồng ý với <a href="https://www.google.com.vn/?hl=vi">điều khoản và điều kiện</a> và <a href="https://www.google.com.vn/?hl=vi">chính sách riêng tư</a> của chúng tôi.</p>
+                                <button type="button" className="btn btn-success btn-block mt-4" id="xac-nhan-dat-hang" disabled={invoice.shippingFee === 0 ? true : false} onClick={() => clickDatHang()}>Place order</button>
+                                <p className="note mt-3">By clicking on <b>Place order</b>, you agree to <a href="https://www.google.com.vn/?hl=vi">Terms and Conditions</a> and <a href="https://www.google.com.vn/?hl=vi">Privacy Policy</a>.</p>
 
                             </div>
                         </div>

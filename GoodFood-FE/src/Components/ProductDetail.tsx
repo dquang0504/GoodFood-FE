@@ -19,7 +19,7 @@ import ReactPaginate from 'react-paginate';
 import '../assets/css/Admin/pagination.css'
 import { Carts } from '../Interfaces/Carts';
 
-interface Stars{
+interface Stars {
     fiveStars: number,
     fourStars: number,
     threeStars: number,
@@ -30,27 +30,27 @@ interface Stars{
 const ProductDetail = () => {
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate()
-    const {state} = useLocation();
-    const [product,setProduct] = useState<Products | null>(null);
-    const [stars,setStars] = useState<Stars>({
+    const { state } = useLocation();
+    const [product, setProduct] = useState<Products | null>(null);
+    const [stars, setStars] = useState<Stars>({
         fiveStars: 0,
         fourStars: 0,
         oneStars: 0,
         threeStars: 0,
         twoStars: 0
     });
-    const [products,setProducts] = useState<Products[]>([]);
-    const [quantity,setQuantity] = useState<number>(1);
-    const [evaluates,setEvaluates] = useState<Reviews[]>([]);
-    const {user} = useSelector((state:RootState)=>state.login);
+    const [products, setProducts] = useState<Products[]>([]);
+    const [quantity, setQuantity] = useState<number>(1);
+    const [evaluates, setEvaluates] = useState<Reviews[]>([]);
+    const { user } = useSelector((state: RootState) => state.login);
     const averageStars = useRef(0);
-    const [ratingFilter,setRatingFilter] = useState('All');
+    const [ratingFilter, setRatingFilter] = useState('All');
     const navigator = useNavigate();
-    const [pageNum,setPageNum] = useState(1);
-    const [totalPage,setTotalPage] = useState(0);
-    const [chosenItems,setChosenItems] = useState<Carts[]>([])
+    const [pageNum, setPageNum] = useState(1);
+    const [totalPage, setTotalPage] = useState(0);
+    const [chosenItems, setChosenItems] = useState<Carts[]>([])
 
-    const fetchDetail = async(filter:string,pageNum: number)=>{
+    const fetchDetail = async (filter: string, pageNum: number) => {
         try {
             const response = await axios.get(`${ENDPOINT}/products/detail?id=${state.productID}&filter=${filter}&page=${pageNum}`)
             setProduct(response.data.data.product);
@@ -61,23 +61,23 @@ const ProductDetail = () => {
                     product: response.data.data.product,
                     productID: response.data.data.product.productID,
                     quantity: quantity > 0 ? quantity : 1,
-            };
+                };
 
-            setChosenItems([newItem])}
+                setChosenItems([newItem])
+            }
             setStars(response.data.data.stars);
             setEvaluates(response.data.data.review);
             setTotalPage(response.data.totalPage)
             //calculating average rating
             const fetchedStars = response.data.data.stars
             const totalVotes = fetchedStars.fiveStars + fetchedStars.fourStars + fetchedStars.threeStars + fetchedStars.twoStars + fetchedStars.oneStars
-            averageStars.current = totalVotes === 0 ? 0 : (5*fetchedStars.fiveStars + 4*fetchedStars.fourStars + 3*fetchedStars.threeStars + 2*fetchedStars.twoStars + 1*fetchedStars.oneStars) / totalVotes
-            console.log(response);
+            averageStars.current = totalVotes === 0 ? 0 : (5 * fetchedStars.fiveStars + 4 * fetchedStars.fourStars + 3 * fetchedStars.threeStars + 2 * fetchedStars.twoStars + 1 * fetchedStars.oneStars) / totalVotes
         } catch (error) {
             console.log(error);
         }
     }
 
-    const fetchSimilar = async()=>{
+    const fetchSimilar = async () => {
         try {
             const response = await axios.get(`${ENDPOINT}/products/similar?id=${state.productID}&typeID=${state.productType}`)
             setProducts(response.data.data);
@@ -86,14 +86,14 @@ const ProductDetail = () => {
         }
     }
 
-    useEffect(()=>{
+    useEffect(() => {
         fetchDetail(ratingFilter, pageNum);
         fetchSimilar();
-    },[ratingFilter,pageNum,quantity])
+    }, [ratingFilter, pageNum, quantity])
 
 
-    const clickAddProductCart = async(product: Products)=>{
-        if (user === null){
+    const clickAddProductCart = async (product: Products) => {
+        if (user === null) {
             toast.warning("Please login first!");
             navigator("/login");
             return
@@ -103,44 +103,50 @@ const ProductDetail = () => {
             productID: product.productID,
             accountID: user?.accountID,
         }
-        
+
         dispatch(addToCart(payload))
     }
 
-    const clickPay = (product: Products)=>{
 
-    }
-    
-    const changeQuantity = (value: number)=>{
-        if (value > 0){
-            setQuantity(quantity+1);
+    const changeQuantity = (value: number) => {
+        if (value > 0) {
+            setQuantity(quantity + 1);
             setChosenItems(
                 chosenItems.map(item => ({
                     ...item,
-                    quantity: quantity+1,
+                    quantity: quantity + 1,
                 }))
             )
         }
-        else if (quantity == 1){
+        else if (quantity == 1) {
             return;
         }
-        else{
-            setQuantity(quantity-1);
+        else {
+            setQuantity(quantity - 1);
             setChosenItems(
                 chosenItems.map(item => ({
                     ...item,
-                    quantity: quantity+1,
+                    quantity: quantity + 1,
                 }))
             )
         }
     }
 
     const clickProduct = (product: Products) => {
-    
+        const cart: Carts[] = []
+        const cartItem: Carts = {
+            accountID: user ? user.accountID : 0,
+            cartID: 0,
+            product: product,
+            productID: product.productID,
+            quantity: 1
+        }
+        cart.push(cartItem)
+        navigate("/home/payment-details", { state: { listChosenItems: cart } });
     }
 
-    const clickMuaNgay = () =>{
-        navigate("/home/payment-details",{state:{listChosenItems: chosenItems}});
+    const clickMuaNgay = () => {
+        navigate("/home/payment-details", { state: { listChosenItems: chosenItems } });
     }
 
     const renderStars = (rating: number) => {
@@ -157,7 +163,7 @@ const ProductDetail = () => {
         return stars;
     };
 
-    const clickEditReview = (reviewID: number)=>{
+    const clickEditReview = (reviewID: number) => {
         navigate(`/home/edit-evaluate?id=${reviewID}`)
     }
 
@@ -209,7 +215,7 @@ const ProductDetail = () => {
                                         <button className="btn btn-add-cart btn-outline-success" onClick={() => { product && clickAddProductCart(product) }}>
                                             <i className="fa-solid fa-cart-plus"></i> Add to Cart
                                         </button>
-                                        <button className="btn btn-buy btn-success" onClick={clickMuaNgay}>Buy</button>
+                                        <button className="btn btn-buy btn-success" onClick={clickMuaNgay}>Purchase</button>
                                     </div>
                                 </div>
                                 <div style={{ margin: '20px 0 0 0' }}>
@@ -227,7 +233,7 @@ const ProductDetail = () => {
 
                     {/* Review */}
                     <div className="evaluate mt-3">
-                        <div className="mb-1" style={{ fontSize: '30px', paddingLeft:28 }}>PRODUCT REVIEWS</div>
+                        <div className="mb-1" style={{ fontSize: '30px', paddingLeft: 28 }}>PRODUCT REVIEWS</div>
                         <div className="detail-evaluate-star">
                             <span className="number-star">
                                 {averageStars.current}/5 <i className="fa fa-star text-warning"></i>
@@ -251,12 +257,12 @@ const ProductDetail = () => {
                                         evaluates.map(eva => (
                                             <div className="card-body content row" key={eva.reviewID}>
                                                 <div className="col-md-1 mt-2 ms-3 me-3">
-                                                    <img 
-                                                        alt="" 
-                                                        src={eva.reviewAccount?.avatar ??  'https://cellphones.com.vn/sforum/wp-content/uploads/2023/10/avatar-trang-4.jpg'} 
-                                                        width="50px" 
-                                                        height="50px" 
-                                                        style={{ borderRadius: '50%' }} 
+                                                    <img
+                                                        alt=""
+                                                        src={eva.reviewAccount?.avatar ?? 'https://cellphones.com.vn/sforum/wp-content/uploads/2023/10/avatar-trang-4.jpg'}
+                                                        width="50px"
+                                                        height="50px"
+                                                        style={{ borderRadius: '50%' }}
                                                     />
                                                 </div>
                                                 <div className="col-md-9 mt-2">
@@ -270,31 +276,31 @@ const ProductDetail = () => {
                                                     <div className="mb-3">{eva.comment}</div>
                                                     {eva.reviewImages ? (
                                                         Array.isArray(eva.reviewImages) && eva.reviewImages.length > 0 && eva.reviewImages.map(img => (
-                                                           <span key={img.imageName}>
-                                                                <img 
-                                                                    src={img.imageName} 
-                                                                    alt="" 
-                                                                    width="75px" 
-                                                                    height="75px" 
-                                                                    style={{ marginRight: '10px' }} 
+                                                            <span key={img.imageName}>
+                                                                <img
+                                                                    src={img.imageName}
+                                                                    alt=""
+                                                                    width="75px"
+                                                                    height="75px"
+                                                                    style={{ marginRight: '10px' }}
                                                                 />
-                                                            </span> 
-                                                        ))  
-                                                    ):(
+                                                            </span>
+                                                        ))
+                                                    ) : (
                                                         <></>
                                                     )}
 
                                                     {/* Phản hồi của admin */}
                                                     {eva.reviewReply ? (
-                                                        Array.isArray(eva.reviewReply) && eva.reviewReply.length > 0 && eva.reviewReply.map(reply=>(
+                                                        Array.isArray(eva.reviewReply) && eva.reviewReply.length > 0 && eva.reviewReply.map(reply => (
                                                             <div className="admin-replies mt-3">
-                                                                <h5 className="text-success">Phản hồi từ Admin:</h5>
+                                                                <h5 className="text-success">Admin's reply:</h5>
                                                                 <div className="admin-reply" key={reply.replyID}>
                                                                     <strong>Admin:</strong> <span>{reply.reply}</span>
                                                                 </div>
                                                             </div>
                                                         ))
-                                                    ): (
+                                                    ) : (
                                                         <></>
                                                     )}
 
@@ -310,7 +316,7 @@ const ProductDetail = () => {
                                             </div>
                                         ))
                                     ) : (
-                                        <div className="no-reviews-message text-center">Không có đánh giá</div>
+                                        <div className="no-reviews-message text-center">No reviews yet</div>
                                     )}
                                 </div>
                             </div>
@@ -325,14 +331,14 @@ const ProductDetail = () => {
                             </div>
                         )} */}
 
-                        <div hidden={totalPage===0} className="d-flex justify-content-between" style={{marginTop:"25px"}}>
+                        <div hidden={totalPage === 0} className="d-flex justify-content-between" style={{ marginTop: "25px" }}>
                             {/* Vị trí hiển thị số trang */}
-                            <p className="fw-bold">Currently viewing {pageNum} / {totalPage}</p>        
+                            <p className="fw-bold">Currently viewing {pageNum} / {totalPage}</p>
                             {/* React Paginate */}
                             <ReactPaginate
                                 breakLabel="..."
                                 nextLabel={<i className="fa-solid fa-forward-step"></i>}
-                                onPageChange={(event)=>setPageNum(event.selected + 1)}
+                                onPageChange={(event) => setPageNum(event.selected + 1)}
                                 pageRangeDisplayed={3}
                                 pageCount={totalPage}
                                 previousLabel={<i className="fa-solid fa-backward-step"></i>}
@@ -350,30 +356,29 @@ const ProductDetail = () => {
                                 forcePage={pageNum - 1}
                             />
                             <p className="fw-bold">3 records / page</p>
-                        </div>  
+                        </div>
                     </div>
 
                     <div className="similar-product-details row">
                         <div className='mb-2' style={{ fontSize: '30px' }}>SIMILAR PRODUCTS</div>
                         {products.length > 0 ? (
-                            products.slice(0,8)
-                            .map(product => (
-                                <div className="col-md-3 card-product" key={product.productID}>
-                                    <div className="card card-sp">
-                                        <img src={product.coverImage} className="card-img-top" alt={product.productName} onClick={() => clickProduct(product)}/>
-                                        {/* </a> */}
-                                        <div className="card-body">
-                                            <h3 className="product-name">{product.productName}</h3>
-                                            <div className="action row me-1">
-                                                <div className="product-price col-md-7 m-0 d-flex justify-content-center align-items-center">{formatVND(product.price)}</div>
-                                                <div className="btn btn-success col-md-5 m-0 d-flex justify-content-center text-center" style={{ cursor: 'pointer' }} onClick={() => clickProduct(product)}>Mua ngay</div>
+                            products.slice(0, 8)
+                                .map(product => (
+                                    <div className="col-md-3 card-product" key={product.productID}>
+                                        <div className="card card-sp">
+                                            <img src={product.coverImage} className="card-img-top" alt={product.productName}  />
+                                            <div className="card-body">
+                                                <h3 className="product-name">{product.productName}</h3>
+                                                <div className="action row me-1">
+                                                    <div className="product-price col-md-7 m-0 d-flex justify-content-center align-items-center">{formatVND(product.price)}</div>
+                                                    <div className="btn btn-success col-md-5 m-0 d-flex justify-content-center text-center" style={{ cursor: 'pointer' }} onClick={() => clickProduct(product)}>Purchase</div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            ))
+                                ))
                         ) : (
-                            <div className="text-center">Không có sản phẩm để hiển thị.</div>
+                            <div className="text-center">No products to display.</div>
                         )}
 
                         {/* <div className="see-more">
@@ -382,9 +387,9 @@ const ProductDetail = () => {
                     </div>
 
                 </main>
-            </div>  
+            </div>
 
-            <Footer></Footer> 
+            <Footer></Footer>
         </>
     );
 };

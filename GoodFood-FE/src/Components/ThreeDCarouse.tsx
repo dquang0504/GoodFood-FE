@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../assets/css/ThreeDCarousel.css";
 import { Products } from "../Interfaces/Products";
+import { useNavigate } from "react-router-dom";
 
 type ThreeDCarouselDProps = {
   products: Products[];
@@ -11,6 +12,7 @@ const ThreeDCarousel: React.FC<ThreeDCarouselDProps> = ({ products }) => {
   const itemCount = products.length;
   const rotateStep = 360 / itemCount;
   const translateZ = 400;
+  const navigate = useNavigate()
 
   const rotateCarousel = (direction: "next" | "prev") => {
     setSelectedIndex((prev) =>
@@ -20,9 +22,9 @@ const ThreeDCarousel: React.FC<ThreeDCarouselDProps> = ({ products }) => {
     );
   };
 
-  const handleClick = (item: Products) => {
-    console.log(item.productName);
-  };
+  const handleTryNow = (item:Products)=>{
+    navigate(`/home/product-details/${item.productID}`,{state:{productID:item.productID,productType:item.productType?.productTypeID}})
+  }
 
   // Auto rotate every 3 seconds
   useEffect(() => {
@@ -45,12 +47,12 @@ const ThreeDCarousel: React.FC<ThreeDCarouselDProps> = ({ products }) => {
               style={{
                 transform: `rotateY(${rotation}deg) translateZ(${translateZ}px)`
               }}
-              onClick={() => handleClick(item)}
             >
               <img src={item.coverImage} alt={item.productName} />
               <div className="carousel__info">
                 <h3>{item.productName}</h3>
                 <p>{item.description}</p>
+                <button className="btn btn-success" onClick={()=>handleTryNow(item)}>Try now!</button>
               </div>
             </div>
           );

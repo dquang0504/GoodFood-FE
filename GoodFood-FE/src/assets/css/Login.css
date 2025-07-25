@@ -115,3 +115,13 @@
   margin-top: 20px;
   font-size: 18px;
 }
+.login-tabs .tab {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tab.active {
+  color: #D95D39;
+  border-bottom: 2px solid #D95D39;
+  transform: scale(1.05);
+}

@@ -13,6 +13,9 @@ import { useNavigate } from 'react-router-dom';
 import ReactPaginate from 'react-paginate';
 import Footer from './Footer';
 import { number } from 'framer-motion';
+import { Carts } from '../Interfaces/Carts';
+import { useSelector } from 'react-redux';
+import { RootState } from '../Store/store';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -20,6 +23,7 @@ import { number } from 'framer-motion';
 const Product = () => {
 
     const [loaiSanPhams, setLoaiSanPhams] = useState<ProductTypes[]>([]);
+    const {user} = useSelector((state:RootState)=>state.login)
     const [timKiem,setTimKiem] = useState("");
     const [loading,setLoading] = useState(false);
     const [products,setProducts] = useState<Products[]>([]);
@@ -50,7 +54,6 @@ const Product = () => {
         try {
             const response = await axios.get(`${ENDPOINT}/products/getTypes`);
             setLoaiSanPhams(response.data.data);
-            console.log(response.data.data);
         } catch (error : any) {
             console.log(error)
             toast.error(error.response.data.message)
@@ -63,7 +66,6 @@ const Product = () => {
             const response = await axios.get(`${ENDPOINT}/products?page=${page}${typeQuery}&search=${searchQuery}&minPrice=${price.minPrice}&maxPrice=${price.maxPrice}&orderBy=${orderBy}`);
             setProducts(response.data.data || []);
             setToTalPage(response.data.totalPage);
-            console.log(response);
         } catch (error: any) {
             console.log(error);
             toast.error(error.response?.data?.message || "Error fetching products");
@@ -71,7 +73,6 @@ const Product = () => {
     };
 
     const clickTimkiem = (timKiem: string)=>{
-        console.log("Đây")
         fetchProductsByPage(pageNum,timKiem,loai);
     }
 
@@ -105,7 +106,6 @@ const Product = () => {
     }
 
     const uploadImage = async(event: React.ChangeEvent<HTMLInputElement>)=>{
-        console.log(event.target.files?.[0]);
         const file = event.target.files?.[0];
         if(!file) return
         try {
@@ -128,23 +128,23 @@ const Product = () => {
             transcriptRef.current = "";
         } catch (error) {
             console.log(error);
-            console.log("Hello")
         }
         finally{
             setLoading(false);
         }
     }
 
-    const clickSapXep = (event: React.ChangeEvent<HTMLSelectElement>)=>{
-        
-    }
-
-    useEffect(()=>{
-        fetchProductsByPage(pageNum,timKiem,loai);
-    },[orderBy])
-
     const clickMuaNgay = (product: Products)=>{
-
+        const cart: Carts[] = []
+        const cartItem: Carts = {
+            accountID: user ? user.accountID : 0,
+            cartID: 0,
+            product: product,
+            productID: product.productID,
+            quantity: 1
+        }
+        cart.push(cartItem)
+        navigate("/home/payment-details",{state:{listChosenItems: cart}});
     }
 
     const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) =>{
@@ -157,16 +157,9 @@ const Product = () => {
     },[])
 
     useEffect(()=>{
-        fetchProductsByPage(pageNum,"",loai);
-    },[pageNum,loai])
+        fetchProductsByPage(pageNum,timKiem,loai);
+    },[pageNum,loai,orderBy])
 
-    // useEffect(()=>{
-    //     fetchProductsByPage(pageNum,timKiem)
-    // },[timKiem])
-
-    // useEffect(()=>{
-    //     handlePageClick(pageNum);
-    // },[pageNum])
 
     return (
         <div className='body-product'>
@@ -263,7 +256,7 @@ const Product = () => {
                                                         <h3 className="product-name">{product.productName}</h3>
                                                         <div className="action row">
                                                             <div className="product-price col-md-6">{formatVND(product.price)}</div>
-                                                            <div className="btn btn-success col-md-5" style={{ cursor: 'pointer' }} onClick={() => clickMuaNgay(product)}>Buy</div>
+                                                            <div className="btn btn-success col-md-5" style={{ cursor: 'pointer' }} onClick={() => clickMuaNgay(product)}>Purchase</div>
                                                         </div>
                                                     </div>
                                                 </div>

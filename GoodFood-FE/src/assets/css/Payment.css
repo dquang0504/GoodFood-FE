@@ -1,4 +1,4 @@
-.container-pay-details {
+.container-pay {
     background-color: #F5F0DC;
     color: #333;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -95,4 +95,8 @@ input.form-control, textarea.form-control {
 input.form-control:focus, textarea.form-control:focus {
     border-color: #067A38;
     box-shadow: none;
+}
+
+.container .container-pay .row{
+    width: 80%;
 }

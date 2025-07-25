@@ -162,14 +162,14 @@ const Cart = () => {
             {loading ? (
                 <>
                     <div className='container mt-5 cart-container' style={{ marginBottom: "75px", minHeight: "430px" }}>
-                        <h2 className='text-center cart-header pb-2'>Giỏ Hàng</h2>
+                        <h2 className='text-center cart-header pb-2'>Your Cart</h2>
                         {
                             listCart && listCart.length === 0 ? (
                                 <div>
                                     <div className='d-flex justify-content-center mt-5'>
                                         <img src={imgCart} alt={imgCart} />
                                     </div>
-                                    <div className="text-center fs-4">Chưa có sản phẩm</div>
+                                    <div className="text-center fs-4">Cart is empty...</div>
                                 </div>
                             ) : (
                                 <div>
@@ -178,11 +178,11 @@ const Cart = () => {
                                             <thead>
                                                 <tr>
                                                     <th></th>
-                                                    <th>Sản phẩm</th>
-                                                    <th>Đơn Giá</th>
-                                                    <th>Số Lượng</th>
-                                                    <th>Số Tiền</th>
-                                                    <th className="d-flex justify-content-center">Thao Tác</th>
+                                                    <th>Product</th>
+                                                    <th>Price</th>
+                                                    <th>Quantity</th>
+                                                    <th>Total</th>
+                                                    <th className="d-flex justify-content-center">Action</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -228,11 +228,11 @@ const Cart = () => {
                                         <table style={{ width: '100%', padding: '0 20px' }}>
                                             <tbody >
                                                 <tr className="row" >
-                                                    <td className="col-md-2 align-content-center"><input className="ms-1" type="checkbox" id="checkboxAll" onClick={(event) => { clickSelectAll(event) }} />&nbsp;<label htmlFor='checkboxAll'> Chọn Tất Cả ({totalProductSelect})</label></td>
+                                                    <td className="col-md-2 align-content-center"><input className="ms-1" type="checkbox" id="checkboxAll" onClick={(event) => { clickSelectAll(event) }} />&nbsp;<label htmlFor='checkboxAll'> Choose all ({totalProductSelect})</label></td>
                                                     <td className="col-md-4 align-content-center">
-                                                        <span className='remove-link' onClick={() => setShowModalDeleteAll(true)} >Xóa tất cả</span>
+                                                        <span className='remove-link' onClick={() => setShowModalDeleteAll(true)} >Remove all</span>
                                                     </td>
-                                                    <td className="col-md-4 align-content-center"><div className="d-flex justify-content-end">Tổng thanh toán (<span id="tongSanPhamChon" className="ms-1 me-1">{totalProductSelect}</span> sản phẩm): <span className="total-amount"> <span id="total" className="ms-1 me-1">{totalAmount === 0 ? "0 ₫" : formatVND(totalAmount)}</span> </span> </div> </td>
+                                                    <td className="col-md-4 align-content-center"><div className="d-flex justify-content-end">Total cart (<span id="tongSanPhamChon" className="ms-1 me-1">{totalProductSelect}</span> {chosenItems.length > 1 ? 'products' : 'product'}): <span className="total-amount"> <span id="total" className="ms-1 me-1">{totalAmount === 0 ? "0 ₫" : formatVND(totalAmount)}</span> </span> </div> </td>
                                                     <td className="col-md-2 align-content-center d-flex justify-content-center">
                                                         <button
                                                             type="submit"
@@ -240,7 +240,7 @@ const Cart = () => {
                                                             id="muaHang"
                                                             onClick={clickMuaHang}
                                                             disabled={totalAmount == 0 ? true : false}
-                                                        >Mua Hàng
+                                                        >Purchase
                                                         </button>
                                                     </td>
                                                 </tr>
@@ -262,19 +262,19 @@ const Cart = () => {
 
             <Modal show={showModalDeleteAll} onHide={() => showModalDeleteAll ? setShowModalDeleteAll(false) : setShowModalDeleteAll(true)}>
                 <Modal.Header closeButton className='d-flex justify-content-end '>
-                    <Modal.Title className='fw-bold fs-3'>Xóa tất cả sản phẩm</Modal.Title>
+                    <Modal.Title className='fw-bold fs-3'>Remove all cart items</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <div className='ms-4 me-4 mt-2 mb-2'>
-                        Bạn có chắc muốn xóa tất cả sản phẩm có trong giỏ hàng không?
+                        Are you sure you want to remove all of your cart items ?
                     </div>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={() => setShowModalDeleteAll(false)} style={{ width: '80px' }}>
-                        Không
+                        No
                     </Button>
                     <Button variant="danger" onClick={() => clickAgreeDeleteAll()} style={{ width: '80px' }}>
-                        Có
+                        Yes
                     </Button>
                 </Modal.Footer>
                 {/* <div className='position-absolute bg-black loading-modal-delete-all d-flex justify-content-center align-items-center' style={{ opacity: 0.4 }}>

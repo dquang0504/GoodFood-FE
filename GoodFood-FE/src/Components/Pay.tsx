@@ -8,6 +8,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../Store/store';
 import { Products } from '../Interfaces/Products';
 import Footer from './Footer';
+import '../assets/css/Payment.css'
 
 const Pay = () => {
     const {state} = useLocation();
@@ -69,7 +70,7 @@ const Pay = () => {
                     <h3 className="payment-header">Order paid successfully!</h3>
                 )}
                 {invoice && (
-                    <div className="row">
+                    <div className="row d-flex justify-content-center mx-auto">
                         <div className="col-md-8">
                             <div className="order-details">
                                 <h4>RECEIPT DETAILS</h4>
@@ -103,7 +104,11 @@ const Pay = () => {
                                         </tr>
                                     </tbody>
                                 </table>
-                                <p className="note">Notes: {invoice.note}</p>
+                                {invoice.note ? (
+                                    <p className="note">Notes: {invoice.note}</p>
+                                ):(
+                                    <p className="note">No notes found.</p>
+                                )}
                             </div>
                         </div>
                         <div className="col-md-4">

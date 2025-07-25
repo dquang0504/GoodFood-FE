@@ -197,7 +197,7 @@ const UpdateAccount = () => {
                                         <div className="d-flex justify-content-center mt-1">
                                             <div className="d-flex justify-content-start" style={{ width: '350px' }}>
                                                 <div className="row">
-                                                    <label className="fs-5 p-0" htmlFor="">Hình ảnh:</label>
+                                                    <label className="fs-5 p-0" htmlFor="">Profile picture:</label>
                                                     <input
                                                         type="file"
                                                         className="form-control col-md-9"
