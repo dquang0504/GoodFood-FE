@@ -13,6 +13,7 @@ const Navbar = () => {
 
     const {cart} = useSelector((state:RootState)=>state.cart)
     const {user} = useSelector((state:RootState)=>state.login)
+    console.log(user);
     const dispatch = useDispatch<AppDispatch>();
 
     const clickDangXuat = ()=>{
@@ -90,10 +91,10 @@ const Navbar = () => {
                 </li>
                 <li className="nav-item cart-dropdown">
                     <NavLink to={""} className="nav-link cart-icon" id="userDropdown" role="button">
-                        {user !== null ? (
+                        {user ? (
                             <>
-                                { user?.avatar !== null ? (
-                                        <img className="img-menu" alt="" src={user.avatar} />
+                                { user.avatar !== null ? (
+                                        <img className="img-menu" alt="" src={user.avatar} referrerPolicy="no-referrer" />
                                     ) : (
                                         <i className="fas fa-user"></i>
                                     )
@@ -105,7 +106,7 @@ const Navbar = () => {
                         )}
                     </NavLink>
                     <div className="cart-dropdown-content" style={{ borderRadius:5 }} aria-labelledby="userDropdown">
-                        {user !== null ? (
+                        {user ? (
                             <>
                                 <NavLink className="dropdown-item" to="/home/address">Delivery Address</NavLink>
                                 <NavLink className="dropdown-item" to="/home/order-history">Orders</NavLink>

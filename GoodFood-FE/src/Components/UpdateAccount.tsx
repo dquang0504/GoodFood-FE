@@ -12,9 +12,11 @@ import { v4 } from 'uuid';
 import { storage } from './Firebase';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { setUser } from '../Slices/LoginSlice';
+import { ENDPOINT } from '../App';
 
 const UpdateAccount = () => {
-
+    const {user} = useSelector((state:RootState)=>state.login);
+    if (!user) return;
     const initialAccount: Users = {
         accountID: 0,
         avatar: "",
@@ -27,7 +29,7 @@ const UpdateAccount = () => {
         status: true,
         username: "",
     }
-    const [account,setAccount] = useState<Users>(initialAccount);
+    const [account,setAccount] = useState<Users>(user);
     const [err,setErr] = useState({
         errName: "",
         errPhone: "",
@@ -36,8 +38,8 @@ const UpdateAccount = () => {
         errImage: "",
     })
     const[file,setFile] = useState<File | null>(null);
-    const {user} = useSelector((state:RootState)=>state.login);
-    const dispatch = useDispatch<AppDispatch>()
+    
+    const dispatch = useDispatch<AppDispatch>();
 
     const basicValidation = (e:React.ChangeEvent<HTMLInputElement>,fieldName: string)=>{
         if (fieldName === "fullname"){
@@ -97,7 +99,7 @@ const UpdateAccount = () => {
                 toast.success(response.data.message);
                 console.log(response.data.data);
                 dispatch(setUser(response.data.data))
-                setAccount(initialAccount);
+                // setAccount(initialAccount);
             } catch (error: any) {
                 console.log(error);
                 setErr(prev => ({

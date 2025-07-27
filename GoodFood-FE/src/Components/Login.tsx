@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../Store/store";
-import { login } from "../Slices/LoginSlice";
+import { login, loginGoogle } from "../Slices/LoginSlice";
 import "../assets/css/Login.css";
 import bgLogin from "../assets/images/GoodFood24h_logo.png";
 import Navbar from "./Navbar";
@@ -12,6 +12,7 @@ import { ENDPOINT } from "../App";
 import { toast } from "react-toastify";
 import { motion, AnimatePresence } from "framer-motion";
 import {GoogleLogin, GoogleOAuthProvider} from "@react-oauth/google"
+import FacebookLogin from "./FacebookLogin";
 
 const Login = () => {
     const [isLoginTab, setIsLoginTab] = useState(true);
@@ -23,7 +24,7 @@ const Login = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const toUrl = location.state?.from?.pathname || "/home";
-    const { isAuthenticated } = useSelector((state: RootState) => state.login);
+    const { isAuthenticated,user } = useSelector((state: RootState) => state.login);
     const googleID = import.meta.env.VITE_GOOGLE_CLIENT_ID
     const facebookID = import.meta.env.VITE_FACEBOOK_APP_ID
 
@@ -117,6 +118,15 @@ const Login = () => {
         }
     };
 
+    const handleFacebookLogin = async(accessToken: string)=>{
+        try {
+            const response = await axios.post(`${ENDPOINT}/user/login/facebook`,{accessToken: accessToken});
+            console.log(response);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     return (
         <div className="login-container">
             <Navbar />
@@ -154,12 +164,15 @@ const Login = () => {
                             <GoogleOAuthProvider clientId={googleID}>
                                 <GoogleLogin onSuccess={async(credentialResponse)=>{
                                     const accessToken = credentialResponse.credential;
-                                    const response = await axios.post(`${ENDPOINT}/user/login/google`,{accessToken: accessToken});
+                                    if (!accessToken) return "Failed"; 
+                                    const response = await dispatch(loginGoogle(accessToken))
                                     console.log(response);
+                                    toast.error(response.payload);
                                 }} onError={()=>console.log("Login failed")}>
 
                                 </GoogleLogin>
                             </GoogleOAuthProvider>
+                            <FacebookLogin onLoginSuccess={handleFacebookLogin} />
                         </motion.div>
                     ) : (
                         <motion.div

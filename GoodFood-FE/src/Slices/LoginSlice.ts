@@ -64,6 +64,23 @@ const loginSlice = createSlice({
                 state.user = null;
                 state.accessToken = null;
             })
+            .addCase(loginGoogle.pending,(state)=>{
+                state.isLoading = true
+                state.error = null;
+            })
+            .addCase(loginGoogle.fulfilled,(state,action)=>{
+                state.error = null;
+                state.isAuthenticated = true;
+                state.isLoading = false;
+                state.user = action.payload.user
+                state.accessToken = action.payload.accessToken
+                console.log(state.isAuthenticated)
+                console.log(state.user)
+            })
+            .addCase(loginGoogle.rejected, (state,action)=>{
+                state.error = action.payload as string;
+                state.isLoading = false
+            })
     },
 })
 
@@ -90,10 +107,22 @@ export const refreshAccessToken = createAsyncThunk(
             });
             return response.data.accessToken;
         } catch (error: any) {
-            return rejectWithValue("Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại!");
+            return rejectWithValue("Your session has run out. Please login again!");
         }
     }
 );
+
+export const loginGoogle = createAsyncThunk(
+    "login/google",
+    async(accessToken: string,{rejectWithValue})=>{
+        try{
+            const response = await axios.post(`${ENDPOINT}/user/login/google`,{accessToken: accessToken});
+            return response.data.data
+        }catch(error: any){
+            return rejectWithValue(error.response.data.message);
+        }
+    }
+)
 
 export default loginSlice.reducer;
 export const {logout} = loginSlice.actions
