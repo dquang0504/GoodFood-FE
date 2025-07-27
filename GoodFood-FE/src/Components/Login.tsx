@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../Store/store";
-import { login, loginGoogle } from "../Slices/LoginSlice";
+import { login, loginFacebook, loginGoogle } from "../Slices/LoginSlice";
 import "../assets/css/Login.css";
 import bgLogin from "../assets/images/GoodFood24h_logo.png";
 import Navbar from "./Navbar";
@@ -120,7 +120,7 @@ const Login = () => {
 
     const handleFacebookLogin = async(accessToken: string)=>{
         try {
-            const response = await axios.post(`${ENDPOINT}/user/login/facebook`,{accessToken: accessToken});
+            const response = dispatch(loginFacebook(accessToken))
             console.log(response);
         } catch (error) {
             console.log(error);
@@ -156,10 +156,6 @@ const Login = () => {
                                 <input type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
                                 <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} onKeyDown={handleKeyDown} />
                                 <button className="submit-button" onClick={() => dispatch(login({ username, password }))}>SUBMIT</button>
-                                <div className="social-login">
-                                    <span><i className="fa-brands fa-facebook text-lg" style={{ color: "#6068e2" }}></i> Facebook</span>
-                                    <span><i className="fa-brands fa-google"></i> Google+</span>
-                                </div>
                             </div>
                             <GoogleOAuthProvider clientId={googleID}>
                                 <GoogleLogin onSuccess={async(credentialResponse)=>{

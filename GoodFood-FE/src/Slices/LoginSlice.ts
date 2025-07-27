@@ -74,10 +74,23 @@ const loginSlice = createSlice({
                 state.isLoading = false;
                 state.user = action.payload.user
                 state.accessToken = action.payload.accessToken
-                console.log(state.isAuthenticated)
-                console.log(state.user)
             })
             .addCase(loginGoogle.rejected, (state,action)=>{
+                state.error = action.payload as string;
+                state.isLoading = false
+            })
+            .addCase(loginFacebook.pending,(state)=>{
+                state.isLoading = true
+                state.error = null;
+            })
+            .addCase(loginFacebook.fulfilled,(state,action)=>{
+                state.error = null;
+                state.isAuthenticated = true;
+                state.isLoading = false;
+                state.user = action.payload.user
+                state.accessToken = action.payload.accessToken
+            })
+            .addCase(loginFacebook.rejected, (state,action)=>{
                 state.error = action.payload as string;
                 state.isLoading = false
             })
@@ -119,6 +132,19 @@ export const loginGoogle = createAsyncThunk(
             const response = await axios.post(`${ENDPOINT}/user/login/google`,{accessToken: accessToken});
             return response.data.data
         }catch(error: any){
+            return rejectWithValue(error.response.data.message);
+        }
+    }
+)
+
+export const loginFacebook = createAsyncThunk(
+    "login/facebook",
+    async(accessToken: string,{rejectWithValue})=>{
+        try{
+            const response = await axios.post(`${ENDPOINT}/user/login/facebook`,{accessToken: accessToken});
+            return response.data.data
+        }catch(error: any){
+            console.log(error.response.data.message);
             return rejectWithValue(error.response.data.message);
         }
     }
