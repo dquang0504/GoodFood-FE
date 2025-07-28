@@ -19,6 +19,8 @@ import { InvoiceDetails } from '../Interfaces/InvoiceDetails';
 import { deleteCartItem } from '../Slices/CartSlice';
 import { Products } from '../Interfaces/Products';
 import { stat } from 'fs';
+import { ENDPOINT } from '../App';
+import PayPalButton from './PaypalButton';
 
 const PaymentDetails = () => {
 
@@ -176,6 +178,16 @@ const PaymentDetails = () => {
         }
     }
 
+    const clickOnlinePay = async()=>{
+        try {
+            const response = await axiosInstance.post(`${ENDPOINT}/invoice/pay/online`,invoice);
+            console.log(response.data.data);
+            window.location.href = response.data.data;
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     return (
         <>
            < Navbar/> 
@@ -268,6 +280,7 @@ const PaymentDetails = () => {
                                                     <label className="form-check-label" htmlFor="vnpay">
                                                         <img width={43} alt='' src='https://firebasestorage.googleapis.com/v0/b/fivefood-datn-8a1cf.appspot.com/o/AnhLogo%2FLogo-VNPAY-QR-1.webp?alt=media&token=46e719a7-72ac-4de4-b6fc-118a16c3ab1b' /> VNPAY
                                                     </label>
+                                                    <PayPalButton></PayPalButton>
                                                 </div>
                                                 {/* <div>
                                                     <input className="form-check-input" type="radio" name="paymentMethodType" id="qrcode" value="qrcode" checked={!invoice.paymentMethod} onChange={() => setInvoice({...invoice,paymentMethod: false})} />
@@ -282,7 +295,7 @@ const PaymentDetails = () => {
                                     }
 
                                 </div>
-                                <button type="button" className="btn btn-success btn-block mt-4" id="xac-nhan-dat-hang" disabled={invoice.shippingFee === 0 ? true : false} onClick={() => clickDatHang()}>Place order</button>
+                                <button type="button" className="btn btn-success btn-block mt-4" id="xac-nhan-dat-hang" disabled={invoice.shippingFee === 0 ? true : false} onClick={() => invoice.paymentMethod ? clickDatHang() : clickOnlinePay()}>Place order</button>
                                 <p className="note mt-3">By clicking on <b>Place order</b>, you agree to <a href="https://www.google.com.vn/?hl=vi">Terms and Conditions</a> and <a href="https://www.google.com.vn/?hl=vi">Privacy Policy</a>.</p>
 
                             </div>

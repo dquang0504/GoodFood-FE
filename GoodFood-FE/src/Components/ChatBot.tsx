@@ -524,7 +524,7 @@ const ChatBot = () => {
                                 </ConversationList>
                             </Sidebar>
                             <ChatContainer style={{ width: "400px", overflowY: "auto", maxHeight: "460px" }}>
-                                <MessageList typingIndicator={isTyping && currentChat === "Chatbot" && <TypingIndicator content="Chatbot đang gõ..." />}>
+                                <MessageList typingIndicator={isTyping && currentChat === "Chatbot" && <TypingIndicator content="Bot is typing..." />}>
                                     {(currentChat === 'Chatbot' ? botMessages : (user?.role ? adminMessages : userMessages)).map(msg => (
                                         <Message
                                             onClick={msg.type === 'function' ? (() => handleQuickReply(msg.text)) as React.MouseEventHandler<HTMLElement> : msg.type==="navigate" ? (()=>handleNavigate(navigateID.current)) : msg.type==='navigatePlaceOrder' ? (()=>handleNavigateToOrder()) : undefined}
