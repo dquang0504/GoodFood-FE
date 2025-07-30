@@ -4,17 +4,20 @@ import Navbar from './Navbar';
 import { InvoiceDetails } from '../Interfaces/InvoiceDetails';
 import { formatVND } from '../Services/FormatVND';
 import { Invoices } from '../Interfaces/Invoices';
-import { useSelector } from 'react-redux';
-import { RootState } from '../Store/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../Store/store';
 import { Products } from '../Interfaces/Products';
 import Footer from './Footer';
 import '../assets/css/Payment.css'
+import { deleteCartItem, saveCart, saveInvoice, saveInvoiceDetails, saveProduct } from '../Slices/CartSlice';
+import axiosInstance from '../Services/AxiosInstance';
+import { toast } from 'react-toastify';
 
 const Pay = () => {
     const {state} = useLocation();
-    const [invoiceDetails, setInvoiceDetails] = useState<InvoiceDetails[]>(
-        state?.invoiceDetails ?? []
-    );    
+    const dispatch = useDispatch<AppDispatch>()
+    const queryParams = new URLSearchParams(window.location.search);
+    const {invoiceDetails,invoice,cart} = useSelector((state:RootState)=>state.cart); 
     const {user} = useSelector((state:RootState)=>state.login);
     const initialInvoice: Invoices = {
         accountID: user ? user.accountID : 0,
@@ -32,11 +35,40 @@ const Pay = () => {
         totalPrice: 0,
         invoiceStatus: null
     }
-    const [invoice,setInvoice] = useState<Invoices>(state?.invoice ?? initialInvoice)
+    const [invoices,setInvoices] = useState(initialInvoice); 
     const [productDetails,setProductDetails] = useState<Products[]>(state?.product ?? []);
-    const navigate = useNavigate();
+    console.log(invoiceDetails);
+
+    const createInvoice = async()=>{
+        if (!invoice) return;
+
+        const updatedInvoice = { ...invoice, status: true };
+
+        const payload = {
+            invoice: updatedInvoice,
+            invoiceDetails,
+        };
+        try {
+            const response = await axiosInstance.post(`invoice/pay`,payload);
+            setInvoices(response.data.data.invoice);
+            setProductDetails(response.data.data.product);
+            toast.success(response.data.message);
+            // deleting cart item using cart slice
+            cart.map(item=>(
+                dispatch(deleteCartItem({cartID: item.cartID,accountID: user ? user.accountID : 0}))
+            ))
+            dispatch(saveCart(null));
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
     useEffect(() => {
+        
+        if(queryParams.get("vnp_ResponseCode")==="00"){
+            createInvoice();
+        }
+
         if (invoiceDetails && productDetails) {
             const mergedDetails = invoiceDetails.map(detail => {
                 const matchingProduct = productDetails.find(p => p.productID === detail.productID);
@@ -45,7 +77,13 @@ const Pay = () => {
                     product: matchingProduct || null
                 };
             });
-            setInvoiceDetails(mergedDetails);
+            dispatch(saveInvoiceDetails(mergedDetails));
+        }
+
+        return () => {
+            dispatch(saveInvoice(null));
+            dispatch(saveInvoiceDetails([]));
+            dispatch(saveProduct([]));
         }
     }, []);
 
@@ -57,19 +95,19 @@ const Pay = () => {
                     <ol className="breadcrumb">
                         <li className="breadcrumb-item"><a href="/home/cart">Cart</a></li>
                         <li className="breadcrumb-item "><a href='#'>Payment Details</a></li>
-                        {invoice.paymentMethod ? (
+                        {invoices.paymentMethod ? (
                                 <li className="breadcrumb-item active" aria-current="page">Ordered successfully!</li>
                             ):(
                                 <li className="breadcrumb-item active" aria-current="page">Order paid successfully!</li>
                         )}
                     </ol>
                 </nav>
-                {invoice.paymentMethod ? (
+                {invoices.paymentMethod ? (
                     <h3 className="payment-header">Ordered successfully!</h3>
                 ):(
                     <h3 className="payment-header">Order paid successfully!</h3>
                 )}
-                {invoice && (
+                {invoices && (
                     <div className="row d-flex justify-content-center mx-auto">
                         <div className="col-md-8">
                             <div className="order-details">
@@ -84,15 +122,15 @@ const Pay = () => {
                                         ))}
                                         <tr>
                                             <td>Subtotal:</td>
-                                            <td className="text-right">{formatVND(invoice.totalPrice - invoice.shippingFee)}</td>  
+                                            <td className="text-right">{formatVND(invoices.totalPrice - invoices.shippingFee)}</td>  
                                         </tr>
                                         <tr>
                                             <td>Shipping Fee:</td>
-                                            <td className="text-right">{formatVND(invoice.shippingFee)}</td>
+                                            <td className="text-right">{formatVND(invoices.shippingFee)}</td>
                                         </tr>
                                         <tr>
                                             <td>Payment Method:</td>
-                                            {invoice.paymentMethod ? (
+                                            {invoices.paymentMethod ? (
                                                 <td className="text-right">Cash on Delivery (COD)</td>
                                             ) : (
                                                 <td className="text-right">Online Payment</td>
@@ -100,12 +138,12 @@ const Pay = () => {
                                         </tr>
                                         <tr>
                                             <td className="total-amount">Total:</td>
-                                            <td className="text-right total-amount">{formatVND(invoice.totalPrice)}</td>
+                                            <td className="text-right total-amount">{formatVND(invoices.totalPrice)}</td>
                                         </tr>
                                     </tbody>
                                 </table>
-                                {invoice.note ? (
-                                    <p className="note">Notes: {invoice.note}</p>
+                                {invoices.note ? (
+                                    <p className="note">Notes: {invoices.note}</p>
                                 ):(
                                     <p className="note">No notes found.</p>
                                 )}
@@ -114,12 +152,12 @@ const Pay = () => {
                         <div className="col-md-4">
                             <div className="order-summary">
                                 <h4>Thank you. Your order has been confirmed.</h4>
-                                <p><strong>Order ID:</strong> {invoice.invoiceID}</p>
-                                <p><strong>Date:</strong> {new Date(invoice.paymentDate).toLocaleString()}</p>
-                                <p><strong>Phone Number:</strong> {invoice.receivePhone}</p>
-                                <p><strong>Delivery Address:</strong> {invoice.receiveAddress}</p>
+                                <p><strong>Order ID:</strong> {invoices.invoiceID}</p>
+                                <p><strong>Date:</strong> {new Date(invoices.paymentDate).toLocaleString()}</p>
+                                <p><strong>Phone Number:</strong> {invoices.receivePhone}</p>
+                                <p><strong>Delivery Address:</strong> {invoices.receiveAddress}</p>
                                 <p><strong>Payment Method:</strong>
-                                    {invoice.paymentMethod ? (
+                                    {invoices.paymentMethod ? (
                                         <span className="text-right">Cash on Delivery (COD)</span>
                                     ) : (
                                         <span className="text-right">Online Payment</span>

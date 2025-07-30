@@ -9,7 +9,7 @@ import { AppDispatch, RootState } from '../Store/store';
 import axiosInstance from '../Services/AxiosInstance';
 import { formatVND } from '../Services/FormatVND';
 import { toast } from 'react-toastify';
-import { deleteAllItems, deleteCartItem, modifyQuantityCart } from '../Slices/CartSlice';
+import { deleteAllItems, deleteCartItem, modifyQuantityCart, saveCart, saveInvoiceDetails } from '../Slices/CartSlice';
 import { FourSquare, OrbitProgress } from 'react-loading-indicators';
 import Footer from './Footer';
 import { useNavigate } from 'react-router-dom';
@@ -152,7 +152,7 @@ const Cart = () => {
     const navigate = useNavigate();
 
     const clickMuaHang = async()=>{
-        console.log(chosenItems);
+        dispatch(saveCart(chosenItems))
         navigate("/home/payment-details",{state:{listChosenItems: chosenItems}});
     }
 

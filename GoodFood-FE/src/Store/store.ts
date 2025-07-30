@@ -12,7 +12,7 @@ import { setStore } from "../Services/AxiosInstance";
 const persistConfig = {
     key: 'root', //key dùng để lưu trữ
     storage,
-    whitelist: ["login"],
+    whitelist: ["login","cart"],
 }
 
 const rootReducer = combineReducers({

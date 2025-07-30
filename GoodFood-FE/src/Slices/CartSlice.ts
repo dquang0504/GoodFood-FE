@@ -3,11 +3,17 @@ import { Carts } from "../Interfaces/Carts";
 import axiosInstance from "../Services/AxiosInstance";
 import { toast } from "react-toastify";
 import { logout } from "./LoginSlice";
+import { InvoiceDetails } from "../Interfaces/InvoiceDetails";
+import { Invoices } from "../Interfaces/Invoices";
+import { Products } from "../Interfaces/Products";
 
 export interface CartState{
     cart: Carts[] | [],
     error: string | null,
-    isLoading: boolean
+    isLoading: boolean,
+    invoiceDetails: InvoiceDetails[],
+    invoice: Invoices | null,
+    products: Products[]
 }
 
 const cartSession: Carts[] = JSON.parse(sessionStorage.getItem("cart") || "null");
@@ -16,6 +22,9 @@ const initialState: CartState = {
     cart: cartSession,
     error: null,
     isLoading: false,
+    invoiceDetails: [],
+    invoice: null,
+    products: [],
 }
 
 export const addToCart = createAsyncThunk(
@@ -100,6 +109,18 @@ const cartSlice = createSlice({
         clearCart: (state)=>{
             state.cart = [];
             sessionStorage.removeItem("cart");
+        },
+        saveInvoiceDetails: (state,action)=>{
+            state.invoiceDetails = action.payload as InvoiceDetails[]
+        },
+        saveInvoice: (state,action)=>{
+            state.invoice = action.payload as Invoices
+        },
+        saveCart: (state,action)=>{
+            state.cart = action.payload as Carts[]
+        },
+        saveProduct: (state,action)=>{
+            state.products = action.payload as Products[]
         }
     },
     extraReducers(builder) {
@@ -196,4 +217,4 @@ const cartSlice = createSlice({
 
 
 export default cartSlice.reducer;
-export const { clearCart } = cartSlice.actions;
+export const { clearCart, saveInvoiceDetails, saveInvoice, saveCart, saveProduct } = cartSlice.actions;

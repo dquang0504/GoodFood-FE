@@ -4,7 +4,6 @@ import Navbar from './Navbar';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { Addresses } from '../Interfaces/Addresses';
 import { useDispatch, useSelector } from 'react-redux';
-import { rootCertificates } from 'tls';
 import { AppDispatch, RootState } from '../Store/store';
 import axiosInstance from '../Services/AxiosInstance';
 import { toast } from 'react-toastify';
@@ -14,13 +13,11 @@ import { formatVND } from '../Services/FormatVND';
 import axios from 'axios';
 import { Modal, NavItem } from 'react-bootstrap';
 import Footer from './Footer';
-import { format } from 'date-fns';
 import { InvoiceDetails } from '../Interfaces/InvoiceDetails';
-import { deleteCartItem } from '../Slices/CartSlice';
+import { deleteCartItem, saveInvoice, saveInvoiceDetails, saveProduct } from '../Slices/CartSlice';
 import { Products } from '../Interfaces/Products';
-import { stat } from 'fs';
 import { ENDPOINT } from '../App';
-import PayPalButton from './PaypalButton';
+import PaypalButton from './PaypalButton';
 
 const PaymentDetails = () => {
 
@@ -80,9 +77,13 @@ const PaymentDetails = () => {
     const [invoice,setInvoice] = useState<Invoices>(initialInvoice)
     const [invoiceDetails,setInvoiceDetails] = useState<InvoiceDetails[]>(initialInvoiceDetails)
     const totalTemp = useRef(listItemClickChon.reduce((acc,item) => acc + (item.product.price * item.quantity),0))
-    const [showModal,setShowModal] = useState(false);
+    const [showModal,setShowModal] = useState({
+        showAddress: false,
+        showPaypal: false,
+    });
     const [listAddress, setListAddress] = useState<Addresses[]>([]);
     const navigate = useNavigate();
+    const [paymentMethod,setPaymentMethod] = useState('vnpay');
 
     const fetchAddress = async()=>{
         try {
@@ -115,7 +116,7 @@ const PaymentDetails = () => {
             console.log(error);
         }
         finally{
-            setShowModal(false);
+            setShowModal({...showModal,showAddress: false});
         }
     }
 
@@ -162,7 +163,6 @@ const PaymentDetails = () => {
             invoiceDetails: invoiceDetails,
             product: product
         }
-        console.log(payload);
         try {
             const response = await axiosInstance.post(`invoice/pay`,payload);
             console.log(response);
@@ -172,20 +172,45 @@ const PaymentDetails = () => {
                 dispatch(deleteCartItem({cartID: item.cartID,accountID: user ? user.accountID : 0}))
             ))
             //navigating to page Pay.tsx
+            dispatch(saveInvoice(response.data.data.invoice));
+            dispatch(saveInvoiceDetails(response.data.data.invoiceDetails));
             navigate("/home/payment",{state:response.data.data})
         } catch (error) {
             console.log(error)
         }
     }
 
-    const clickOnlinePay = async()=>{
-        try {
-            const response = await axiosInstance.post(`${ENDPOINT}/invoice/pay/online`,invoice);
-            console.log(response.data.data);
-            window.location.href = response.data.data;
-        } catch (error) {
-            console.log(error);
+    const clickOnlinePay = async(method: string, details: any)=>{
+        const payload = {
+            invoice: invoice,
+            invoiceDetails: invoiceDetails,
+            product: product
         }
+        if(method === "vnpay"){
+            try {
+                const response = await axiosInstance.post(`${ENDPOINT}/invoice/pay/vnpay`,invoice);
+                console.log(response.data.data);
+                dispatch(saveInvoice(invoice));
+                dispatch(saveProduct(product));
+                window.location.href = response.data.data;
+            } catch (error) {
+                console.log(error);
+            }
+        }else if(method === "paypal"){
+
+            if (details !== null) {
+                try {
+                    clickDatHang();
+                } catch (error) {
+                    console.log(error);
+                }finally{
+                    setShowModal({...showModal,showPaypal: false});
+                    return;
+                }
+            }
+            setShowModal({...showModal,showPaypal: true});
+        }
+        
     }
 
     return (
@@ -206,7 +231,7 @@ const PaymentDetails = () => {
                         <div className="col-md-8">
                             <div className="order-details">
                                 <h4>Delivery Information</h4>
-                                <span>Change your address <span className='text-danger fw-bold' style={{ cursor: 'pointer' }} onClick={() => setShowModal(true)}>HERE</span> </span>
+                                <span>Change your address <span className='text-danger fw-bold' style={{ cursor: 'pointer' }} onClick={() => setShowModal({...showModal,showAddress: true})}>HERE</span> </span>
                                 <div className='mt-1'>
                                     <div className="form-group">
                                         <label>Phone number</label>
@@ -276,11 +301,10 @@ const PaymentDetails = () => {
                                         invoice.paymentMethod === false ? (
                                             <div className='ps-3'>
                                                 <div>
-                                                    <input className="form-check-input" type="radio" name="paymentMethodType" id="vnpay" value="vnpay" checked={true} onChange={() => setInvoice({...invoice,paymentMethod: false})} />
+                                                    <input className="form-check-input" type="radio" name="paymentMethodType" id="vnpay" value="vnpay" checked={paymentMethod === 'vnpay'} onChange={() => {setInvoice({...invoice,paymentMethod: false,status: true}); setPaymentMethod('vnpay')}} />
                                                     <label className="form-check-label" htmlFor="vnpay">
                                                         <img width={43} alt='' src='https://firebasestorage.googleapis.com/v0/b/fivefood-datn-8a1cf.appspot.com/o/AnhLogo%2FLogo-VNPAY-QR-1.webp?alt=media&token=46e719a7-72ac-4de4-b6fc-118a16c3ab1b' /> VNPAY
                                                     </label>
-                                                    <PayPalButton></PayPalButton>
                                                 </div>
                                                 {/* <div>
                                                     <input className="form-check-input" type="radio" name="paymentMethodType" id="qrcode" value="qrcode" checked={!invoice.paymentMethod} onChange={() => setInvoice({...invoice,paymentMethod: false})} />
@@ -288,6 +312,12 @@ const PaymentDetails = () => {
                                                         <img width={43} alt='' src='https://firebasestorage.googleapis.com/v0/b/fivefood-datn-8a1cf.appspot.com/o/AnhLogo%2Fpayos.png?alt=media&token=d61454d9-1abf-4a09-ba5a-3c382e7bf27c' /> Pay OS
                                                     </label>
                                                 </div> */}
+                                                <div>
+                                                    <input className="form-check-input" type="radio" name="paymentMethodType" id="vnpay" value="vnpay" checked={paymentMethod === 'paypal'} onChange={() => {setInvoice({...invoice,paymentMethod: false, status: true}); setPaymentMethod('paypal')}} />
+                                                    <label className="form-check-label" htmlFor="paypal">
+                                                        <img width={43} alt='' src='https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/PayPal.svg/2560px-PayPal.svg.png' /> Paypal
+                                                    </label>
+                                                </div>
                                             </div>
                                         ) : (
                                             <></>
@@ -295,7 +325,7 @@ const PaymentDetails = () => {
                                     }
 
                                 </div>
-                                <button type="button" className="btn btn-success btn-block mt-4" id="xac-nhan-dat-hang" disabled={invoice.shippingFee === 0 ? true : false} onClick={() => invoice.paymentMethod ? clickDatHang() : clickOnlinePay()}>Place order</button>
+                                <button type="button" className="btn btn-success btn-block mt-4" id="xac-nhan-dat-hang" disabled={invoice.shippingFee === 0 ? true : false} onClick={() => invoice.paymentMethod ? clickDatHang() : clickOnlinePay(paymentMethod, null)}>Place order</button>
                                 <p className="note mt-3">By clicking on <b>Place order</b>, you agree to <a href="https://www.google.com.vn/?hl=vi">Terms and Conditions</a> and <a href="https://www.google.com.vn/?hl=vi">Privacy Policy</a>.</p>
 
                             </div>
@@ -306,7 +336,7 @@ const PaymentDetails = () => {
                 </div>
            </div>
 
-           <Modal size='xl' show={showModal} onHide={()=> setShowModal(false)} dialogClassName="modal-90w" aria-labelledby="example-custom-modal-styling-title">
+           <Modal size='xl' show={showModal.showAddress} onHide={()=> setShowModal({...showModal,showAddress: false})} dialogClassName="modal-90w" aria-labelledby="example-custom-modal-styling-title">
                 <Modal.Header closeButton className='d-flex justify-content-end me-3'>
                     <Modal.Title className='fw-bold fs-3'>Thay đổi địa chỉ</Modal.Title>
                 </Modal.Header>
@@ -330,6 +360,19 @@ const PaymentDetails = () => {
 
                 </Modal.Body>
             </Modal>
+
+            <Modal size='lg' show={showModal.showPaypal} onHide={()=> setShowModal({...showModal,showPaypal: false})} dialogClassName="modal-90w" aria-labelledby="example-custom-modal-styling-title">
+                <Modal.Header closeButton className='d-flex justify-content-end me-3'>
+                    <Modal.Title className='text-center fw-bold fs-3'>Paypal info</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <div className='ms-4 me-4 mt-2 mb-2'>
+                        <PaypalButton order={invoice} onSuccess={(details)=>clickOnlinePay(paymentMethod,details)}></PaypalButton>
+                    </div>
+
+                </Modal.Body>
+            </Modal>
+
             <Footer />
         </>
     );

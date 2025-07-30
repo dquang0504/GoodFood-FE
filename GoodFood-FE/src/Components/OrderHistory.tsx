@@ -66,6 +66,7 @@ const OrderHistory = () => {
         try {
             const response = await axiosInstance.get(`order-history?tab=${tab}&accountID=${user?.accountID}`)
             setInvoiceList(response.data.data);
+            console.log(response.data.data);
         } catch (error) {
             console.log(error)
         }
