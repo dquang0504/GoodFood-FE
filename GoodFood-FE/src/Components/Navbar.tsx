@@ -12,8 +12,7 @@ import { clearCart, fetchCart } from '../Slices/CartSlice';
 const Navbar = () => {
 
     const {cart} = useSelector((state:RootState)=>state.cart)
-    const {user} = useSelector((state:RootState)=>state.login)
-    console.log(user);
+    const {user,isAuthenticated,accessToken} = useSelector((state:RootState)=>state.login)
     const dispatch = useDispatch<AppDispatch>();
 
     const clickDangXuat = ()=>{
@@ -22,7 +21,8 @@ const Navbar = () => {
     }
 
     const getCart = ()=>{
-        if(user?.accountID !== undefined){
+        if (!user) return;
+        if(isAuthenticated && accessToken){
             dispatch(fetchCart(user.accountID))
         }  
     }

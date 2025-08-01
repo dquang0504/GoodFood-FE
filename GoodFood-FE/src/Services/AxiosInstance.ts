@@ -1,48 +1,83 @@
 import axios from "axios";
 import { refreshAccessToken } from "../Slices/LoginSlice";
+import type { RootState } from "../Store/store";
+import type { Store } from "redux";
 
-let storeRef : any = null;
-
-export const setStore = (store:any)=>{
-    storeRef = store
-}
+let storeRef: Store<RootState> | null = null;
+export const setStore = (store: Store<RootState>) => { storeRef = store; };
 
 const axiosInstance = axios.create({
     baseURL: "http://localhost:8080/api/",
-    withCredentials: true, // Quan trọng: Gửi Cookie refreshToken lên server
+    withCredentials: true,
 });
 
-// Thêm Interceptor để refresh token tự động
-axiosInstance.interceptors.request.use(
-    (config) => {
-        const accessToken = storeRef.getState().login.accessToken; // Lấy token từ sessionStorage
+// --- Refresh Token Queue ---
+let isRefreshing = false;
+let failedQueue: { resolve: (value?: unknown) => void; reject: (error: unknown) => void; config: any }[] = [];
+
+const processQueue = (error: any, token: string | null = null) => {
+    failedQueue.forEach(p => {
+        if (error) {
+            p.reject(error);
+        } else {
+            if (token && p.config.headers) {
+                p.config.headers["Authorization"] = `Bearer ${token}`;
+            }
+            p.resolve(axiosInstance(p.config));
+        }
+    });
+    failedQueue = [];
+};
+
+// --- Request Interceptor ---
+axiosInstance.interceptors.request.use((config) => {
+    if (storeRef) {
+        const state = storeRef.getState();
+        const accessToken = state.login.accessToken;
         if (accessToken) {
             config.headers["Authorization"] = `Bearer ${accessToken}`;
         }
-        return config;
-    },
-    (error) => {
-        return Promise.reject(error);
     }
-);
+    return config;
+});
 
+// --- Response Interceptor ---
 axiosInstance.interceptors.response.use(
     (response) => response,
     async (error) => {
         const originalRequest = error.config;
-        if (!originalRequest._retry) {
+
+        if (error.response?.status === 401 && !originalRequest._retry && storeRef) {
+            if (isRefreshing) {
+                // Đợi refresh xong rồi retry
+                return new Promise((resolve, reject) => {
+                    failedQueue.push({ resolve, reject, config: originalRequest });
+                });
+            }
+
             originalRequest._retry = true;
+            isRefreshing = true;
 
             try {
-                // Gọi action refreshAccessToken để lấy token mới
-                const newAccessToken = await storeRef.dispatch(refreshAccessToken()).unwrap();
+                const newToken = await storeRef.dispatch<any>(refreshAccessToken()).unwrap();
 
-                originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
+                processQueue(null, newToken);
+
+                if (newToken && originalRequest.headers) {
+                    originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
+                }
+
+                console.log("tại interceptor: ",newToken)
                 return axiosInstance(originalRequest);
             } catch (err) {
+                processQueue(err, null);
+                // storeRef.dispatch({ type: "login/logout" });
                 return Promise.reject(err);
+            } finally {
+                isRefreshing = false;
             }
         }
+
         return Promise.reject(error);
     }
 );

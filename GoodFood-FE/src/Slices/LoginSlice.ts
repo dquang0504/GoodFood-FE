@@ -11,6 +11,7 @@ export interface LoginState{
     accessToken: string | null
     error: string | null,
     isLoading: boolean,
+    sessionID: string | null,
     resetToken: string | null,
 }
 
@@ -20,6 +21,7 @@ const initialState: LoginState = {
     accessToken: null,
     error: null,
     isLoading: false,
+    sessionID: null,
     resetToken: null,
 }
 
@@ -31,6 +33,7 @@ const loginSlice = createSlice({
             state.isAuthenticated = false;
             state.user = null;
             state.accessToken = null
+            sessionStorage.removeItem("sessionID")
         },
         setUser(state,action){
             state.user = action.payload;
@@ -51,6 +54,8 @@ const loginSlice = createSlice({
                 state.isLoading = false;
                 state.user = action.payload.user;
                 state.accessToken = action.payload.accessToken
+                state.sessionID = action.payload.sessionID
+                sessionStorage.setItem("sessionID",action.payload.sessionID);
             })
             .addCase(login.rejected, (state,action)=>{
                 state.error = action.payload as string;
@@ -58,6 +63,7 @@ const loginSlice = createSlice({
             })
             .addCase(refreshAccessToken.fulfilled, (state, action) => {
                 state.accessToken = action.payload;
+                state.isAuthenticated = true;
             })
             .addCase(refreshAccessToken.rejected, (state) => {
                 state.isAuthenticated = false;
@@ -74,6 +80,8 @@ const loginSlice = createSlice({
                 state.isLoading = false;
                 state.user = action.payload.user
                 state.accessToken = action.payload.accessToken
+                state.sessionID = action.payload.sessionID
+                sessionStorage.setItem("sessionID",action.payload.sessionID);
             })
             .addCase(loginGoogle.rejected, (state,action)=>{
                 state.error = action.payload as string;
@@ -89,6 +97,8 @@ const loginSlice = createSlice({
                 state.isLoading = false;
                 state.user = action.payload.user
                 state.accessToken = action.payload.accessToken
+                state.sessionID = action.payload.sessionID
+                sessionStorage.setItem("sessionID",action.payload.sessionID);
             })
             .addCase(loginFacebook.rejected, (state,action)=>{
                 state.error = action.payload as string;
@@ -102,7 +112,7 @@ export const login = createAsyncThunk(
     async({username,password}: {username: string, password: string}, {rejectWithValue})=>{
         try {
             const response = await axios.get(`${ENDPOINT}/user/login?username=${username}&password=${password}`,{withCredentials: true});
-            toast.success("Successfully logged in!")
+            toast.success("Successfully logged in!");
             return response.data.data;
         } catch (error : any) {
             toast.error(error.response.data.message)
@@ -115,11 +125,17 @@ export const refreshAccessToken = createAsyncThunk(
     "login/refreshAccessToken",
     async (_, { rejectWithValue }) => {
         try {
-            const response = await axios.get(`${ENDPOINT}/user/refresh-token`, {
-                withCredentials: true, // Gửi refreshToken từ Cookie
-            });
+            const sessionID = sessionStorage.getItem("sessionID");
+            if (!sessionID) throw new Error("No sessionID found!");
+
+            const response = await axios.post(`${ENDPOINT}/user/refresh-token`, {sessionID},{withCredentials: true});
+
+            //update sessionID
+            sessionStorage.setItem("sessionID",response.data.sessionID);
             return response.data.accessToken;
         } catch (error: any) {
+            console.error("refreshAccessToken failed: ", error);
+            sessionStorage.removeItem("sessionID");
             return rejectWithValue("Your session has run out. Please login again!");
         }
     }
@@ -129,7 +145,7 @@ export const loginGoogle = createAsyncThunk(
     "login/google",
     async(accessToken: string,{rejectWithValue})=>{
         try{
-            const response = await axios.post(`${ENDPOINT}/user/login/google`,{accessToken: accessToken});
+            const response = await axios.post(`${ENDPOINT}/user/login/google`,{accessToken: accessToken},{withCredentials: true});
             return response.data.data
         }catch(error: any){
             return rejectWithValue(error.response.data.message);
@@ -141,7 +157,7 @@ export const loginFacebook = createAsyncThunk(
     "login/facebook",
     async(accessToken: string,{rejectWithValue})=>{
         try{
-            const response = await axios.post(`${ENDPOINT}/user/login/facebook`,{accessToken: accessToken});
+            const response = await axios.post(`${ENDPOINT}/user/login/facebook`,{accessToken: accessToken},{withCredentials: true});
             return response.data.data
         }catch(error: any){
             console.log(error.response.data.message);

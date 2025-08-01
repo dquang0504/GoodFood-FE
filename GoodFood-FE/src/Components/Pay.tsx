@@ -52,6 +52,8 @@ const Pay = () => {
             const response = await axiosInstance.post(`invoice/pay`,payload);
             setInvoices(response.data.data.invoice);
             setProductDetails(response.data.data.product);
+            saveInvoiceDetails(response.data.data.invoiceDetails)
+            console.log(response.data.data);
             toast.success(response.data.message);
             // deleting cart item using cart slice
             cart.map(item=>(
@@ -69,16 +71,16 @@ const Pay = () => {
             createInvoice();
         }
 
-        if (invoiceDetails && productDetails) {
-            const mergedDetails = invoiceDetails.map(detail => {
-                const matchingProduct = productDetails.find(p => p.productID === detail.productID);
-                return {
-                    ...detail,
-                    product: matchingProduct || null
-                };
-            });
-            dispatch(saveInvoiceDetails(mergedDetails));
-        }
+        // if (invoiceDetails && productDetails) {
+        //     const mergedDetails = invoiceDetails.map(detail => {
+        //         const matchingProduct = productDetails.find(p => p.productID === detail.productID);
+        //         return {
+        //             ...detail,
+        //             product: matchingProduct || null
+        //         };
+        //     });
+        //     dispatch(saveInvoiceDetails(mergedDetails));
+        // }
 
         return () => {
             dispatch(saveInvoice(null));

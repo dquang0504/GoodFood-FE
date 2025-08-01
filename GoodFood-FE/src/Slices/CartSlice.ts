@@ -2,7 +2,6 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { Carts } from "../Interfaces/Carts";
 import axiosInstance from "../Services/AxiosInstance";
 import { toast } from "react-toastify";
-import { logout } from "./LoginSlice";
 import { InvoiceDetails } from "../Interfaces/InvoiceDetails";
 import { Invoices } from "../Interfaces/Invoices";
 import { Products } from "../Interfaces/Products";
@@ -209,7 +208,7 @@ const cartSlice = createSlice({
                 state.isLoading = false
                 state.error = action.payload as string
             })
-            .addCase(logout,(state)=>{
+            .addCase("login/logout",(state)=>{
                 return initialState
             });
     },

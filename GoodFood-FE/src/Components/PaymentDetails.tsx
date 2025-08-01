@@ -191,7 +191,7 @@ const PaymentDetails = () => {
                 const response = await axiosInstance.post(`${ENDPOINT}/invoice/pay/vnpay`,invoice);
                 console.log(response.data.data);
                 dispatch(saveInvoice(invoice));
-                dispatch(saveProduct(product));
+                dispatch(saveInvoiceDetails(invoiceDetails));
                 window.location.href = response.data.data;
             } catch (error) {
                 console.log(error);

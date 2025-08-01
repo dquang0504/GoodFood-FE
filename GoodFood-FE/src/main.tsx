@@ -9,6 +9,9 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Provider } from 'react-redux';
 import store, { persistor } from './Store/store.ts';
 import { PersistGate } from 'redux-persist/integration/react';
+import { setStore } from './Services/AxiosInstance.ts';
+
+setStore(store);
 
 createRoot(document.getElementById('root')!).render(
   // <StrictMode>
