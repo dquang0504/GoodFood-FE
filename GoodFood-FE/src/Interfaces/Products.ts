@@ -12,5 +12,5 @@ export interface Products{
     productTypeID: number,
     weight: number,
     productType: ProductTypes | null,
-    productImages: ProductImages | null
+    productImages: ProductImages[]
 }

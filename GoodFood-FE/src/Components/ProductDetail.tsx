@@ -18,6 +18,7 @@ import { access } from 'fs';
 import ReactPaginate from 'react-paginate';
 import '../assets/css/Admin/pagination.css'
 import { Carts } from '../Interfaces/Carts';
+import { ProductImages } from '../Interfaces/ProductImages';
 
 interface Stars {
     fiveStars: number,
@@ -31,7 +32,22 @@ const ProductDetail = () => {
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate()
     const { state } = useLocation();
-    const [product, setProduct] = useState<Products | null>(null);
+    const initialProduct: Products = {
+        coverImage: "",
+        description: "",
+        insertDate: new Date(),
+        price: 0,
+        productID: 0,
+        productImages: [],
+        productName: "",
+        productType: null,
+        productTypeID: 0,
+        status: true,
+        weight: 0,
+    }
+    const [product, setProduct] = useState<Products>(initialProduct);
+    const [productImgs,setProductImgs] = useState<ProductImages[]>([]);
+    const [selectedImage,setSelectedImage] = useState<ProductImages>({image: "",productID: 0,productImageID: 0})
     const [stars, setStars] = useState<Stars>({
         fiveStars: 0,
         fourStars: 0,
@@ -53,7 +69,10 @@ const ProductDetail = () => {
     const fetchDetail = async (filter: string, pageNum: number) => {
         try {
             const response = await axios.get(`${ENDPOINT}/products/detail?id=${state.productID}&filter=${filter}&page=${pageNum}`)
+            console.log(response);
             setProduct(response.data.data.product);
+            setSelectedImage({...selectedImage,image: response.data.data.product.coverImage});
+            setProductImgs(response.data.data.productImages);
             if (response.data.data.product?.productID !== undefined) {
                 const newItem: Carts = {
                     accountID: user ? user.accountID : 0,
@@ -177,9 +196,30 @@ const ProductDetail = () => {
                             {/* {productImages.length > 0 && ( */}
                             <img
                                 className="large-image" id="largeImage"
-                                src={product?.coverImage}
+                                src={selectedImage.image}
                                 alt={product?.productName}
                             />
+                            {productImgs && productImgs.length > 0 && (
+                                <div className="thumbnail-list d-flex flex-wrap mt-3">
+                                {productImgs.map((img, index) => (
+                                    <img
+                                    key={index}
+                                    src={img.image}
+                                    alt={`${product?.productName} - ${index}`}
+                                    className="thumbnail me-2 mb-2"
+                                    style={{
+                                        width: "80px",
+                                        height: "80px",
+                                        objectFit: "cover",
+                                        cursor: "pointer",
+                                        border: img.image === selectedImage.image ? "2px solid #D95D39" : "1px solid #ddd",
+                                        borderRadius: "6px",
+                                    }}
+                                    onClick={() => setSelectedImage(img)}
+                                    />
+                                ))}
+                                </div>
+                            )}
                         </div>
                         <div className="detail-product col-md-6">
                             <div className="name-product">{product?.productName}</div>
@@ -321,15 +361,6 @@ const ProductDetail = () => {
                                 </div>
                             </div>
                         </div>
-
-                        {/* {filteredEvaluates.length > 0 && (
-                            <div className="see-more">
-                                <form action="" method="post">
-                                    <input type="hidden" name="sanPhamId" value={product.maSanPham} />
-                                    <button onClick={loadMoreReviews} className="btn btn-success xemthem">Xem Thêm</button>
-                                </form>
-                            </div>
-                        )} */}
 
                         <div hidden={totalPage === 0} className="d-flex justify-content-between" style={{ marginTop: "25px" }}>
                             {/* Vị trí hiển thị số trang */}

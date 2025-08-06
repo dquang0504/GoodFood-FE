@@ -27,11 +27,6 @@ const initialProductType: ProductTypes = {
     status: true,
     TotalProduct: 0,
 };
-const initialProductImages: ProductImages = {
-    productImageID: 0,
-    image: "",
-    productID: 0
-};
 const Product = () => {
 
     const [cards,setCards] = useState<Cards>({
@@ -42,7 +37,7 @@ const Product = () => {
     const [totalPage,setTotalPage] = useState(0);
     const [sort,setSort] = useState("Type");
     const [search,setSearch] = useState("");
-    const initialDisplayP = {
+    const initialDisplayP: Products = {
         coverImage: "",
         description: "",
         insertDate: new Date(),
@@ -53,7 +48,7 @@ const Product = () => {
         status: true,
         weight: 0,
         productType: initialProductType,
-        productImages: initialProductImages
+        productImages: [],
     }
     const [displayP,setDisplayP] = useState<Products>(initialDisplayP)
     const [err, setErr] = useState({
@@ -137,6 +132,7 @@ const Product = () => {
             const response = await axiosInstance.get(`admin/product/detail?productID=${id}`);
             setDisplayP(response.data.data);
             setListHinhSP(response.data.listHinhSP);
+            console.log(response);
             setSlides(
                 (response.data.listHinhSP as ProductImages[]).map(item => ({
                   src: item.image

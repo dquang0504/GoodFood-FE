@@ -121,8 +121,8 @@ const Navbar = () => {
                             </>
                         ) : (
                             <>
-                                <NavLink className="dropdown-item" to="/login">Login</NavLink>
-                                <NavLink className="dropdown-item" to="/register">Register</NavLink>
+                                <NavLink className="dropdown-item" to="/login" state={{isLogin: true}}>Login</NavLink>
+                                <NavLink className="dropdown-item" to="/login" state={{isLogin: false}}>Register</NavLink>
                             </>
                         )}
                     </div>

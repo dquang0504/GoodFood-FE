@@ -15,7 +15,9 @@ import {GoogleLogin, GoogleOAuthProvider} from "@react-oauth/google"
 import FacebookLogin from "./FacebookLogin";
 
 const Login = () => {
-    const [isLoginTab, setIsLoginTab] = useState(true);
+    const {state} = useLocation();
+    console.log(state?.isLogin)
+    const [isLoginTab, setIsLoginTab] = useState(state ? state.isLogin : true);
 
     // Login state
     const [username, setUsername] = useState("");
@@ -115,6 +117,8 @@ const Login = () => {
             } catch (error: any) {
                 setErr(prev => ({ ...prev, ...error.response.data.err }));
             }
+        }else{
+            toast.error("Please check the displayed errors!");
         }
     };
 
