@@ -1,12 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import Navbar from './Navbar';
-import { InvoiceDetails } from '../Interfaces/InvoiceDetails';
 import { formatVND } from '../Services/FormatVND';
 import { Invoices } from '../Interfaces/Invoices';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../Store/store';
-import { Products } from '../Interfaces/Products';
 import Footer from './Footer';
 import '../assets/css/Payment.css'
 import { deleteCartItem, saveCart, saveInvoice, saveInvoiceDetails, saveProduct } from '../Slices/CartSlice';
@@ -14,7 +11,6 @@ import axiosInstance from '../Services/AxiosInstance';
 import { toast } from 'react-toastify';
 
 const Pay = () => {
-    const {state} = useLocation();
     const dispatch = useDispatch<AppDispatch>()
     const queryParams = new URLSearchParams(window.location.search);
     const {invoiceDetails,invoice,cart} = useSelector((state:RootState)=>state.cart); 
@@ -36,7 +32,6 @@ const Pay = () => {
         invoiceStatus: null
     }
     const [invoices,setInvoices] = useState(initialInvoice); 
-    const [productDetails,setProductDetails] = useState<Products[]>(state?.product ?? []);
     console.log(invoiceDetails);
 
     const createInvoice = async()=>{
@@ -51,7 +46,6 @@ const Pay = () => {
         try {
             const response = await axiosInstance.post(`invoice/pay`,payload);
             setInvoices(response.data.data.invoice);
-            setProductDetails(response.data.data.product);
             saveInvoiceDetails(response.data.data.invoiceDetails)
             console.log(response.data.data);
             toast.success(response.data.message);

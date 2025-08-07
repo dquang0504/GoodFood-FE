@@ -1,5 +1,5 @@
 import { Chart } from 'chart.js';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import axiosInstance from '../../Services/AxiosInstance';
 
 const PieChart = () => {

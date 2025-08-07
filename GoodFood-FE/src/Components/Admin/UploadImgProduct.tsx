@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useImageUploadContext } from './ImageUploadContext';
 import {useDropzone} from "react-dropzone"
 
 interface UploadImgProductProps{

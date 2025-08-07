@@ -12,7 +12,6 @@ import { formatVND } from '../Services/FormatVND';
 import { useNavigate } from 'react-router-dom';
 import ReactPaginate from 'react-paginate';
 import Footer from './Footer';
-import { number } from 'framer-motion';
 import { Carts } from '../Interfaces/Carts';
 import { useSelector } from 'react-redux';
 import { RootState } from '../Store/store';
@@ -28,7 +27,6 @@ const Product = () => {
     const [loading,setLoading] = useState(false);
     const [products,setProducts] = useState<Products[]>([]);
     const [loai,setLoai] = useState<ProductTypes | null>(null);
-    const [valueSapXep,setValueSapXep] = useState("");
     const [totalPage,setToTalPage] = useState(0);
     const [pageNum,setPageNum] = useState(1);
     const [price,setPrice] = useState<{minPrice: number,maxPrice: number}>({

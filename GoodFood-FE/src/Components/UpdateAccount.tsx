@@ -12,23 +12,10 @@ import { v4 } from 'uuid';
 import { storage } from './Firebase';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { setUser } from '../Slices/LoginSlice';
-import { ENDPOINT } from '../App';
 
 const UpdateAccount = () => {
     const {user} = useSelector((state:RootState)=>state.login);
     if (!user) return;
-    const initialAccount: Users = {
-        accountID: 0,
-        avatar: "",
-        email: "",
-        fullName: "",
-        gender: true,
-        password: "",
-        phoneNumber: "",
-        role: false,
-        status: true,
-        username: "",
-    }
     const [account,setAccount] = useState<Users>(user);
     const [err,setErr] = useState({
         errName: "",

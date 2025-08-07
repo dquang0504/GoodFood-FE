@@ -50,10 +50,10 @@ const Address = () => {
     })
     const [editting,setEditting] = useState(false);
     //Address info
-    const [province,setProvince] = useState<Provinces>(
+    const [province] = useState<Provinces>(
         { provinceID: 220, provinceName: "Cần Thơ", provinceCode: 0}
     )
-    const [listDistrict,setListDistrct] = useState<Districts[]>([
+    const [listDistrict] = useState<Districts[]>([
         {DistrictCode: 0, DistrictID:1572, DistrictName: "Quận Ninh Kiều",ProvinceID:220},
         {DistrictCode: 0, DistrictID:1573, DistrictName: "Quận Bình Thủy",ProvinceID:220},
         {DistrictCode: 0, DistrictID:1574, DistrictName: "Quận Cái Răng",ProvinceID:220},
@@ -331,7 +331,7 @@ const Address = () => {
                                                         <select className="form-select" id="district" value={JSON.stringify({ "districtID": addressForm.districtID, "districtName": address.districtName })} onChange={(e)=>handleChangeSelect("districtID",e)} >
                                                             <option selected hidden={true} value={JSON.stringify({ "districtID": "", "districtName": "" })}>District</option>
                                                             {
-                                                                listDistrict.map((item, index) => {
+                                                                listDistrict.map((item) => {
                                                                     return (
                                                                         <option key={item.DistrictID} value={JSON.stringify({ "districtID": item.DistrictID, "districtName": item.DistrictName })} >{item.DistrictName}</option>
                                                                     )
@@ -352,7 +352,7 @@ const Address = () => {
                                                         <select className="form-select" id="ward" value={JSON.stringify({ "wardCode": addressForm.wardCode, "wardName": address.wardName })} onChange={(e)=>handleChangeSelect("wardCode",e)}>
                                                             <option selected hidden={true} value={JSON.stringify({ "wardCode": "", "wardName": "" })}>Commune/Ward</option>
                                                             {
-                                                                listWard.map((item, index) => {
+                                                                listWard.map((item) => {
                                                                     return (
                                                                         <option key={item.WardCode} value={JSON.stringify({ "wardCode": item.WardCode, "wardName": item.WardName })} >{item.WardName}</option>
                                                                     )

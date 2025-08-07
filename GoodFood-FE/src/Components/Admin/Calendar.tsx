@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.min.css"; // Import CSS of flatpickr
 

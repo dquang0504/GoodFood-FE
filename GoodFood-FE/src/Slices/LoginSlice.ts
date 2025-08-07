@@ -3,7 +3,6 @@ import axios from 'axios';
 import { ENDPOINT } from '../App';
 import { toast } from 'react-toastify';
 import { Users } from '../Interfaces/Users';
-import axiosInstance from '../Services/AxiosInstance';
 
 export interface LoginState{
     isAuthenticated: boolean,
@@ -33,7 +32,7 @@ const loginSlice = createSlice({
             state.isAuthenticated = false;
             state.user = null;
             state.accessToken = null
-            sessionStorage.removeItem("sessionID")
+            state.sessionID = null
         },
         setUser(state,action){
             state.user = action.payload;
@@ -55,7 +54,6 @@ const loginSlice = createSlice({
                 state.user = action.payload.user;
                 state.accessToken = action.payload.accessToken
                 state.sessionID = action.payload.sessionID
-                sessionStorage.setItem("sessionID",action.payload.sessionID);
             })
             .addCase(login.rejected, (state,action)=>{
                 state.error = action.payload as string;
@@ -81,7 +79,6 @@ const loginSlice = createSlice({
                 state.user = action.payload.user
                 state.accessToken = action.payload.accessToken
                 state.sessionID = action.payload.sessionID
-                sessionStorage.setItem("sessionID",action.payload.sessionID);
             })
             .addCase(loginGoogle.rejected, (state,action)=>{
                 state.error = action.payload as string;
@@ -98,7 +95,6 @@ const loginSlice = createSlice({
                 state.user = action.payload.user
                 state.accessToken = action.payload.accessToken
                 state.sessionID = action.payload.sessionID
-                sessionStorage.setItem("sessionID",action.payload.sessionID);
             })
             .addCase(loginFacebook.rejected, (state,action)=>{
                 state.error = action.payload as string;
@@ -123,19 +119,15 @@ export const login = createAsyncThunk(
 
 export const refreshAccessToken = createAsyncThunk(
     "login/refreshAccessToken",
-    async (_, { rejectWithValue }) => {
+    async (sessionID: string, { rejectWithValue }) => {
         try {
-            const sessionID = sessionStorage.getItem("sessionID");
             if (!sessionID) throw new Error("No sessionID found!");
 
             const response = await axios.post(`${ENDPOINT}/user/refresh-token`, {sessionID},{withCredentials: true});
-
-            //update sessionID
-            sessionStorage.setItem("sessionID",response.data.sessionID);
             return response.data.accessToken;
         } catch (error: any) {
             console.error("refreshAccessToken failed: ", error);
-            sessionStorage.removeItem("sessionID");
+            sessionStorage.clear();
             return rejectWithValue("Your session has run out. Please login again!");
         }
     }

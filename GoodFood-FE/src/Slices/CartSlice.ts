@@ -208,7 +208,7 @@ const cartSlice = createSlice({
                 state.isLoading = false
                 state.error = action.payload as string
             })
-            .addCase("login/logout",(state)=>{
+            .addCase("login/logout",()=>{
                 return initialState
             });
     },

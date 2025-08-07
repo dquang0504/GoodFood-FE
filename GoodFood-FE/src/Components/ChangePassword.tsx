@@ -1,4 +1,4 @@
-import React, { ReactText, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import '../assets/css/Changepassword.css'
 import imgCrush from '../assets/images/comga.png';
 import Navbar from './Navbar';

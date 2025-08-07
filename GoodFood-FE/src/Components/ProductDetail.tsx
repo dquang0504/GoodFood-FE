@@ -1,7 +1,7 @@
 import axios from 'axios';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import '../assets/css/ProductDetail.css'
-import { Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { ENDPOINT } from '../App';
 import Navbar from './Navbar';
 import { Products } from '../Interfaces/Products';
@@ -9,12 +9,9 @@ import { formatVND } from '../Services/FormatVND';
 import { toast } from 'react-toastify';
 import { Reviews } from '../Interfaces/Reviews';
 import Footer from './Footer';
-import axiosInstance from '../Services/AxiosInstance';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../Store/store';
 import { addToCart } from '../Slices/CartSlice';
-import internal from 'stream';
-import { access } from 'fs';
 import ReactPaginate from 'react-paginate';
 import '../assets/css/Admin/pagination.css'
 import { Carts } from '../Interfaces/Carts';

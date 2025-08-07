@@ -9,7 +9,7 @@ import persistStore from "redux-persist/es/persistStore";
 import { FLUSH, PAUSE, PERSIST, PURGE, REGISTER, REHYDRATE } from "redux-persist";
 import { createFilter } from 'redux-persist-transform-filter';
 
-const loginTransform = createFilter('login', ['user','isAuthenticated']);
+const loginTransform = createFilter('login', ['user','isAuthenticated','sessionID']);
 
 const persistConfig = {
     key: 'root',

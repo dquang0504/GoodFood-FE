@@ -95,62 +95,32 @@ const EditReviewProduct = () => {
     }
 
     const handleUpdate = async () => {
-        let newUniqueFileName = ""
-        let imageURL: ReviewImages[] = [];
-        if (imageFile.length > 0) {
-            for (const file of imageFile) {
-                //split the extension of the file
-                let fileExtension = file.name.split('.').pop();
-                let fileNameWithoutExtension = file.name.split('.').join('.');
-                //checking if the product already has images
-                if (listHinhReview.length > 0) {
-                    for (const hinh of listHinhReview) {
-                        const imageNameWithParams = hinh.imageName.split("%2F").pop();
-                        const imageName = imageNameWithParams?.split("?")[0];
-                        try {
-                            await deleteObject(ref(storage, `AnhDanhGia/${imageName}`));
-                            console.log("Đã xóa ảnh cũ:", imageName);
-                        } catch (error: any) {
-                            if (error.code === 'storage/object-not-found') {
-                                console.warn(`Ảnh không tồn tại: ${imageName} — đã bị xóa trước đó.`);
-                            } else {
-                                console.error("Lỗi khi xóa ảnh:", error);
-                                throw error; // nếu lỗi khác thì vẫn ném ra để biết
-                            }
-                        }
-                    }
-                }
-                //create a new file name with v4 library
-                newUniqueFileName = `${fileNameWithoutExtension}_${v4()}.${fileExtension}`;
-                //create a reference to firebase storage
-                const storageRef = ref(storage, `AnhDanhGia/${newUniqueFileName}`);
-                await uploadBytes(storageRef, file); //upload the image to firebase
-                imageURL.push({
-                    imageName: await getDownloadURL(storageRef) || "",
-                    reviewID: 0,
-                    reviewImageID: 0
-                })
-            }
-        }
-        const newReview = {
+        const formData = new FormData()
+        formData.append("review",JSON.stringify({
             ...review,
-            reviewImages: imageURL
+            reviewImages: []
+        }))
+
+        for(const file of imageFile){
+            formData.append("reviewImages",file)
         }
-        if (err.errReview === "" && review.stars > 0) {
-            try {
-                console.log(newReview);
-                const response = await axiosInstance.put(`review/update?reviewID=${reviewID}`, newReview);
-                console.log(response);
-                toast.success(response.data.message);
-                resetForm();
-            } catch (error) {
-                console.log(error);
-            }finally{
-                fetchData();
-            }
-        } else {
-            toast.error("Please check the displayed errors!");
-        }
+
+
+        // if (err.errReview === "" && review.stars > 0) {
+        //     try {
+        //         console.log(newReview);
+        //         const response = await axiosInstance.put(`review/update?reviewID=${reviewID}`, newReview);
+        //         console.log(response);
+        //         toast.success(response.data.message);
+        //         resetForm();
+        //     } catch (error) {
+        //         console.log(error);
+        //     }finally{
+        //         fetchData();
+        //     }
+        // } else {
+        //     toast.error("Please check the displayed errors!");
+        // }
 
     }
 
@@ -233,7 +203,7 @@ const EditReviewProduct = () => {
                             <em className="text-danger">{err?.errImages}</em>
                         </div>
                         <div className="image-gallery mb-3" style={{ marginTop: '10px', display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
-                            {Array.isArray(review.reviewImages) && review.reviewImages && review.reviewImages.map((hinh, index) => (
+                            {Array.isArray(review.reviewImages) && review.reviewImages && review.reviewImages.map((hinh) => (
                                 <img 
                                     key={hinh.imageName}
                                     src={hinh.imageName}

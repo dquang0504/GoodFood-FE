@@ -59,7 +59,9 @@ axiosInstance.interceptors.response.use(
             isRefreshing = true;
 
             try {
-                const newToken = await storeRef.dispatch<any>(refreshAccessToken()).unwrap();
+                const sessionID = storeRef.getState().login.sessionID;
+                if (!sessionID) return;
+                const newToken = await storeRef.dispatch<any>(refreshAccessToken(sessionID)).unwrap();
 
                 processQueue(null, newToken);
 
@@ -67,7 +69,6 @@ axiosInstance.interceptors.response.use(
                     originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
                 }
 
-                console.log("tại interceptor: ",newToken)
                 return axiosInstance(originalRequest);
             } catch (err) {
                 processQueue(err, null);

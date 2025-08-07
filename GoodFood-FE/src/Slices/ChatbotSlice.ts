@@ -1,5 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Message } from "../Components/ChatBot";
+import { createSlice} from "@reduxjs/toolkit";
 
 export interface ChatbotState{
     isOpen: boolean,
@@ -30,7 +29,7 @@ const chatbotSlice = createSlice({
             state.message = action.payload;
         }
     },
-    extraReducers: (builder) => {
+    extraReducers: () => {
         // builder.addCase(fetchChatbotStuff.pending, (state) => {...})
     },
 })

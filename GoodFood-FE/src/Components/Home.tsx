@@ -1,29 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import Navbar from './Navbar';
-import comImg from '../assets/images/comga.png'
 import aboutImg from '../assets/images/about.png';
 import placeOrderImg from '../assets/images/place_order.png'
 import shippingImg from '../assets/images/shipping.png'
 import enjoyImg from '../assets/images/enjoy_review.png'
 import '../assets/css/main.css'
 import Footer from './Footer';
-import axios, { AxiosResponse } from 'axios';
+import axios from 'axios';
 import { ENDPOINT } from '../App';
 import { Products } from '../Interfaces/Products';
-import { formatVND } from '../Services/FormatVND';
-import { useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../Store/store';
+import { useDispatch} from 'react-redux';
 import { addMessage, openChatbot } from '../Slices/ChatbotSlice';
 import { toast } from 'react-toastify';
 import ThreeDCarousel from './ThreeDCarouse';
 
 const Home = () => {
-    const navigate = useNavigate();
-    const { isOpen } = useSelector((state: RootState) => state.chatbot);
     const dispatch = useDispatch();
     const [products, setProducts] = useState<Products[]>([]);
-    const [loading, setLoading] = useState(true);
     const [formData, setFormData] = useState({
         name: '',
         fromEmail: '',
@@ -43,9 +36,6 @@ const Home = () => {
             console.log(response);
         } catch (error) {
             console.log(error)
-        }
-        finally {
-            setLoading(false)
         }
     }
 

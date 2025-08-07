@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import SideNav from './SideNav';
 import HorizontalNav from './HorizontalNav';
 import { StatisticalData } from '../../Interfaces/StatisticalData';
@@ -6,7 +6,6 @@ import { toast } from 'react-toastify';
 import { formatVND } from '../../Services/FormatVND';
 import Footer from './Footer';
 import axiosInstance from '../../Services/AxiosInstance';
-import { access } from 'fs';
 
 const Statistics = () => {
 

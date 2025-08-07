@@ -1,11 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect} from 'react';
 import { NavLink } from 'react-router-dom';
 import '../assets/css/menu.css'
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../Store/store';
 import { logout } from '../Slices/LoginSlice';
-import axiosInstance from '../Services/AxiosInstance';
-import { Carts } from '../Interfaces/Carts';
 import { formatVND } from '../Services/FormatVND';
 import { clearCart, fetchCart } from '../Slices/CartSlice';
 

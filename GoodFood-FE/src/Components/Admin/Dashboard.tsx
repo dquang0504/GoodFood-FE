@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import SideNav from './SideNav';
 import HorizontalNav from './HorizontalNav';
 import Footer from './Footer';

@@ -10,7 +10,7 @@ const FacebookLoginButton: React.FC<Props> = ({ onLoginSuccess }) => {
   const sdkReady = useFacebookSDK();
   
   const handleLogin = () => {
-    if (!window.FB) {
+    if (!window.FB && !sdkReady) {
       console.error("FB SDK chưa load xong");
       return;
     }

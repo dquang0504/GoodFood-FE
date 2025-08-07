@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { Invoices } from "../Interfaces/Invoices";
-import { convertVNDToUSD } from "../Services/FormatVND";
 import axios from "axios";
 
 declare global {
@@ -40,14 +39,14 @@ const PaypalButton: React.FC<PaypalButtonProps> = ({onSuccess,order}) => {
     script.async = true;
     script.onload = () => {
       window.paypal.Buttons({
-        createOrder: (data: any,actions: any) => {
+        createOrder: (actions: any) => {
           return actions.order.create({
             purchase_units: [{
               amount: { value: usdValue, currency_code: "USD" } // số tiền test
             }]
           });
         },
-        onApprove: async (data: any, actions: any) => {
+        onApprove: async (actions: any) => {
           const details = await actions.order.capture();
           console.log("Transaction completed by " + details.payer.name.given_name);
           console.log(details);

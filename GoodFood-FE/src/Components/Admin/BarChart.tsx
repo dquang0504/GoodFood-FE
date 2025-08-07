@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import axiosInstance from '../../Services/AxiosInstance';
 import { Chart } from 'chart.js';
 

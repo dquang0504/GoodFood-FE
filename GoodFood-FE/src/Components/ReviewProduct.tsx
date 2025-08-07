@@ -1,25 +1,17 @@
-import React, { TextareaHTMLAttributes, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import '../assets/css/Evaluate.css'
 import Navbar from './Navbar';
 import axiosInstance from '../Services/AxiosInstance';
-import { Products } from '../Interfaces/Products';
 import { formatVND } from '../Services/FormatVND';
-import { Navigate, NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { InvoiceDetails } from '../Interfaces/InvoiceDetails';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { InvoiceDetailList } from './OrderHistory';
 import { Reviews } from '../Interfaces/Reviews';
-import User from './Admin/User';
 import { useSelector } from 'react-redux';
 import { RootState } from '../Store/store';
 import UploadImgProduct from './Admin/UploadImgProduct';
 import Footer from './Footer';
-import { ProductImages } from '../Interfaces/ProductImages';
-import { v4 } from 'uuid';
-import { storage } from './Firebase';
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { toast } from 'react-toastify';
 import { ReviewImages } from '../Interfaces/ReviewImages';
-import { ProductTypes } from '../Interfaces/ProductTypes';
 
 const ReviewProduct = () => {
     const navigate = useNavigate();
@@ -117,7 +109,7 @@ const ReviewProduct = () => {
         }))
         
         for (const file of imageFile){
-            formData.append("images",file)
+            formData.append("reviewImages",file)
         }
         
         if(err.errReview === "" && review.stars > 0){

@@ -9,7 +9,6 @@ import {
     MessageInput,
     MessageList,
     MessagePayload,
-    MessageType,
     Sidebar,
     TypingIndicator,
 } from "@chatscope/chat-ui-kit-react";
@@ -17,7 +16,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../Store/store';
 import adminAvatar from '../assets/images/software-engineer.png'
 import '@chatscope/chat-ui-kit-styles/dist/default/styles.min.css';
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import axios from 'axios';
 import { ENDPOINT } from '../App';
 import { addDoc, collection, doc, getDocs, orderBy, query, setDoc, Timestamp } from 'firebase/firestore';
@@ -45,14 +43,6 @@ type function_place_order = {
 
 const ChatBot = () => {
     const navigate = useNavigate();
-    const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({
-        model: 'tunedModels/fivefoodchatbotmodelnew-ggnlz4us0srt',
-        generationConfig: {
-            temperature: 0.3,
-            maxOutputTokens: 50
-        }
-    });
     const { user } = useSelector((state: RootState) => state.login);
     const {isOpen, message} = useSelector((state:RootState)=>state.chatbot);
     const dispatch = useDispatch();

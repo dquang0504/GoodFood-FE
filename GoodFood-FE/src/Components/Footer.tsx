@@ -1,4 +1,3 @@
-import React from 'react';
 import '../assets/css/footer.css';  // Đảm bảo rằng đường dẫn đúng 
 
 const Footer = () => {

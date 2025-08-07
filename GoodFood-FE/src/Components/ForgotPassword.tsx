@@ -6,7 +6,6 @@ import { NavLink } from 'react-router-dom';
 import axios from 'axios';
 import { ENDPOINT } from '../App';
 import { toast } from 'react-toastify';
-import { set } from 'date-fns';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../Store/store';
 import { setResetToken } from '../Slices/LoginSlice';
@@ -26,10 +25,8 @@ const ForgotPassword = () => {
         errEmail: "",
         errCodeOTP: "",
     })
-    const [isSent,setIsSent] = useState(false);
 
     const clickSendMail = async()=>{
-        setIsSent(true);
         if(
             err.errEmail === "" && err.errCodeOTP === ""
         ){

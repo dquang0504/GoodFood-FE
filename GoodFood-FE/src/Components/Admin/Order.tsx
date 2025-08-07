@@ -5,7 +5,6 @@ import axiosInstance from '../../Services/AxiosInstance';
 import { Invoices } from '../../Interfaces/Invoices';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../Store/store';
-import { InvoiceDetails } from '../../Interfaces/InvoiceDetails';
 import { InvoiceStatuses } from '../../Interfaces/InvoicesStatuses';
 import { Modal } from 'react-bootstrap';
 import Footer from './Footer';

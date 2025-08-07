@@ -6,7 +6,6 @@ import { Replies } from '../../Interfaces/Replies';
 import { ReviewImages } from '../../Interfaces/ReviewImages';
 import axiosInstance from '../../Services/AxiosInstance';
 import { Products } from '../../Interfaces/Products';
-import { ProductImages } from '../../Interfaces/ProductImages';
 import { ProductTypes } from '../../Interfaces/ProductTypes';
 import Lightbox, { SlideImage } from 'yet-another-react-lightbox';
 import { toast } from 'react-toastify';
@@ -56,11 +55,6 @@ const Review = () => {
         username: "",
         avatar: "",
     }
-    const initialProductImgs: ProductImages = {
-        image: "",
-        productID: 0,
-        productImageID: 0
-    }
     const initialProductType: ProductTypes = {
         productTypeID: 0,
         typeName: "",
@@ -73,7 +67,7 @@ const Review = () => {
         insertDate: new Date(),
         price: 0,
         productID: 0,
-        productImages: initialProductImgs,
+        productImages: [],
         productName: "",
         productType: initialProductType,
         productTypeID: 0,
@@ -92,7 +86,8 @@ const Review = () => {
         status: true,
         reviewProduct: initialProduct,
         reviewImages: null,
-        reviewReply: null
+        reviewReply: null,
+        reviewInvoice: null
     }
     const [displayR,setDisplayR] = useState<Reviews>(initialDisplayR);
     const [reviews,setReviews] = useState<Reviews[]>([]);
@@ -128,6 +123,7 @@ const Review = () => {
         try {
             const response = await axiosInstance.get(`admin/review/review-analysis?page=${page}&sort=${sort}`)
             setAnalysisList(response.data.result);
+            setTotalPageAnalyze(response.data.totalPage);
             console.log(response);
         } catch (error) {
             console.log(error);
@@ -254,14 +250,14 @@ const Review = () => {
                 <HorizontalNav></HorizontalNav>
                 <main className="content">
                     <div className="container-fluid p-0">
-                        <h1 className="h3 mb-3">Danh sách đánh giá sản phẩm</h1>
+                        <h1 className="h3 mb-3">Product Review List</h1>
                         <div className="row">
                             <div className="col-md-6">
                                 <div className="card">
                                 <div className="card-body" style={{borderRadius:8}}>
                                     <div className="row">
                                     <div className="col mt-0">
-                                        <h5 className="card-title">Tổng số bình luận</h5>
+                                        <h5 className="card-title">Total reviews</h5>
                                     </div>
 
                                     <div className="col-auto">
@@ -279,7 +275,7 @@ const Review = () => {
                                 <div className="card-body" style={{borderRadius:8}}>
                                     <div className="row">
                                     <div className="col mt-0">
-                                        <h5 className="card-title">Số sản phẩm đạt 5 sao</h5>
+                                        <h5 className="card-title">Total 5 stars review</h5>
                                     </div>
 
                                     <div className="col-auto">
@@ -382,7 +378,7 @@ const Review = () => {
                                                         style={{ marginTop: "10px" }}
                                                     >
                                                         {listHinhDG &&
-                                                            listHinhDG.map((hinh, index) => (
+                                                            listHinhDG.map((hinh) => (
                                                                 <img
                                                                     src={hinh.imageName} // Đường dẫn ảnh từ imageUrls
                                                                     alt={hinh.imageName}
@@ -479,7 +475,7 @@ const Review = () => {
                                                     type="search"
                                                     value={search}
                                                     className="form-control"
-                                                    placeholder="Tìm kiếm"
+                                                    placeholder="Search"
                                                     onChange={(e)=>setSearch(e.target.value)}
                                                     />
 
@@ -497,17 +493,17 @@ const Review = () => {
                                                         name="ngayFrom"
                                                         type="date"
                                                         className="form-control"
-                                                        placeholder="Từ"
+                                                        placeholder="From"
                                                         onChange={(e)=>handleDateChange(e)}
                                                     />
                                                     <input
                                                         name="ngayTo"
                                                         type="date"
                                                         className="form-control"
-                                                        placeholder="Đến"
+                                                        placeholder="To"
                                                         onChange={(e)=>handleDateChange(e)}
                                                     />
-                                                    <button type="submit" className="btn btn-success">Tìm kiếm</button>
+                                                    <button type="submit" className="btn btn-success">Search</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -516,13 +512,13 @@ const Review = () => {
                                     <table className="table table-striped table-hover table-light">
                                         <thead className="text-center" style={{ backgroundColor: '#067a38', color: '#fff',fontSize:'0.8rem' }}>
                                             <tr>
-                                                <th>Mã đánh giá</th>
-                                                <th>Ngày đánh giá</th>
-                                                <th>Trạng thái</th>
-                                                <th>Tên khách hàng</th>
-                                                <th>Tên sản phẩm</th>
-                                                <th>Số sao</th>
-                                                <th>Hành động</th>
+                                                <th>Review ID</th>
+                                                <th>Review date</th>
+                                                <th>Status</th>
+                                                <th>Customer</th>
+                                                <th>Product Name</th>
+                                                <th>Stars</th>
+                                                <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody className="text-center">
@@ -558,12 +554,12 @@ const Review = () => {
                                     </table>
 
                                     <div className="text-center" hidden={totalPage !== 0}>
-                                        <p className="fw-bold">Không tìm thấy đánh giá tương ứng</p>
+                                        <p className="fw-bold">No matching review found!</p>
                                     </div>
 
                                     <div hidden={totalPage===0} className="d-flex justify-content-between" style={{marginTop:"25px"}}>
                                         {/* Vị trí hiển thị số trang */}
-                                        <p className="fw-bold">Đang xem trang {pageNum} / {totalPage}</p>
+                                        <p className="fw-bold">Currently viewing {pageNum} / {totalPage}</p>
 
                                         
                                         {/* React Paginate */}
@@ -587,7 +583,7 @@ const Review = () => {
                                                 activeClassName='active'
                                                 forcePage={pageNum - 1}
                                             />
-                                        <p className="fw-bold">6 bản ghi / 1 trang</p>
+                                        <p className="fw-bold">6 records / page</p>
                                     </div>         
                                 </div>
                             </div>
@@ -621,10 +617,10 @@ const Review = () => {
                                     <table className="table table-striped table-hover table-light">
                                         <thead className="text-center" style={{ backgroundColor: '#067a38', color: '#fff' }}>
                                             <tr>
-                                                <th>Mã đánh giá</th>
-                                                <th>Bình luận</th>
-                                                <th>Phân tích cảm xúc</th>
-                                                <th>Hành động</th>
+                                                <th>Review ID</th>
+                                                <th>Comment</th>
+                                                <th>Sentiment Analysis</th>
+                                                <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody className='text-center'>
@@ -643,6 +639,7 @@ const Review = () => {
                                                         <td>{item.reviewID}</td>
                                                         <td>{item.review}</td>
                                                         <td>
+                                                            <span hidden={true} className="fw-bold">{type}</span>
                                                             {test.map(t => (
                                                                 summary.includes(t) && (
                                                                     <span
@@ -654,7 +651,7 @@ const Review = () => {
                                                                             : "bg-warning"
                                                                         }`}
                                                                     >
-                                                                        {t}
+                                                                        {t === "Khen" ? "Positive" : t === "Chê" ? "Negative" : t === "Ý kiến trung lập" ? "Neutral" : t}
                                                                     </span>
                                                                 )
                                                             ))}
@@ -670,6 +667,39 @@ const Review = () => {
                                             })}
                                         </tbody>
                                     </table>
+
+                                    <div className="text-center" hidden={totalPageAnalyze !== 0}>
+                                        <p className="fw-bold">No matching review found!</p>
+                                    </div>
+
+                                    <div hidden={totalPageAnalyze===0} className="d-flex justify-content-between" style={{marginTop:"25px"}}>
+                                        {/* Vị trí hiển thị số trang */}
+                                        <p className="fw-bold">Currently viewing {pageNumAnalyze} / {totalPageAnalyze}</p>
+
+                                        
+                                        {/* React Paginate */}
+                                        <ReactPaginate
+                                                breakLabel="..."
+                                                nextLabel={<i className="fa-solid fa-forward-step"></i>}
+                                                onPageChange={(event)=>setPageNumAnalyze(event.selected + 1)}
+                                                pageRangeDisplayed={3}
+                                                pageCount={totalPageAnalyze}
+                                                previousLabel={<i className="fa-solid fa-backward-step"></i>}
+                                                renderOnZeroPageCount={null}
+                                                pageClassName='page-item page-address'
+                                                pageLinkClassName='page-link'
+                                                previousClassName='page-item page-address mr-3'
+                                                previousLinkClassName='page-link'
+                                                nextClassName='page-item page-address'
+                                                nextLinkClassName='page-link'
+                                                breakClassName='page-item'
+                                                breakLinkClassName='page-link'
+                                                containerClassName='pagination'
+                                                activeClassName='active'
+                                                forcePage={pageNumAnalyze - 1}
+                                            />
+                                        <p className="fw-bold">6 records / page</p>
+                                    </div> 
 
                                 </div>
                             </div>

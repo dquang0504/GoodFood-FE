@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import '../assets/css/Cart.css'
 import imgCart from '../assets/images/anhgiohang.png'
 import Navbar from './Navbar';
@@ -8,17 +8,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../Store/store';
 import axiosInstance from '../Services/AxiosInstance';
 import { formatVND } from '../Services/FormatVND';
-import { toast } from 'react-toastify';
-import { deleteAllItems, deleteCartItem, modifyQuantityCart, saveCart, saveInvoiceDetails } from '../Slices/CartSlice';
-import { FourSquare, OrbitProgress } from 'react-loading-indicators';
+import { deleteAllItems, deleteCartItem, modifyQuantityCart, saveCart} from '../Slices/CartSlice';
+import { FourSquare} from 'react-loading-indicators';
 import Footer from './Footer';
 import { useNavigate } from 'react-router-dom';
 
 const Cart = () => {
     const dispatch = useDispatch<AppDispatch>()
-    const [loading, setLoading] = useState(true);
+    const [loading] = useState(true);
     const { user } = useSelector((state: RootState) => state.login)
-    const { accessToken } = useSelector((state: RootState) => state.login)
     const [listCart, setListCart] = useState<Carts[]>([]);
     const { cart } = useSelector((state: RootState) => state.cart)
     const [totalAmount, setTotalAmount] = useState(0);
@@ -135,7 +133,7 @@ const Cart = () => {
         if (isChecked) {
             totalPrice = listCart.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
         }
-        setTotalProductSelect(prev => isChecked ? checkboxes.length : 0);
+        setTotalProductSelect(isChecked ? checkboxes.length : 0);
         setTotalAmount(totalPrice)
     }
 

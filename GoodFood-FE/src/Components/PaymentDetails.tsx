@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import '../assets/css/PaymentDetails.css'
 import Navbar from './Navbar';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
@@ -11,10 +11,10 @@ import { Invoices } from '../Interfaces/Invoices';
 import { Carts } from '../Interfaces/Carts';
 import { formatVND } from '../Services/FormatVND';
 import axios from 'axios';
-import { Modal, NavItem } from 'react-bootstrap';
+import { Modal} from 'react-bootstrap';
 import Footer from './Footer';
 import { InvoiceDetails } from '../Interfaces/InvoiceDetails';
-import { deleteCartItem, saveInvoice, saveInvoiceDetails, saveProduct } from '../Slices/CartSlice';
+import { deleteCartItem, saveInvoice, saveInvoiceDetails} from '../Slices/CartSlice';
 import { Products } from '../Interfaces/Products';
 import { ENDPOINT } from '../App';
 import PaypalButton from './PaypalButton';
@@ -24,7 +24,7 @@ const PaymentDetails = () => {
     const apiKey = import.meta.env.VITE_API_GHN;
     const dispatch = useDispatch<AppDispatch>()
     const {state} = useLocation();
-    const [listItemClickChon,setListItemClickChon] = useState<Carts[]>(state.listChosenItems)
+    const [listItemClickChon] = useState<Carts[]>(state.listChosenItems)
     const [product, setProduct] = useState<Products[]>([]);
     // Sau khi có `state.listChosenItems`, bạn có thể cập nhật:
     useEffect(() => {
@@ -75,7 +75,7 @@ const PaymentDetails = () => {
     }))
     const [address,setAddress] = useState<Addresses>(initialAddress)
     const [invoice,setInvoice] = useState<Invoices>(initialInvoice)
-    const [invoiceDetails,setInvoiceDetails] = useState<InvoiceDetails[]>(initialInvoiceDetails)
+    const [invoiceDetails] = useState<InvoiceDetails[]>(initialInvoiceDetails)
     const totalTemp = useRef(listItemClickChon.reduce((acc,item) => acc + (item.product.price * item.quantity),0))
     const [showModal,setShowModal] = useState({
         showAddress: false,
@@ -181,11 +181,6 @@ const PaymentDetails = () => {
     }
 
     const clickOnlinePay = async(method: string, details: any)=>{
-        const payload = {
-            invoice: invoice,
-            invoiceDetails: invoiceDetails,
-            product: product
-        }
         if(method === "vnpay"){
             try {
                 const response = await axiosInstance.post(`${ENDPOINT}/invoice/pay/vnpay`,invoice);

@@ -7,7 +7,7 @@ import { ProductImages } from '../../Interfaces/ProductImages';
 import axiosInstance from '../../Services/AxiosInstance';
 import { formatVND } from '../../Services/FormatVND';
 import ReactPaginate from 'react-paginate';
-import { Id, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import UploadImgProduct from './UploadImgProduct';
 import "yet-another-react-lightbox/styles.css";
 import Lightbox, { SlideImage } from "yet-another-react-lightbox";
@@ -429,7 +429,7 @@ const Product = () => {
                                                 reset={resetPreview}
                                             />
                                             <div className="image-gallery" style={{ marginTop: '10px',display: 'flex',flexWrap: 'wrap',gap: '10px'}}>           
-                                                {listHinhSP && listHinhSP.map((hinh, index) => (
+                                                {listHinhSP && listHinhSP.map((hinh) => (
                                                     <img 
                                                         src={hinh.image}
                                                         alt={hinh.image}

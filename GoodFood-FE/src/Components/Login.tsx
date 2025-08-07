@@ -26,9 +26,8 @@ const Login = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const toUrl = location.state?.from?.pathname || "/home";
-    const { isAuthenticated,user } = useSelector((state: RootState) => state.login);
+    const { isAuthenticated} = useSelector((state: RootState) => state.login);
     const googleID = import.meta.env.VITE_GOOGLE_CLIENT_ID
-    const facebookID = import.meta.env.VITE_FACEBOOK_APP_ID
 
     useEffect(() => {
         if (isAuthenticated) {

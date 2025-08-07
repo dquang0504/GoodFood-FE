@@ -5,6 +5,7 @@ import Login from './Components/Login'
 import { ToastContainer } from 'react-toastify'
 import Product from './Components/Product'
 import ProductAdmin from './Components/Admin/Product'
+import ReviewAdmin from './Components/Admin/Review'
 import ProductDetail from './Components/ProductDetail'
 import Cart from './Components/Cart'
 import { useSelector } from 'react-redux'
@@ -83,7 +84,7 @@ function App() {
           <Route path='/home-admin/product' element={ <PrivateRoute element={ProductAdmin}></PrivateRoute> }></Route>
           <Route path='/home-admin/product-category' element={ <PrivateRoute element={ProductType}></PrivateRoute> }></Route>
           <Route path='/home-admin/statistics' element={ <PrivateRoute element={Statistics}></PrivateRoute> }></Route>
-          <Route path='/home-admin/reviews' element={ <PrivateRoute element={Review}></PrivateRoute> }></Route>
+          <Route path='/home-admin/reviews' element={ <PrivateRoute element={ReviewAdmin}></PrivateRoute> }></Route>
 
         </Routes>
       </div>
