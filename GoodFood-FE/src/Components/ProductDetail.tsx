@@ -180,7 +180,7 @@ const ProductDetail = () => {
     };
 
     const clickEditReview = (reviewID: number) => {
-        navigate(`/home/edit-evaluate?id=${reviewID}`)
+        navigate(`/home/edit-evaluate`,{state:{reviewID}})
     }
 
     return (

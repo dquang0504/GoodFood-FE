@@ -14,12 +14,14 @@ import { storage } from './Firebase';
 import { v4 } from 'uuid';
 import { toast } from 'react-toastify';
 import Lightbox, { SlideImage } from 'yet-another-react-lightbox';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const EditReviewProduct = () => {
     const { user } = useSelector((state: RootState) => state.login);
     const queryString = window.location.search
-    const urlParams: URLSearchParams = new URLSearchParams(queryString);
-    const reviewID = urlParams.get('id');
+    const navigate = useNavigate();
+    const {state} = useLocation();
+    const reviewID = state.reviewID ? state.reviewID : -1
     const initialReview: Reviews = {
         accountID: user ? user.accountID : 0,
         comment: "",
@@ -59,10 +61,10 @@ const EditReviewProduct = () => {
 
     const fetchData = async () => {
         try {
-            const response = await axiosInstance.get(`review/detail?reviewID=${reviewID}`);
+            const response = await axiosInstance.get(`/review/detail?reviewID=${reviewID}`);
             console.log(response);
             setSlides(
-                (response.data.data.reviewImages as ReviewImages[]).map(item => ({
+                (response.data.data.reviewImages as ReviewImages[] ?? []).map(item => ({
                     src: item.imageName
                 }))
             );
@@ -70,8 +72,9 @@ const EditReviewProduct = () => {
             setReview(response.data.data)
             setInvoiceDetail(response.data.detail);
 
-        } catch (error) {
+        } catch (error: any) {
             console.log(error);
+            toast.error(error.response.data.message)
         }
     }
 
@@ -105,22 +108,26 @@ const EditReviewProduct = () => {
             formData.append("reviewImages",file)
         }
 
-
-        // if (err.errReview === "" && review.stars > 0) {
-        //     try {
-        //         console.log(newReview);
-        //         const response = await axiosInstance.put(`review/update?reviewID=${reviewID}`, newReview);
-        //         console.log(response);
-        //         toast.success(response.data.message);
-        //         resetForm();
-        //     } catch (error) {
-        //         console.log(error);
-        //     }finally{
-        //         fetchData();
-        //     }
-        // } else {
-        //     toast.error("Please check the displayed errors!");
-        // }
+        if (err.errReview === "" && review.stars > 0) {
+            try {
+                const response = await axiosInstance.put(`review/update?reviewID=${reviewID}`, formData,{
+                    headers:{
+                        "Content-Type": "multipart/form-data"
+                    }
+                });
+                const productID = response.data.data.productID ?? 0;
+                console.log(response);
+                toast.success(response.data.message);
+                navigate(`/home/product-details/${productID}`,{state:{productID:productID,productType:review.reviewProduct?.productTypeID}})
+            } catch (error: any) {
+                console.log(error);
+                toast.error(error.response.data.message)
+            }finally{
+                fetchData();
+            }
+        } else {
+            toast.error("Please check the displayed errors!");
+        }
 
     }
 
