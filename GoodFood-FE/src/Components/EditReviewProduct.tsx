@@ -9,16 +9,12 @@ import { formatVND } from '../Services/FormatVND';
 import { InvoiceDetails } from '../Interfaces/InvoiceDetails';
 import UploadImgProduct from './Admin/UploadImgProduct';
 import { ReviewImages } from '../Interfaces/ReviewImages';
-import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import { storage } from './Firebase';
-import { v4 } from 'uuid';
 import { toast } from 'react-toastify';
 import Lightbox, { SlideImage } from 'yet-another-react-lightbox';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const EditReviewProduct = () => {
     const { user } = useSelector((state: RootState) => state.login);
-    const queryString = window.location.search
     const navigate = useNavigate();
     const {state} = useLocation();
     const reviewID = state.reviewID ? state.reviewID : -1
@@ -49,8 +45,7 @@ const EditReviewProduct = () => {
     const [review, setReview] = useState<Reviews>(initialReview)
     const [invoiceDetail, setInvoiceDetail] = useState<InvoiceDetails>(initialInvoiceDetails);
     const [imageFile, setImageFile] = useState<File[]>([])
-    const [resetPreview, setResetPreview] = useState(false);
-    const [listHinhReview,setListHinhReview] = useState<ReviewImages[]>([]);
+    const [resetPreview] = useState(false);
     const [err, setErr] = useState({
         errReview: "",
         errStars: "",
@@ -68,7 +63,6 @@ const EditReviewProduct = () => {
                     src: item.imageName
                 }))
             );
-            setListHinhReview(response.data.data.reviewImages)
             setReview(response.data.data)
             setInvoiceDetail(response.data.detail);
 
@@ -89,13 +83,6 @@ const EditReviewProduct = () => {
             setErr({ ...err, errStars: "" })
         }
     }, [review.stars])
-
-    const resetForm = () => {
-        setResetPreview(true);
-        setReview(initialReview);
-        setImageFile([]);
-        setListHinhReview([]);
-    }
 
     const handleUpdate = async () => {
         const formData = new FormData()

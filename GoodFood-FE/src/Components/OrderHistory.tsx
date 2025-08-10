@@ -6,12 +6,13 @@ import axiosInstance from '../Services/AxiosInstance';
 import { Button, Modal } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import Footer from './Footer';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { Products } from '../Interfaces/Products';
 import { useSelector } from 'react-redux';
 import { RootState } from '../Store/store';
 import ReactPaginate from 'react-paginate';
 import '../assets/css/Admin/pagination.css'
+import { Carts } from '../Interfaces/Carts';
 
 interface InvoiceList {
     invoiceID: number,
@@ -36,8 +37,9 @@ const OrderHistory = () => {
     const { user } = useSelector((state: RootState) => state.login)
     const statusList = ['Order Placed', 'Order Confirmed', 'Order Processing', 'Shipping', 'Delivered', 'Cancelled']
     const [activeTab, setActiveTab] = useState("Order Placed");
-    const [pageNum,setPageNum] = useState(1);
-    const [totalPage,setTotalPage] = useState(0);
+    const navigate = useNavigate();
+    const [pageNum, setPageNum] = useState(1);
+    const [totalPage, setTotalPage] = useState(0);
     const [invoiceList, setInvoiceList] = useState<InvoiceList[]>([])
     const [invoiceDetailList, setInvoiceDetailList] = useState<InvoiceDetailList[]>([]);
     const [showModal, setShowModal] = useState(false);
@@ -64,7 +66,7 @@ const OrderHistory = () => {
     const [otherReason, setOtherReason] = useState("");
 
 
-    const fetchData = async (tab: string,pageNum: number) => {
+    const fetchData = async (tab: string, pageNum: number) => {
         try {
             const response = await axiosInstance.get(`order-history?tab=${tab}&accountID=${user?.accountID}&page=${pageNum}`)
             setInvoiceList(response.data.data);
@@ -76,8 +78,8 @@ const OrderHistory = () => {
     }
 
     useEffect(() => {
-        fetchData(activeTab,pageNum);
-    }, [activeTab,pageNum])
+        fetchData(activeTab, pageNum);
+    }, [activeTab, pageNum])
 
     const clickXemChiTiet = async (invoiceID: number) => {
         try {
@@ -111,16 +113,16 @@ const OrderHistory = () => {
             setOtherReason("");
             setInvoice({ ...invoice, cancelReason: listReasons[0]?.reason || "" }); // reset dropdown
             setErr({ ...err, errReason: "" });
-            fetchData(activeTab,pageNum);
+            fetchData(activeTab, pageNum);
         }
     }
 
-    const clickMuaLai = async (productID: number, quantity: number) => {
-        try {
+    const clickMuaLai = async (product: Products, quantity: number) => {
 
-        } catch (error) {
-
-        }
+        const cart: Carts = { accountID: user?.accountID ?? 0, cartID: 0, product: product, productID: product.productID, quantity: quantity }
+        const carts: Carts[] = [];
+        carts.push(cart);
+        navigate("/home/payment-details", { state: { listChosenItems: carts } })
     }
 
     return (
@@ -131,7 +133,7 @@ const OrderHistory = () => {
                     <li className="nav-item" key={index}>
                         <p
                             className={`nav-link ${activeTab === status ? 'active' : ''}`}
-                            onClick={(event) => {setActiveTab(event.currentTarget.innerText); setPageNum(1)}}
+                            onClick={(event) => { setActiveTab(event.currentTarget.innerText); setPageNum(1) }}
                         >
                             {status}
                         </p>
@@ -317,7 +319,7 @@ const OrderHistory = () => {
                                                                 activeTab === "Delivered" ? (
                                                                     <>
                                                                         {detail.product?.productID !== undefined && (
-                                                                            <NavLink to={"#"} className="btn btn-sm btn-buy-again btn-success me-2" onClick={() => { clickMuaLai(detail.product!.productID, detail.quantity) }}>Buy Again</NavLink>
+                                                                            <button className="btn btn-sm btn-buy-again btn-success me-2" onClick={() => {if (detail.product) clickMuaLai(detail.product, detail.quantity)}}>Buy Again</button>
                                                                         )}
                                                                         {!detail.reviewCheck ?
                                                                             (

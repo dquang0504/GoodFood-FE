@@ -32,10 +32,6 @@ const Register = () => {
         errConfirm: "",
     })
 
-    const clickDangKy = async()=>{
-
-    }
-
     const basicValidation = (e: React.ChangeEvent<HTMLInputElement>,fieldName: string)=>{
         if (fieldName === "fullname"){
             if (e.target.value.length <= 0){

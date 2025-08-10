@@ -17,8 +17,6 @@ import Order from './Components/Admin/Order'
 import User from './Components/Admin/User'
 import ProductType from './Components/Admin/ProductType'
 import Statistics from './Components/Admin/Statistics'
-import Review from './Components/ReviewProduct'
-// index.tsx hoặc App.tsx
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import Register from './Components/Register'
