@@ -246,6 +246,7 @@ const ChatBot = () => {
             let response;
             if (user == null){
                 response = await axios.post(`${ENDPOINT}/chatbot/call`, { prompt: message })
+                return response.data.data
             }
             response = await axiosInstance.post(`${ENDPOINT}/chatbot/call`, { prompt: message })
             console.log(response);
