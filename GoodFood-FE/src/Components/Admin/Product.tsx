@@ -132,9 +132,8 @@ const Product = () => {
             const response = await axiosInstance.get(`admin/product/detail?productID=${id}`);
             setDisplayP(response.data.data);
             setListHinhSP(response.data.listHinhSP);
-            console.log(response);
             setSlides(
-                (response.data.listHinhSP as ProductImages[]).map(item => ({
+                listHinhSP && listHinhSP.map(item => ({
                   src: item.image
                 }))
             );
@@ -203,7 +202,7 @@ const Product = () => {
                 //create a new file name with v4 library
                 newUniqueFileName = `${fileNameWithoutExtension}_${v4()}.${fileExtension}`
                 //checking if the product already has images
-                if(listHinhSP.length > 0){
+                if(listHinhSP && listHinhSP.length > 0){
                     for(const hinh of listHinhSP){
                         const imageNameWithParams = hinh.image.split("%2F").pop();
                         const imageName = imageNameWithParams?.split("?")[0];
@@ -429,8 +428,9 @@ const Product = () => {
                                                 reset={resetPreview}
                                             />
                                             <div className="image-gallery" style={{ marginTop: '10px',display: 'flex',flexWrap: 'wrap',gap: '10px'}}>           
-                                                {listHinhSP && listHinhSP.map((hinh) => (
-                                                    <img 
+                                                {listHinhSP && listHinhSP.map((hinh,index) => (
+                                                    <div key={index}>
+                                                        <img
                                                         src={hinh.image}
                                                         alt={hinh.image}
                                                         style={{
@@ -444,8 +444,9 @@ const Product = () => {
                                                         }}
                                                         onClick={()=>setOpen(true)}
                                                     />
+                                                    </div>
                                                 ))}
-                                                {slides.length > 0 && (
+                                                {slides && slides.length > 0 && (
                                                     <Lightbox open={open} close={() => setOpen(false)} slides={slides} />
                                                 )}
                                             </div>

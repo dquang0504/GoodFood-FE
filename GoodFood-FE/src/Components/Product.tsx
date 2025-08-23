@@ -71,7 +71,7 @@ const Product = () => {
     };
 
     const clickTimkiem = (timKiem: string)=>{
-        fetchProductsByPage(pageNum,timKiem,loai);
+        fetchProductsByPage(pageNum,timKiem,null);
     }
 
     const timKiemBangGiongNoi = ()=>{
@@ -156,6 +156,7 @@ const Product = () => {
 
     useEffect(()=>{
         fetchProductsByPage(pageNum,timKiem,loai);
+        console.log("Rannnnn")
     },[pageNum,loai,orderBy])
 
 

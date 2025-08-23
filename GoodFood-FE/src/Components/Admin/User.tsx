@@ -268,7 +268,7 @@ const User = () => {
                                                 <div className="form-check">
                                                     <input checked={displayU.role === true} className="form-check-input"
                                                         value={"Admin"} type="radio" name="vaiTro" id="flexRadioDefault1"
-                                                        onChange={(e)=>setDisplayU({...displayU,role: e.target.value === 'Admin'})}
+                                                        onChange={(e)=>setDisplayU({...displayU,role: e.target.value === 'Admin',status: true})}
                                                         />Admin
                                                 </div>
                                                 <div className="form-check">
@@ -282,14 +282,14 @@ const User = () => {
                                         <div className="col-md-6">
                                             <div className="mb-3">
                                                 <label className="form-label fw-bold">Status:</label>
-                                                <div className="form-check">
-                                                    <input checked={displayU.status === true} className="form-check-input"
+                                                <div style={{color: `${editting !== true || displayU.role === true ? 'grey' : 'black'}`}} className="form-check">
+                                                    <input disabled={editting !== true || displayU.role === true} checked={displayU.status === true} className="form-check-input"
                                                         type="radio" value={"Active"} name="trangThai" id="flexRadioDefault3"
                                                         onChange={(e)=>setDisplayU({...displayU,status: e.target.value === 'Active'})}
                                                         />Active
                                                 </div>
-                                                <div className="form-check">
-                                                    <input checked={displayU.status === false} className="form-check-input"
+                                                <div style={{color: `${editting !== true || displayU.role === true ? 'grey' : 'black'}`}} className="form-check">
+                                                    <input disabled={editting !== true || displayU.role === true} checked={displayU.status === false} className="form-check-input"
                                                         type="radio" value={"Banned"} name="trangThai" id="flexRadioDefault4"
                                                         onChange={(e)=>setDisplayU({...displayU,status: e.target.value === 'Active'})}
                                                         />Banned
