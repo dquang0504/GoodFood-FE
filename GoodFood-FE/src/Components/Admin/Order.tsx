@@ -52,7 +52,7 @@ const Order = () => {
         invoiceStatus: null,
         invoiceStatusID: 0,
         note: "",
-        paymentDate: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
         paymentMethod: false,
         receiveAddress: "",
         receiveName: "",
@@ -87,11 +87,11 @@ const Order = () => {
 
     const handleShow = (invoiceID: number,status: InvoiceStatuses)=>{
         console.log(status);
-        if (statusList[0].statusName === "Giao thành công" || statusList[0].statusName === "Đã Hủy"){
+        if (statusList[0].statusName === "Delivered" || statusList[0].statusName === "Cancelled"){
             setEditting(false);
             return;
         }
-        if(status.statusName === "Đã Hủy"){
+        if(status.statusName === "Cancelled"){
             setShow(true);
         }
         else{
@@ -105,7 +105,7 @@ const Order = () => {
             statusName: statusName,
             cancelReason: displayInvoice.cancelReason
         }
-        if (statusList[0].statusName === "Giao thành công" || statusList[0].statusName === "Đã Hủy"){
+        if (statusList[0].statusName === "Delivered" || statusList[0].statusName === "Cancelled"){
             return;
         }
         try {
@@ -132,7 +132,7 @@ const Order = () => {
 	    var searchField = document.getElementById("searchField") as HTMLElement;
 	    var dateFields = document.getElementById("dateFields") as HTMLElement;
 	        
-	    if (sortSelect && sortSelect.value === "Ngày thanh toán") {
+	    if (sortSelect && sortSelect.value === "Created at") {
             searchField.style.display = "none";
             dateFields.style.display = "flex"; // Keep elements in the same row
         } else if (sortSelect) {
@@ -302,7 +302,7 @@ const Order = () => {
                                             </Modal.Header>
                                             <Modal.Body>
                                                 <div className='mb-3'>
-                                                    <textarea onChange={(event)=>setDisplayInvoice({...displayInvoice,cancelReason: event.target.value})} placeholder='Nhập vào lý do hủy' className='form-control' name="" id="" cols={3} rows={6}></textarea>
+                                                    <textarea onChange={(event)=>setDisplayInvoice({...displayInvoice,cancelReason: event.target.value})} placeholder="Your excuse for cancelling customer's order..." className='form-control' name="" id="" cols={3} rows={6}></textarea>
                                                 </div>
                                             </Modal.Body>
                                             <Modal.Footer>
@@ -326,7 +326,7 @@ const Order = () => {
                                                 className="form-select" aria-label="Default select example">
                                                 <option value="Invoice ID">Invoice ID</option>
                                                 <option value="Customer name">Customer name</option>
-                                                <option value="Payment date">Payment date</option>
+                                                <option value="Created at">Created at</option>
                                                 <option value="Invoice status">Invoice status</option>
                                             </select>
                                             <div id="searchField">
@@ -351,7 +351,7 @@ const Order = () => {
                             <table className="table table-striped table-hover table-light">
                                 <thead className="text-center align-middle" style={{ backgroundColor: '#067a38', color: '#fff',fontSize:'0.8rem' }}>
                                     <th>Invoice ID</th>
-                                    <th>Payment date</th>
+                                    <th>Created at</th>
                                     <th>Invoice status</th>
                                     <th>Invoice total</th>
                                     <th>Payment status</th>
@@ -365,9 +365,9 @@ const Order = () => {
                                     {invoices.map((invoice) => (
                                         <tr key={invoice.invoiceID}>
                                             <td>{invoice.invoiceID}</td>
-                                            <td>{invoice.paymentDate.toLocaleString()}</td>
+                                            <td>{invoice.createdAt.toLocaleString()}</td>
                                             <td>
-                                                <span className={`badge ${invoice.invoiceStatus?.statusName === 'Đã hủy' ? 'bg-danger' : invoice.invoiceStatus?.statusName === 'Đang xử lý' ? 'bg-warning' : invoice.invoiceStatus?.statusName === 'Đang vận chuyển' ? 'bg-info' : 'bg-success'}`}>
+                                                <span className={`badge ${invoice.invoiceStatus?.statusName === 'Cancelled' ? 'bg-danger' : invoice.invoiceStatus?.statusName === 'Processing' ? 'bg-warning' : invoice.invoiceStatus?.statusName === 'Shipping' ? 'bg-info' : 'bg-success'}`}>
                                                     {invoice.invoiceStatus?.statusName}
                                                 </span>
                                             </td>

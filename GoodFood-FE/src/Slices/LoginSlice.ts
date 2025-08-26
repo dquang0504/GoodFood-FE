@@ -3,6 +3,7 @@ import axios from 'axios';
 import { ENDPOINT } from '../App';
 import { toast } from 'react-toastify';
 import { Users } from '../Interfaces/Users';
+import { clearCart } from './CartSlice';
 
 export interface LoginState{
     isAuthenticated: boolean,
@@ -128,6 +129,7 @@ export const refreshAccessToken = createAsyncThunk(
         } catch (error: any) {
             console.error("refreshAccessToken failed: ", error);
             sessionStorage.clear();
+            clearCart();
             return rejectWithValue("Your session has run out. Please login again!");
         }
     }

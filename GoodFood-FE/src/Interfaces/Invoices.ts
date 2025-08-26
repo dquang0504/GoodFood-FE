@@ -4,7 +4,7 @@ export interface Invoices{
     invoiceID: number,
     shippingFee: number,
     totalPrice: number,
-    paymentDate: Date | string,
+    createdAt: Date | string,
     paymentMethod: boolean,
     status: boolean,
     note: string,
