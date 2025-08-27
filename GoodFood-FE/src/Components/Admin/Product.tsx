@@ -29,14 +29,14 @@ const initialProductType: ProductTypes = {
 };
 const Product = () => {
 
-    const [cards,setCards] = useState<Cards>({
+    const [cards, setCards] = useState<Cards>({
         TotalInactive: 0,
         TotalProduct: 0,
     })
-    const [pageNum,setPageNum] = useState(1);
-    const [totalPage,setTotalPage] = useState(0);
-    const [sort,setSort] = useState("Type");
-    const [search,setSearch] = useState("");
+    const [pageNum, setPageNum] = useState(1);
+    const [totalPage, setTotalPage] = useState(0);
+    const [sort, setSort] = useState("Type");
+    const [search, setSearch] = useState("");
     const initialDisplayP: Products = {
         coverImage: "",
         description: "",
@@ -50,7 +50,7 @@ const Product = () => {
         productType: initialProductType,
         productImages: [],
     }
-    const [displayP,setDisplayP] = useState<Products>(initialDisplayP)
+    const [displayP, setDisplayP] = useState<Products>(initialDisplayP)
     const [err, setErr] = useState({
         errProductName: '',
         errPrice: '',
@@ -58,16 +58,16 @@ const Product = () => {
         errType: '',
         errImages: ''
     });
-    const [editting,setEditting] = useState(false);
-    const [listLoaiSP,setListLoaiSP] = useState<ProductTypes[]>([]);
-    const [products,setProducts] = useState<Products[]>([]);
-    const [listHinhSP,setListHinhSP] = useState<ProductImages[]>([]);
+    const [editting, setEditting] = useState(false);
+    const [listLoaiSP, setListLoaiSP] = useState<ProductTypes[]>([]);
+    const [products, setProducts] = useState<Products[]>([]);
+    const [listHinhSP, setListHinhSP] = useState<ProductImages[]>([]);
     const [imageFile, setImageFile] = useState<File[]>([]);
-    const [resetPreview,setResetPreview] = useState(false);
+    const [resetPreview, setResetPreview] = useState(false);
     const [open, setOpen] = useState(false);
     const [slides, setSlides] = useState<SlideImage[]>([]);
 
-    const fetchData = async(page: number, sort: string, search: string)=>{
+    const fetchData = async (page: number, sort: string, search: string) => {
         try {
             const response = await axiosInstance.get(`admin/product?page=${page}&sort=${sort}&search=${search}`);
             setListLoaiSP(response.data.listLoaiSP);
@@ -79,54 +79,54 @@ const Product = () => {
         }
     }
 
-    useEffect(()=>{
-        fetchData(pageNum,sort,search);
-    },[])
+    useEffect(() => {
+        fetchData(pageNum, sort, search);
+    }, []);
 
-    const basicValidation = (e: React.ChangeEvent<HTMLInputElement> | null, selectEvent: React.ChangeEvent<HTMLSelectElement> | null,fieldName: string)=>{
-        if(fieldName==="productName" && e){
-            if(e.target.value.length<=0){
-                setErr({...err,errProductName:"Please input product name!"})
+    const basicValidation = (e: React.ChangeEvent<HTMLInputElement> | null, selectEvent: React.ChangeEvent<HTMLSelectElement> | null, fieldName: string) => {
+        if (fieldName === "productName" && e) {
+            if (e.target.value.length <= 0) {
+                setErr({ ...err, errProductName: "Please input product name!" })
             }
-            else{
-                setErr({...err,errProductName:""})
+            else {
+                setErr({ ...err, errProductName: "" })
             }
-            setDisplayP({...displayP,productName:e.target.value})
+            setDisplayP({ ...displayP, productName: e.target.value })
         }
-        else if(fieldName==="productPrice" && e){
-            if(e.target.valueAsNumber < 0){
-                setErr({...err,errPrice:"Price can't be lower than 0!"})
+        else if (fieldName === "productPrice" && e) {
+            if (e.target.valueAsNumber < 0) {
+                setErr({ ...err, errPrice: "Price can't be lower than 0!" })
             }
-            else{
-                setErr({...err,errPrice:""})
+            else {
+                setErr({ ...err, errPrice: "" })
             }
-            setDisplayP({...displayP,price:e.target.valueAsNumber})
+            setDisplayP({ ...displayP, price: e.target.valueAsNumber })
         }
-        else if(fieldName==="productWeight" && e){
-            if(e.target.valueAsNumber<0){
-                setErr({...err,errWeight:"Weight can't be lower than 0!"})
+        else if (fieldName === "productWeight" && e) {
+            if (e.target.valueAsNumber < 0) {
+                setErr({ ...err, errWeight: "Weight can't be lower than 0!" })
             }
-            else{
-                setErr({...err,errWeight:""})
+            else {
+                setErr({ ...err, errWeight: "" })
             }
-            setDisplayP({...displayP,weight:e.target.valueAsNumber})
+            setDisplayP({ ...displayP, weight: e.target.valueAsNumber })
         }
-        else if(fieldName==="productType" && selectEvent){
-            if(selectEvent.target.value.length<=0){
-                setErr({...err,errType:"Please choose product type!"})
+        else if (fieldName === "productType" && selectEvent) {
+            if (selectEvent.target.value.length <= 0) {
+                setErr({ ...err, errType: "Please choose product type!" })
             }
-            else{
-                setErr({...err,errType:""})
+            else {
+                setErr({ ...err, errType: "" })
             }
             const selectedType = listLoaiSP.find(item => item.typeName === selectEvent.target.value)
             if (selectedType) {
-                setDisplayP({...displayP, productType: selectedType, productTypeID: selectedType.productTypeID});
+                setDisplayP({ ...displayP, productType: selectedType, productTypeID: selectedType.productTypeID });
             }
         }
-        
+
     }
 
-    const fetchDetail = async(id: number) =>{
+    const fetchDetail = async (id: number) => {
         setEditting(true);
         try {
             const response = await axiosInstance.get(`admin/product/detail?productID=${id}`);
@@ -134,7 +134,7 @@ const Product = () => {
             setListHinhSP(response.data.listHinhSP);
             setSlides(
                 listHinhSP && listHinhSP.map(item => ({
-                  src: item.image
+                    src: item.image
                 }))
             );
             console.log(slides);
@@ -143,20 +143,20 @@ const Product = () => {
         }
     }
 
-    const handlePost = async()=>{
+    const handlePost = async () => {
         let newUniqueFileName = "";
         let imageURL: ProductImages[] = []
-        if(imageFile.length > 0){
-            for(const file of imageFile){
+        if (imageFile.length > 0) {
+            for (const file of imageFile) {
                 //split the extension of the file
                 let fileExtension = file.name.split('.').pop();
                 let fileNameWithoutExtension = file.name.split('.').join('.');
 
                 //create a new file name with v4 library
-                newUniqueFileName =  `${fileNameWithoutExtension}_${v4()}.${fileExtension}`;
+                newUniqueFileName = `${fileNameWithoutExtension}_${v4()}.${fileExtension}`;
                 //creating a reference to firebase storage
-                const storageRef = ref(storage,`AnhSanPham/${newUniqueFileName}`);
-                await uploadBytes(storageRef,file); //uploading the image to storage
+                const storageRef = ref(storage, `AnhSanPham/${newUniqueFileName}`);
+                await uploadBytes(storageRef, file); //uploading the image to storage
                 imageURL.push({
                     image: await getDownloadURL(storageRef) || v4(),
                     productID: 0,
@@ -171,39 +171,39 @@ const Product = () => {
             coverImage: imageURL[0]?.image || "",
             productImages: imageURL
         };
-        if(
+        if (
             err.errImages === "" && err.errPrice === "" &&
             err.errProductName === "" && err.errType === "" && err.errWeight === ""
-        ){
+        ) {
             try {
-                const response = await axiosInstance.post(`admin/product/create`,newDisplayP)
+                const response = await axiosInstance.post(`admin/product/create`, newDisplayP)
                 toast.success(response.data.message);
                 console.log(response);
                 resetForm();
             } catch (error: any) {
                 console.log(error);
                 setErr(error.response.data.err)
-            }finally{
-                fetchData(pageNum,sort,search);
+            } finally {
+                fetchData(pageNum, sort, search);
             }
-        }else{
+        } else {
             toast.error("Please check the inputs!");
         }
     }
 
-    const handlePut = async()=>{
+    const handlePut = async () => {
         let newUniqueFileName = ""
         let imageURL: ProductImages[] = []
-        if(imageFile.length > 0){
-            for(const file of imageFile){
+        if (imageFile.length > 0) {
+            for (const file of imageFile) {
                 //split the extension of the file
                 let fileExtension = file.name.split('.').pop();
                 let fileNameWithoutExtension = file.name.split('.').join();
                 //create a new file name with v4 library
                 newUniqueFileName = `${fileNameWithoutExtension}_${v4()}.${fileExtension}`
                 //checking if the product already has images
-                if(listHinhSP && listHinhSP.length > 0){
-                    for(const hinh of listHinhSP){
+                if (listHinhSP && listHinhSP.length > 0) {
+                    for (const hinh of listHinhSP) {
                         const imageNameWithParams = hinh.image.split("%2F").pop();
                         const imageName = imageNameWithParams?.split("?")[0];
                         try {
@@ -220,8 +220,8 @@ const Product = () => {
                     }
                 }
                 //creating a reference to firebase storage
-                const storageRef = ref(storage,`AnhSanPham/${newUniqueFileName}`);
-                await uploadBytes(storageRef,file)
+                const storageRef = ref(storage, `AnhSanPham/${newUniqueFileName}`);
+                await uploadBytes(storageRef, file)
                 imageURL.push({
                     image: await getDownloadURL(storageRef) || v4(),
                     productID: displayP.productID || 0,
@@ -236,12 +236,12 @@ const Product = () => {
             coverImage: imageURL[0]?.image || "",
             productImages: imageURL
         };
-        if(
+        if (
             err.errImages === "" && err.errPrice === "" &&
             err.errProductName === "" && err.errType === "" && err.errWeight === ""
-        ){
+        ) {
             try {
-                const response = await axiosInstance.put(`admin/product/update?productID=${newDisplayP.productID}`,newDisplayP)
+                const response = await axiosInstance.put(`admin/product/update?productID=${newDisplayP.productID}`, newDisplayP)
                 toast.success(response.data.message);
                 console.log(response);
                 resetForm();
@@ -249,15 +249,15 @@ const Product = () => {
             } catch (error: any) {
                 console.log(error);
                 setErr(error.response.data.err)
-            }finally{
-                fetchData(pageNum,sort,search);
+            } finally {
+                fetchData(pageNum, sort, search);
             }
-        }else{
+        } else {
             toast.error("Please check the inputs!");
         }
     }
 
-    const resetForm = ()=>{
+    const resetForm = () => {
         setDisplayP(initialDisplayP);
         setEditting(false);
         setImageFile([]);
@@ -265,18 +265,18 @@ const Product = () => {
         setResetPreview(true)
     }
 
-    useEffect(()=>{
-        const delayDebounce = setTimeout(()=>{
-            fetchData(pageNum,sort,search);
-        },500)
-        return ()=> clearTimeout(delayDebounce);
-    },[pageNum,sort,search])
+    useEffect(() => {
+        const delayDebounce = setTimeout(() => {
+            fetchData(pageNum, sort, search);
+        }, 500)
+        return () => clearTimeout(delayDebounce);
+    }, [pageNum, sort, search])
 
-    useEffect(()=>{
-        if (imageFile.length > 0){
-            setErr({...err,errImages: ""});
+    useEffect(() => {
+        if (imageFile.length > 0) {
+            setErr({ ...err, errImages: "" });
         }
-    },[imageFile])
+    }, [imageFile])
 
     return (
         <div className="wrapper">
@@ -289,7 +289,7 @@ const Product = () => {
                         <div className="row">
                             <div className="col-md-6">
                                 <div className="card">
-                                    <div className="card-body" style={{borderRadius:8}}>
+                                    <div className="card-body" style={{ borderRadius: 8 }}>
                                         <div className="row">
                                             <div className="col mt-0">
                                                 <h5 className="card-title">Total products</h5>
@@ -297,7 +297,7 @@ const Product = () => {
 
                                             <div className="col-auto">
                                                 <div className="stat text-primary">
-                                                    <i className="fa-solid fa-arrow-up-right-dots" style={{color: "#067a38"}}></i>
+                                                    <i className="fa-solid fa-arrow-up-right-dots" style={{ color: "#067a38" }}></i>
                                                 </div>
                                             </div>
                                         </div>
@@ -309,7 +309,7 @@ const Product = () => {
                             </div>
                             <div className="col-md-6">
                                 <div className="card">
-                                    <div className="card-body" style={{borderRadius:8}}>
+                                    <div className="card-body" style={{ borderRadius: 8 }}>
                                         <div className="row">
                                             <div className="col mt-0">
                                                 <h5 className="card-title">Total inactive products</h5>
@@ -317,7 +317,7 @@ const Product = () => {
 
                                             <div className="col-auto">
                                                 <div className="stat text-primary">
-                                                    <i className="fa-solid fa-arrow-up-right-dots" style={{color: "#067a38"}}></i>
+                                                    <i className="fa-solid fa-arrow-up-right-dots" style={{ color: "#067a38" }}></i>
                                                 </div>
                                             </div>
                                         </div>
@@ -329,7 +329,7 @@ const Product = () => {
                             </div>
                         </div>
 
-                        <div className="userDetail" style={{marginTop:"20px"}}>
+                        <div className="userDetail" style={{ marginTop: "20px" }}>
                             <h4>Product details</h4>
                             <form id="productForm">
                                 <input type="text" readOnly hidden name="idForUpdate" value="${idForUpdate}"></input>
@@ -337,12 +337,12 @@ const Product = () => {
                                     <div className="col-md-6">
                                         <div className="mb-3">
                                             <label className="form-label fw-bold">Product name:</label>
-                                            <input value={displayP?.productName || ''} type="text" 
-                                                name="tenSanPham" 
-                                                className="form-control" 
+                                            <input value={displayP?.productName || ''} type="text"
+                                                name="tenSanPham"
+                                                className="form-control"
                                                 placeholder="Input product name"
-                                                onChange={(event)=>basicValidation(event,null,"productName")}
-                                                />
+                                                onChange={(event) => basicValidation(event, null, "productName")}
+                                            />
                                             <em className="text-danger">{err?.errProductName}</em>
                                         </div>
                                     </div>
@@ -350,26 +350,26 @@ const Product = () => {
                                         <div className="mb-3">
                                             <label className="form-label fw-bold">Price:</label>
                                             <input value={displayP?.price || 0}
-                                                type="number" name="gia" className="form-control" 
+                                                type="number" name="gia" className="form-control"
                                                 placeholder="Nhập vào giá sản phẩm"
-                                                onChange={(event)=>basicValidation(event, null,"productPrice")}
-                                                />
+                                                onChange={(event) => basicValidation(event, null, "productPrice")}
+                                            />
                                             <em className="text-danger">{err?.errPrice}</em>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div className="row">
-                                    
+
                                     <div className="col-md-6">
                                         <div className="mb-3">
                                             <label className="form-label fw-bold">Weight (gram):</label>
                                             <input value={displayP?.weight || 0}
-                                                type="number" name="trongLuong" 
-                                                className="form-control" 
+                                                type="number" name="trongLuong"
+                                                className="form-control"
                                                 placeholder="Nhập vào khối lượng"
-                                                onChange={(event)=>basicValidation(event,null,"productWeight")}
-                                                />
+                                                onChange={(event) => basicValidation(event, null, "productWeight")}
+                                            />
                                             <em className="text-danger">{err?.errWeight}</em>
                                         </div>
                                     </div>
@@ -380,15 +380,15 @@ const Product = () => {
                                                 <input type="radio" checked={displayP.status === true}
                                                     className="form-check-input" value={"Active"} name="trangThai"
                                                     id="flexRadioDefault1"
-                                                    onChange={(e)=>setDisplayP({...displayP,status: e.target.value === 'Active'})}
+                                                    onChange={(e) => setDisplayP({ ...displayP, status: e.target.value === 'Active' })}
                                                 />Active
                                             </div>
                                             <div className="form-check">
                                                 <input checked={displayP.status === false}
                                                     className="form-check-input" value={"Inactive"} type="radio" name="trangThai"
                                                     id="flexRadioDefault2"
-                                                    onChange={(e)=>setDisplayP({...displayP,status: e.target.value === 'Active'})}/>Inactive
-                                            </div> 
+                                                    onChange={(e) => setDisplayP({ ...displayP, status: e.target.value === 'Active' })} />Inactive
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -397,12 +397,12 @@ const Product = () => {
                                     <div className="col-md-12">
                                         <div className="mb-3">
                                             <label className="form-label fw-bold">Type:</label>
-                                            <select 
-                                                value={displayP.productType?.typeName} 
-                                                name="tenLoai" 
-                                                className="form-select" 
+                                            <select
+                                                value={displayP.productType?.typeName}
+                                                name="tenLoai"
+                                                className="form-select"
                                                 aria-label="Default select example"
-                                                onChange={(event)=>basicValidation(null,event,"productType")}
+                                                onChange={(event) => basicValidation(null, event, "productType")}
                                             >
                                                 <option value="" hidden>Choose a type...</option>
                                                 {listLoaiSP.map((loaiSP, index) => (
@@ -414,7 +414,7 @@ const Product = () => {
                                             <em className="text-danger">{err?.errType}</em>
                                         </div>
                                     </div>
-                                    
+
                                 </div>
 
                                 <div className="row">
@@ -427,23 +427,23 @@ const Product = () => {
                                                 onFileSelect={setImageFile}
                                                 reset={resetPreview}
                                             />
-                                            <div className="image-gallery" style={{ marginTop: '10px',display: 'flex',flexWrap: 'wrap',gap: '10px'}}>           
-                                                {listHinhSP && listHinhSP.map((hinh,index) => (
+                                            <div className="image-gallery" style={{ marginTop: '10px', display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                                                {listHinhSP && listHinhSP.map((hinh, index) => (
                                                     <div key={index}>
                                                         <img
-                                                        src={hinh.image}
-                                                        alt={hinh.image}
-                                                        style={{
-                                                        width: '100px', 
-                                                        height: '100px', 
-                                                        objectFit: 'cover', 
-                                                        margin: '5px', 
-                                                        border: '1px solid #ddd', 
-                                                        padding: '5px',
-                                                        cursor: 'pointer'
-                                                        }}
-                                                        onClick={()=>setOpen(true)}
-                                                    />
+                                                            src={hinh.image}
+                                                            alt={hinh.image}
+                                                            style={{
+                                                                width: '100px',
+                                                                height: '100px',
+                                                                objectFit: 'cover',
+                                                                margin: '5px',
+                                                                border: '1px solid #ddd',
+                                                                padding: '5px',
+                                                                cursor: 'pointer'
+                                                            }}
+                                                            onClick={() => setOpen(true)}
+                                                        />
                                                     </div>
                                                 ))}
                                                 {slides && slides.length > 0 && (
@@ -460,7 +460,7 @@ const Product = () => {
                                         <div className="mb-3">
                                             <label className="form-label fw-bold">Description:</label>
                                             <textarea name="moTa" className="form-control" rows={3} cols={4} value={displayP?.description || ''}
-                                                onChange={(event)=>setDisplayP({...displayP,description:event.target.value})}></textarea>
+                                                onChange={(event) => setDisplayP({ ...displayP, description: event.target.value })}></textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -476,13 +476,13 @@ const Product = () => {
                             </form>
                         </div>
 
-                        <div className="userList" style={{marginTop:"20px"}}>
+                        <div className="userList" style={{ marginTop: "20px" }}>
                             <h4 className="text-center"> Product list </h4>
-                            <form>
+                            <form onSubmit={(e) => e.preventDefault()}>
                                 <div className="row">
                                     <div className="col-md-4 col-xxl-8">
                                         <div className="input-group mb-3">
-                                            <select onChange={(e)=>setSort(e.target.value)}  name="sort" className="form-select" aria-label="Default select example">
+                                            <select onChange={(e) => setSort(e.target.value)} name="sort" className="form-select" aria-label="Default select example">
                                                 <option value="Type">Type</option>
                                                 <option value="Product Name">Product Name</option>
                                                 <option value="Weight">Weight</option>
@@ -491,14 +491,14 @@ const Product = () => {
                                                 <option value="Active Status">Active Status</option>
                                                 <option value="Inactive Status">Inactive Status</option>
                                             </select>
-                                            <input value={search} name="search" type="search" className="form-control" placeholder="Search" onChange={(e)=>setSearch(e.target.value)}/>
+                                            <input value={search} name="search" type="search" className="form-control" placeholder="Search" onChange={(e) => setSearch(e.target.value)} />
                                         </div>
                                     </div>
                                 </div>
                             </form>
 
                             <table className="table table-striped table-hover table-light">
-                                <thead className="text-center" style={{ backgroundColor: '#067a38', color: '#fff',fontSize:'0.8rem' }}>
+                                <thead className="text-center" style={{ backgroundColor: '#067a38', color: '#fff', fontSize: '0.8rem' }}>
                                     <th>Product ID</th>
                                     <th>Product name</th>
                                     <th>Price</th>
@@ -509,7 +509,7 @@ const Product = () => {
                                     <th>Action</th>
                                 </thead>
                                 <tbody className="text-center">
-                                    {products && products.map((p,index)=>(
+                                    {products && products.map((p, index) => (
                                         <tr key={index}>
                                             <td>{p.productID}</td>
                                             <td>{p.productName}</td>
@@ -522,25 +522,25 @@ const Product = () => {
                                                 </span>
                                             </td>
                                             <td>{p.description}</td>
-                                            <td><i className="fa-solid fa-pen-to-square" onClick={()=>fetchDetail(p.productID)}></i></td>
+                                            <td><i className="fa-solid fa-pen-to-square" onClick={() => fetchDetail(p.productID)}></i></td>
                                         </tr>
                                     ))}
                                 </tbody>
                             </table>
 
-                            <div className="text-center" hidden={totalPage!==0}>
+                            <div className="text-center" hidden={totalPage !== 0}>
                                 <p className="fw-bold">No matching product found</p>
                             </div>
-                            <div hidden={totalPage===0} className="d-flex justify-content-between" style={{marginTop:"25px"}}>
+                            <div hidden={totalPage === 0} className="d-flex justify-content-between" style={{ marginTop: "25px" }}>
                                 {/* Vị trí hiển thị số trang */}
                                 <p className="fw-bold">Currently viewing {pageNum} / {totalPage}</p>
 
-                                    
+
                                 {/* React Paginate */}
                                 <ReactPaginate
                                     breakLabel="..."
                                     nextLabel={<i className="fa-solid fa-forward-step"></i>}
-                                    onPageChange={(event)=>setPageNum(event.selected + 1)}
+                                    onPageChange={(event) => setPageNum(event.selected + 1)}
                                     pageRangeDisplayed={3}
                                     pageCount={totalPage}
                                     previousLabel={<i className="fa-solid fa-backward-step"></i>}
@@ -558,7 +558,7 @@ const Product = () => {
                                     forcePage={pageNum - 1}
                                 />
                                 <p className="fw-bold">6 records / page</p>
-                            </div> 
+                            </div>
 
                         </div>
 
