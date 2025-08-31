@@ -110,7 +110,7 @@ const Review = () => {
 
     const fetchData = async(page: number, search: string, sort: string, ngayFrom: Date, ngayTo: Date)=>{
         try {
-            const response = await axiosInstance.get(`admin/review?page=${page}&search=${search}&sort=${sort}&ngayFrom=${ngayFrom.toISOString().slice(0,10)}&ngayTo=${ngayTo.toISOString().slice(0,10)}`);
+            const response = await axiosInstance.get(`admin/review?page=${page}&search=${search}&sort=${sort}&dateFrom=${ngayFrom.toISOString().slice(0,10)}&dateTo=${ngayTo.toISOString().slice(0,10)}`);
             setCards(response.data.cards);
             setReviews(response.data.data);
             setToTalPage(response.data.totalPage);

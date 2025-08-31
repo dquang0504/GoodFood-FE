@@ -85,12 +85,12 @@ const ProductType = () => {
                 const response = await axiosInstance.put(`admin/product-type/update?typeID=${displayT.productTypeID}`,displayT);
                 toast.success(response.data.message);
                 resetForm();
+                setEditting(false);
             } catch (error: any) {
                 console.log(error)
                 setErr(error.response.data.err);
             }finally{
                 fetchData(pageNum,search);
-                setEditting(false);
             }
         }else{
             toast.error("Please check the inputs!");
