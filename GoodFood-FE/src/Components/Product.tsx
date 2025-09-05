@@ -118,14 +118,15 @@ const Product = () => {
             })
             console.log(response);
             // Tìm kiếm ngay với tên sản phẩm cần tìm
-            transcriptRef.current = response.data.data[0].className; // Lấy tên sản phẩm có độ tin cậy cao nhất
+            transcriptRef.current = response.data.data.productName; // Lấy tên sản phẩm có độ tin cậy cao nhất
             setTimKiem(transcriptRef.current); // Đặt text từ result vào thanh tìm kiếm
             clickTimkiem(transcriptRef.current); // Gọi hàm tìm kiếm với giá trị text
             setTimKiem("");
             setText("");
             transcriptRef.current = "";
-        } catch (error) {
+        } catch (error: any) {
             console.log(error);
+            toast.error(error.response.data.message)
         }
         finally{
             setLoading(false);
@@ -156,7 +157,6 @@ const Product = () => {
 
     useEffect(()=>{
         fetchProductsByPage(pageNum,timKiem,loai);
-        console.log("Rannnnn")
     },[pageNum,loai,orderBy])
 
 
@@ -241,7 +241,7 @@ const Product = () => {
                         {loading ? 
                             // <div>Loading...</div>
                             <div className='d-flex justify-content-center align-items-center' style={{ minHeight: 310 }}>
-                                <FourSquare color="#067A38" size="large" text="" textColor="" />
+                                <FourSquare color="#D95D39" size="large" text="" textColor="" />
                             </div>
                             :
                             products?.length === 0 ? <div className='px-5'>No products to display...</div> :
