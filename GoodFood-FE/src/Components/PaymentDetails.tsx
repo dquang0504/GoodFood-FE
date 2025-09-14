@@ -48,7 +48,8 @@ const PaymentDetails = () => {
         shippingFee: 0,
         status: false,
         totalPrice: 0,
-        invoiceStatus: null
+        invoiceStatus: null,
+        createdAt: new Date(),
     }
     const initialAddress = {
         accountID: user ? user.accountID : 0,

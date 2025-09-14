@@ -73,7 +73,6 @@ const ChatBot = () => {
 
         ws.onmessage = (event) => {
             const message = JSON.parse(event.data);
-            console.log("Received:", message);
             senderID.current = message.from_id
 
             const received = {
@@ -149,8 +148,6 @@ const ChatBot = () => {
         };
 
         fetchMessages();
-        console.log(adminMessages);
-        console.log(userMessages);
     }, []); // Khi maTaiKhoan thay đổi thì load lại tin nhắn
 
     const handleChatSelection = (chatOption: string) => {
@@ -190,7 +187,6 @@ const ChatBot = () => {
                 );
                 return [...prevMessages, ...newMessages]
             })
-            console.log(botWelcomeMessages)
         }
         else if (chatOption === 'User') {
             const adminWelcomeMessage = {
@@ -235,7 +231,6 @@ const ChatBot = () => {
             //đảm bảo khi lưu bao gồm luôn cả outgoing và incoming trong một collection
             // Lưu tin nhắn vào subcollection "messages"
             await addDoc(collection(db, "chats", chatId, "messages"), messageData);
-            console.log("Tin nhắn đã được lưu vào Firestore!", messageData);
         } catch (error) {
             console.error("Lỗi khi lưu tin nhắn vào Firestore:", error);
         }
@@ -248,7 +243,6 @@ const ChatBot = () => {
                 response = await axios.post(`${ENDPOINT}/chatbot/call`, { prompt: message })
             }
             response = await axiosInstance.post(`${ENDPOINT}/chatbot/call`, { prompt: message })
-            console.log(response);
             return response.data
         } catch (error) {
             console.log(error);

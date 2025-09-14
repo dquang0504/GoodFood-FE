@@ -115,6 +115,7 @@ const cartSlice = createSlice({
         },
         saveInvoice: (state,action)=>{
             state.invoice = action.payload as Invoices
+            console.log(action.payload);
         },
         saveCart: (state,action)=>{
             state.cart = action.payload as Carts[]

@@ -39,14 +39,14 @@ const PaypalButton: React.FC<PaypalButtonProps> = ({onSuccess,order}) => {
     script.async = true;
     script.onload = () => {
       window.paypal.Buttons({
-        createOrder: (actions: any) => {
+        createOrder: (_data: any,actions: any) => {
           return actions.order.create({
             purchase_units: [{
               amount: { value: usdValue, currency_code: "USD" } // số tiền test
             }]
           });
         },
-        onApprove: async (actions: any) => {
+        onApprove: async (_data: any ,actions: any) => {
           const details = await actions.order.capture();
           console.log("Transaction completed by " + details.payer.name.given_name);
           console.log(details);

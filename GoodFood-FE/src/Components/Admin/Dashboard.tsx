@@ -17,16 +17,16 @@ import Calendar from './Calendar';
 const Dashboard = () => {
 
     type pieChart = {
-        Label: string,
-        Value: number
+        label: string,
+        value: number
     }
     const [dataPC,setDataPC] = useState<pieChart[]>([]);
 
     const [dashboard,setDashboard] = useState<DashboardTS>({
-        TotalIncome: 0,
-        TotalInvoice: 0,
-        TotalProductSold: 0,
-        TotalUser: 0
+        totalIncome: 0,
+        totalInvoice: 0,
+        totalProductSold: 0,
+        totalUser: 0
     });
 
     const fetchValues = async()=>{
@@ -88,7 +88,7 @@ const Dashboard = () => {
                                                         </div>
                                                     </div>
 
-                                                    <h1 className="mt-1 mb-3 fs-2"> {dashboard.TotalProductSold}</h1>
+                                                    <h1 className="mt-1 mb-3 fs-2"> {dashboard.totalProductSold}</h1>
                                                     <div className="mb-0">
 
                                                     </div>
@@ -107,7 +107,7 @@ const Dashboard = () => {
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <h1 className="mt-1 mb-3 fs-2"> {dashboard.TotalUser} </h1>
+                                                    <h1 className="mt-1 mb-3 fs-2"> {dashboard.totalUser} </h1>
                                                     <div className="mb-0">
 
                                                     </div>
@@ -130,7 +130,7 @@ const Dashboard = () => {
                                                         </div>
                                                     </div>
                                                     <h1 className="mt-1 mb-3 fs-2">
-                                                        {formatVND(dashboard.TotalIncome)}
+                                                        {formatVND(dashboard.totalIncome)}
                                                     </h1>
                                                     <div className="mb-0">
 
@@ -150,7 +150,7 @@ const Dashboard = () => {
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <h1 className="mt-1 mb-3 fs-2">{dashboard.TotalInvoice}</h1>
+                                                    <h1 className="mt-1 mb-3 fs-2">{dashboard.totalInvoice}</h1>
                                                     <div className="mb-0">
 
                                                     </div>
@@ -194,8 +194,8 @@ const Dashboard = () => {
                                                 <tbody>
                                                     {dataPC.map((item, index) => (
                                                         <tr key={index}>
-                                                            <td>{item.Label}</td>
-                                                            <td className="text-end">{item.Value}</td>
+                                                            <td>{item.label}</td>
+                                                            <td className="text-end">{item.value}</td>
                                                         </tr>
                                                     ))}
                                                 </tbody>

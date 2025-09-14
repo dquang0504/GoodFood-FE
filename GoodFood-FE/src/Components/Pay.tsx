@@ -9,11 +9,22 @@ import '../assets/css/Payment.css'
 import { deleteCartItem, saveCart, saveInvoice, saveInvoiceDetails, saveProduct } from '../Slices/CartSlice';
 import axiosInstance from '../Services/AxiosInstance';
 import { toast } from 'react-toastify';
+import { useLocation } from 'react-router-dom';
+import { InvoiceDetails } from '../Interfaces/InvoiceDetails';
+import { Products } from '../Interfaces/Products';
 
 const Pay = () => {
     const dispatch = useDispatch<AppDispatch>()
     const queryParams = new URLSearchParams(window.location.search);
-    const {invoiceDetails,invoice,cart} = useSelector((state:RootState)=>state.cart); 
+    const {invoiceDetails,invoice,cart} = useSelector((state:RootState)=>state.cart);
+    const location = useLocation();
+    //state from navigate at PaymentDetails.tsx for COD method
+    const stateData = location.state as {
+        invoice?: Invoices,
+        invoiceDetails?: InvoiceDetails[],
+        product: Products[]
+    }
+    console.log(stateData);
     const {user} = useSelector((state:RootState)=>state.login);
     const initialInvoice: Invoices = {
         accountID: user ? user.accountID : 0,
@@ -21,7 +32,7 @@ const Pay = () => {
         invoiceID: 0,
         invoiceStatusID: 1,
         note: "",
-        paymentDate: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
         paymentMethod: true,
         receiveAddress: "",
         receiveName: "",
@@ -46,22 +57,37 @@ const Pay = () => {
         try {
             const response = await axiosInstance.post(`invoice/pay`,payload);
             setInvoices(response.data.data.invoice);
+
+            //insert product into invoice details
+
             saveInvoiceDetails(response.data.data.invoiceDetails)
             console.log(response.data.data);
             toast.success(response.data.message);
             // deleting cart item using cart slice
-            cart.map(item=>(
-                dispatch(deleteCartItem({cartID: item.cartID,accountID: user ? user.accountID : 0}))
-            ))
-            dispatch(saveCart(null));
+            cart.forEach(cartItem=>{
+                const matched = invoiceDetails.some(detail => detail.productID === cartItem.productID);
+
+                if (matched){
+                    dispatch(deleteCartItem({cartID: cartItem.cartID,accountID: user ? user.accountID : 0}))
+                    dispatch(saveCart(null));
+                }
+            })
+            
         } catch (error) {
             console.log(error)
         }
     }
 
     useEffect(() => {
-        
-        if(queryParams.get("vnp_ResponseCode")==="00"){
+        if(stateData && stateData.invoice && stateData.invoiceDetails){
+            setInvoices(stateData.invoice);
+            dispatch(saveInvoice(stateData.invoice));
+            stateData.invoiceDetails.forEach(detail=>{
+                stateData.product.map(pro => detail.product = pro)
+            })
+            dispatch(saveInvoiceDetails(stateData.invoiceDetails || []));
+        }
+        else if(queryParams.get("vnp_ResponseCode")==="00"){
             createInvoice();
         }
 
@@ -77,7 +103,7 @@ const Pay = () => {
         // }
 
         return () => {
-            dispatch(saveInvoice(null));
+            // dispatch(saveInvoice(null));
             dispatch(saveInvoiceDetails([]));
             dispatch(saveProduct([]));
         }
@@ -91,14 +117,14 @@ const Pay = () => {
                     <ol className="breadcrumb">
                         <li className="breadcrumb-item"><a href="/home/cart">Cart</a></li>
                         <li className="breadcrumb-item "><a href='#'>Payment Details</a></li>
-                        {invoices.paymentMethod ? (
+                        {invoices && invoices.paymentMethod ? (
                                 <li className="breadcrumb-item active" aria-current="page">Ordered successfully!</li>
                             ):(
                                 <li className="breadcrumb-item active" aria-current="page">Order paid successfully!</li>
                         )}
                     </ol>
                 </nav>
-                {invoices.paymentMethod ? (
+                {invoices && invoices.paymentMethod ? (
                     <h3 className="payment-header">Ordered successfully!</h3>
                 ):(
                     <h3 className="payment-header">Order paid successfully!</h3>
@@ -149,7 +175,7 @@ const Pay = () => {
                             <div className="order-summary">
                                 <h4>Thank you. Your order has been confirmed.</h4>
                                 <p><strong>Order ID:</strong> {invoices.invoiceID}</p>
-                                <p><strong>Date:</strong> {new Date(invoices.paymentDate).toLocaleString()}</p>
+                                <p><strong>Date:</strong> {new Date(invoices.createdAt).toLocaleString()}</p>
                                 <p><strong>Phone Number:</strong> {invoices.receivePhone}</p>
                                 <p><strong>Delivery Address:</strong> {invoices.receiveAddress}</p>
                                 <p><strong>Payment Method:</strong>

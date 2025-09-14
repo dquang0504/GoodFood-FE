@@ -5,8 +5,8 @@ import { Chart } from 'chart.js';
 const BarChart = () => {
 
     type barChart = {
-        Month: number,
-        Value: number
+        month: number,
+        value: number
     }
     
     const [dataBC,setDataBC] = useState<barChart[]>([]);
@@ -44,8 +44,8 @@ const BarChart = () => {
                     labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
                     datasets: [{
                         data: Array.from({length: 12},(_,i)=>{
-                            const monthData = dataBC.find(item => item.Month === i + 1);
-                            return monthData ? monthData.Value : 0;
+                            const monthData = dataBC.find(item => item.month === i + 1);
+                            return monthData ? monthData.value : 0;
                         }),
                         backgroundColor: [
                             "#007bff",

@@ -5,8 +5,8 @@ import axiosInstance from '../../Services/AxiosInstance';
 const PieChart = () => {
 
     type pieChart = {
-        Label: string,
-        Value: number
+        label: string,
+        value: number
     }
 
     const [dataPC,setDataPC] = useState<pieChart[]>([]);
@@ -40,9 +40,9 @@ const PieChart = () => {
         chartInstanceRef.current = new Chart(ctx,{
             type: 'pie',
             data:{
-                labels: dataPC.map(item => item.Label),
+                labels: dataPC.map(item => item.label),
                 datasets: [{
-                    data: dataPC.map(item => item.Value),
+                    data: dataPC.map(item => item.value),
                     backgroundColor: [
                         "#007bff",
                         "#17a2b8",

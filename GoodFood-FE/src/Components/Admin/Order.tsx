@@ -86,7 +86,6 @@ const Order = () => {
     },[])
 
     const handleShow = (invoiceID: number,status: InvoiceStatuses)=>{
-        console.log(status);
         if (statusList[0].statusName === "Delivered" || statusList[0].statusName === "Cancelled"){
             setEditting(false);
             return;

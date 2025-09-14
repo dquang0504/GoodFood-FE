@@ -4,8 +4,8 @@ import Chart from 'chart.js/auto';
 
 const LineChart = () => {
     type lineChart = {
-        Month: number;
-        TotalIncome: number;
+        month: number;
+        totalIncome: number;
     };
 
     const [dataLC, setDataLC] = useState<lineChart[]>([]);
@@ -53,8 +53,8 @@ const LineChart = () => {
                     backgroundColor: gradient,
                     borderColor: "#067a38",
                     data: Array.from({ length: 12 }, (_, i) => {
-                        const monthData = dataLC.find(item => item.Month === i + 1);
-                        return monthData ? monthData.TotalIncome : 0;
+                        const monthData = dataLC.find(item => item.month === i + 1);
+                        return monthData ? monthData.totalIncome : 0;
                     })
                 }]
             },
