@@ -8,6 +8,7 @@ import { ENDPOINT } from '../App';
 import { toast } from 'react-toastify';
 
 interface ResetPass{
+    token: string,
     newPass: string,
     confirmPass: string,
     email: string,
@@ -15,6 +16,7 @@ interface ResetPass{
 const ResetPassword = () => {
     const navigate = useNavigate();
     const initialReset: ResetPass = {
+        token: "",
         confirmPass: "",
         newPass: "",
         email: "",
@@ -26,6 +28,7 @@ const ResetPassword = () => {
     })
     const urlParams = new URLSearchParams(window.location.search);
     const paramValue = urlParams.get('token');
+    setResetPass({...resetPass,token: paramValue ?? ""})
     const [isValid,setIsValid] = useState(false);
 
     const basicValidation = (e:React.ChangeEvent<HTMLInputElement>,fieldName: string) =>{
@@ -44,7 +47,7 @@ const ResetPassword = () => {
             err.errNewPass === "" && err.errConfirm === ""
         ){
             try {
-                const response = await axios.post(`${ENDPOINT}/user/forgot-password/reset?token=${paramValue}`,resetPass);
+                const response = await axios.post(`${ENDPOINT}/user/forgot-password/reset`,resetPass);
                 toast.success(response.data.message);
                 setResetPass(initialReset);
                 navigate("/login");

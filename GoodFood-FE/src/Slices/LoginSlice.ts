@@ -107,8 +107,13 @@ const loginSlice = createSlice({
 export const login = createAsyncThunk(
     "login/login",
     async({username,password}: {username: string, password: string}, {rejectWithValue})=>{
+        const payload = {
+            username,
+            password
+        }
+        console.log(payload);
         try {
-            const response = await axios.get(`${ENDPOINT}/user/login?username=${username}&password=${password}`,{withCredentials: true});
+            const response = await axios.post(`${ENDPOINT}/user/login`,payload,{withCredentials: true});
             toast.success("Successfully logged in!");
             return response.data.data;
         } catch (error : any) {
