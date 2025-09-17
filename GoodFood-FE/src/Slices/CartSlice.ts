@@ -107,8 +107,8 @@ const cartSlice = createSlice({
     initialState: initialState,
     reducers:{
         clearCart: (state)=>{
-            state.cart = [];
             sessionStorage.removeItem("cart");
+            return initialState
         },
         saveInvoiceDetails: (state,action)=>{
             state.invoiceDetails = action.payload as InvoiceDetails[]

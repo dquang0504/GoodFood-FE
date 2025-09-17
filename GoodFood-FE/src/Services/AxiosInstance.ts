@@ -59,9 +59,8 @@ axiosInstance.interceptors.response.use(
             isRefreshing = true;
 
             try {
-                const sessionID = storeRef.getState().login.sessionID;
-                if (!sessionID) return;
-                const newToken = await storeRef.dispatch<any>(refreshAccessToken(sessionID)).unwrap();
+                // gọi refreshAccessToken (backend sẽ đọc cookie refresh)
+                const newToken = await storeRef.dispatch<any>(refreshAccessToken()).unwrap();
 
                 processQueue(null, newToken);
 
@@ -72,7 +71,7 @@ axiosInstance.interceptors.response.use(
                 return axiosInstance(originalRequest);
             } catch (err) {
                 processQueue(err, null);
-                // storeRef.dispatch({ type: "login/logout" });
+                storeRef.dispatch({ type: "auth/forceLogout" });
                 return Promise.reject(err);
             } finally {
                 isRefreshing = false;

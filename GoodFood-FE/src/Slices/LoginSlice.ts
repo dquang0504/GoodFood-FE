@@ -11,7 +11,6 @@ export interface LoginState{
     accessToken: string | null
     error: string | null,
     isLoading: boolean,
-    sessionID: string | null,
     resetToken: string | null,
 }
 
@@ -21,7 +20,6 @@ const initialState: LoginState = {
     accessToken: null,
     error: null,
     isLoading: false,
-    sessionID: null,
     resetToken: null,
 }
 
@@ -30,10 +28,7 @@ const loginSlice = createSlice({
     initialState: initialState,
     reducers: {
         logout(state){
-            state.isAuthenticated = false;
-            state.user = null;
-            state.accessToken = null
-            state.sessionID = null
+            return initialState                          
         },
         setUser(state,action){
             state.user = action.payload;
@@ -54,7 +49,6 @@ const loginSlice = createSlice({
                 state.isLoading = false;
                 state.user = action.payload.user;
                 state.accessToken = action.payload.accessToken
-                state.sessionID = action.payload.sessionID
             })
             .addCase(login.rejected, (state,action)=>{
                 state.error = action.payload as string;
@@ -79,7 +73,6 @@ const loginSlice = createSlice({
                 state.isLoading = false;
                 state.user = action.payload.user
                 state.accessToken = action.payload.accessToken
-                state.sessionID = action.payload.sessionID
             })
             .addCase(loginGoogle.rejected, (state,action)=>{
                 state.error = action.payload as string;
@@ -95,7 +88,6 @@ const loginSlice = createSlice({
                 state.isLoading = false;
                 state.user = action.payload.user
                 state.accessToken = action.payload.accessToken
-                state.sessionID = action.payload.sessionID
             })
             .addCase(loginFacebook.rejected, (state,action)=>{
                 state.error = action.payload as string;
@@ -125,11 +117,9 @@ export const login = createAsyncThunk(
 
 export const refreshAccessToken = createAsyncThunk(
     "login/refreshAccessToken",
-    async (sessionID: string, { rejectWithValue }) => {
+    async (_, { rejectWithValue }) => {
         try {
-            if (!sessionID) throw new Error("No sessionID found!");
-
-            const response = await axios.post(`${ENDPOINT}/user/refresh-token`, {sessionID},{withCredentials: true});
+            const response = await axios.post(`${ENDPOINT}/user/refresh-token`, {},{withCredentials: true});
             return response.data.accessToken;
         } catch (error: any) {
             console.error("refreshAccessToken failed: ", error);
