@@ -3,7 +3,7 @@ import loginReducer, { logout } from '../Slices/LoginSlice'
 import cartReducer from "../Slices/CartSlice";
 import chatbotReducer from "../Slices/ChatbotSlice"
 import updateAccountReducer from "../Slices/UpdateAccountSlice"
-import storage from 'redux-persist/lib/storage'
+import storageSession from 'redux-persist/lib/storage/session'
 import persistReducer from "redux-persist/es/persistReducer";
 import persistStore from "redux-persist/es/persistStore";
 import { FLUSH, PAUSE, PERSIST, PURGE, REGISTER, REHYDRATE } from "redux-persist";
@@ -13,7 +13,7 @@ const loginTransform = createFilter('login', ['user','isAuthenticated']);
 
 const persistConfig = {
     key: 'root',
-    storage,
+    storage: storageSession,
     whitelist: ["login","cart"],
     transforms: [loginTransform],
 };
