@@ -1,4 +1,4 @@
-## GoodFood Frontend 🍔💻
+# GoodFood Frontend 🍔💻
 <p align="center"> 
   <img src="https://raw.githubusercontent.com/dquang0504/GoodFood-FE/main/GoodFood-FE/src/assets/images/GoodFood-FE-cover.png" alt="GoodFood Frontend Banner" width="450" /> 
 </p> 
