@@ -34,6 +34,7 @@ import ChatBot from './Components/ChatBot'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+// export const ENDPOINT = "http://127.0.0.1:8080/api"
 export const ENDPOINT = "http://localhost:8080/api"
 
 interface PrivateRouteProps{

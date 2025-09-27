@@ -6,8 +6,11 @@ import type { Store } from "redux";
 let storeRef: Store<RootState> | null = null;
 export const setStore = (store: Store<RootState>) => { storeRef = store; };
 
+//const ENDPOINT = "http://127.0.0.1:8080/api"
+const ENDPOINT = "http://localhost:8080/api"
+
 const axiosInstance = axios.create({
-    baseURL: "http://localhost:8080/api/",
+    baseURL: ENDPOINT,
     withCredentials: true,
 });
 
