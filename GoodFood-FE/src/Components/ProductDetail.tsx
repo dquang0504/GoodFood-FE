@@ -66,7 +66,6 @@ const ProductDetail = () => {
     const fetchDetail = async (filter: string, pageNum: number) => {
         try {
             const response = await axios.get(`${ENDPOINT}/products/detail?id=${state.productID}&filter=${filter}&page=${pageNum}`)
-            console.log(response);
             setProduct(response.data.data.product);
             setSelectedImage({...selectedImage,image: response.data.data.product.coverImage});
             setProductImgs(response.data.data.productImages);

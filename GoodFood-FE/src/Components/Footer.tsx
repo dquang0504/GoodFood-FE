@@ -6,7 +6,7 @@ const Footer = () => {
             <div className="container">
                 <div className="row">
                     <div className="col-md-3">
-                        <h5 style={{ fontFamily: 'Rancho' }}>Good Food 24 Giờ</h5>
+                        <h5 style={{ fontFamily: 'Rancho' }}>Good Food 24h</h5>
                         <address>
                             FPT Polytechnic Building, 22 Street,<br /> Thuong Thanh ward, Cai Rang district, Can Tho
                         </address>

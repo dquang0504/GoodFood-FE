@@ -83,7 +83,6 @@ const Address = () => {
             const copy: Wards[] = response.data.data;
             if (selectedWard){
                 const ward = copy.find(item => item.WardCode == selectedWard)
-                console.log(listWard);
                 if (ward){
                     setAddress(prev=>({
                         ...prev,
@@ -142,13 +141,6 @@ const Address = () => {
         fetchAddresesByPage(pageNum);
     },[])
 
-    useEffect(()=>{
-        console.log(listWard)
-    },[listWard])
-
-    useEffect(()=>{
-        console.log(address)
-    },[addressForm,address])
 
     useEffect(()=>{
         fetchAddresesByPage(pageNum);
@@ -211,7 +203,6 @@ const Address = () => {
             const response = await axiosInstance.get(`address/detail?addressID=${address.addressID}&accountID=${address.accountID}`);
             setAddressForm(response.data.data);
             const selectedDistrict = listDistrict.find(district => district.DistrictID === response.data.data.districtID)
-            console.log(selectedDistrict)
             if (selectedDistrict){
                 setAddress(prev=>({
                     ...prev,

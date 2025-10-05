@@ -22,24 +22,22 @@ import { RootState } from '../Store/store';
 const Product = () => {
 
     const [loaiSanPhams, setLoaiSanPhams] = useState<ProductTypes[]>([]);
-    const {user} = useSelector((state:RootState)=>state.login)
-    const [timKiem,setTimKiem] = useState("");
-    const [loading,setLoading] = useState(false);
-    const [products,setProducts] = useState<Products[]>([]);
-    const [loai,setLoai] = useState<ProductTypes | null>(null);
-    const [totalPage,setToTalPage] = useState(0);
-    const [pageNum,setPageNum] = useState(1);
-    const [price,setPrice] = useState<{minPrice: number,maxPrice: number}>({
+    const { user } = useSelector((state: RootState) => state.login)
+    const [timKiem, setTimKiem] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [products, setProducts] = useState<Products[]>([]);
+    const [loai, setLoai] = useState<ProductTypes | null>(null);
+    const [totalPage, setToTalPage] = useState(0);
+    const [pageNum, setPageNum] = useState(1);
+    const [price, setPrice] = useState<{ minPrice: number, maxPrice: number }>({
         minPrice: 0,
         maxPrice: 250000,
     })
-    const [orderBy,setOrderBy] = useState("ASC");
-    
-    const [text,setText] = useState("");
+    const [orderBy, setOrderBy] = useState("ASC");
+    const [text, setText] = useState("");
     //state isListening để xác định xem micro còn đang lắng nghe không
     const [isListening, setIsListening] = useState(false);
     const transcriptRef = useRef(''); // Sử dụng useRef để giữ giá trị transcript
-
     // Kiểm tra xem trình duyệt có hỗ trợ Web Speech API không
     const recognition = new ((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition)();
     recognition.lang = 'vi-VN';
@@ -48,17 +46,21 @@ const Product = () => {
     const navigate = useNavigate();
 
 
-    const fetchLoaiSP = async()=>{
+    const fetchLoaiSP = async () => {
+        setLoading(true);
         try {
             const response = await axios.get(`${ENDPOINT}/products/getTypes`);
             setLoaiSanPhams(response.data.data);
-        } catch (error : any) {
+        } catch (error: any) {
             console.log(error)
             toast.error(error.response.data.message)
+        } finally {
+            setLoading(false);;
         }
     }
 
-    const fetchProductsByPage = async (page: number,searchQuery: string, loai?: ProductTypes | null) => {
+    const fetchProductsByPage = async (page: number, searchQuery: string, loai?: ProductTypes | null) => {
+        setLoading(true);
         try {
             const typeQuery = loai ? `&type=${loai.typeName}` : '';
             const response = await axios.get(`${ENDPOINT}/products?page=${page}${typeQuery}&search=${searchQuery}&minPrice=${price.minPrice}&maxPrice=${price.maxPrice}&orderBy=${orderBy}`);
@@ -67,25 +69,27 @@ const Product = () => {
         } catch (error: any) {
             console.log(error);
             toast.error(error.response?.data?.message || "Error fetching products");
+        } finally {
+            setLoading(false);
         }
     };
 
-    const clickTimkiem = (timKiem: string)=>{
-        fetchProductsByPage(pageNum,timKiem,null);
+    const clickTimkiem = (timKiem: string) => {
+        fetchProductsByPage(pageNum, timKiem, null);
     }
 
-    const timKiemBangGiongNoi = ()=>{
-        if (isListening){
+    const timKiemBangGiongNoi = () => {
+        if (isListening) {
             recognition.stop();
-        } else{
+        } else {
             recognition.start();
         }
     }
 
     // Xử lý khi nhận được kết quả từ mic
-    recognition.onresult = (event: any)=>{
+    recognition.onresult = (event: any) => {
         let transcript = '';
-        for(let i = event.resultIndex;i<event.results.length;i++){
+        for (let i = event.resultIndex; i < event.results.length; i++) {
             transcript += event.results[i][0].transcript;
         }
         transcriptRef.current = transcript;
@@ -93,7 +97,7 @@ const Product = () => {
     }
     // Xử lý khi bắt đầu và kết thúc lắng nghe
     recognition.onstart = () => setIsListening(true);
-    recognition.onend = ()=>{
+    recognition.onend = () => {
         setIsListening(false);
         setTimKiem(transcriptRef.current);
         clickTimkiem(transcriptRef.current);
@@ -103,20 +107,19 @@ const Product = () => {
         transcriptRef.current = "";
     }
 
-    const uploadImage = async(event: React.ChangeEvent<HTMLInputElement>)=>{
+    const uploadImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
-        if(!file) return
+        if (!file) return
         try {
             setLoading(true);
             // Tạo FormData và gán file ảnh
             const formData = new FormData();
             formData.append("image", file);
-            const response = await axios.post(`${ENDPOINT}/products/classify-image`,formData,{
-                headers:{
+            const response = await axios.post(`${ENDPOINT}/products/classify-image`, formData, {
+                headers: {
                     "Content-Type": "multipart/form-data"
                 }
             })
-            console.log(response);
             // Tìm kiếm ngay với tên sản phẩm cần tìm
             transcriptRef.current = response.data.data.productName; // Lấy tên sản phẩm có độ tin cậy cao nhất
             setTimKiem(transcriptRef.current); // Đặt text từ result vào thanh tìm kiếm
@@ -128,12 +131,12 @@ const Product = () => {
             console.log(error);
             toast.error(error.response.data.message)
         }
-        finally{
+        finally {
             setLoading(false);
         }
     }
 
-    const clickMuaNgay = (product: Products)=>{
+    const clickMuaNgay = (product: Products) => {
         const cart: Carts[] = []
         const cartItem: Carts = {
             accountID: user ? user.accountID : 0,
@@ -143,21 +146,21 @@ const Product = () => {
             quantity: 1
         }
         cart.push(cartItem)
-        navigate("/home/payment-details",{state:{listChosenItems: cart}});
+        navigate("/home/payment-details", { state: { listChosenItems: cart } });
     }
 
-    const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) =>{
+    const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
         setTimKiem(event.target.value);
     }
 
 
-    useEffect(()=>{
+    useEffect(() => {
         fetchLoaiSP();
-    },[])
+    }, [])
 
-    useEffect(()=>{
-        fetchProductsByPage(pageNum,timKiem,loai);
-    },[pageNum,loai,orderBy])
+    useEffect(() => {
+        fetchProductsByPage(pageNum, timKiem, loai);
+    }, [pageNum, loai, orderBy])
 
 
     return (
@@ -173,7 +176,7 @@ const Product = () => {
                                         type="search"
                                         className="form-control"
                                         placeholder="Search..."
-                                        onChange={(event) => { handleSearch(event)}}
+                                        onChange={(event) => { handleSearch(event) }}
                                         value={text ? text : timKiem}
                                     />
                                     <button
@@ -198,18 +201,28 @@ const Product = () => {
                                             accept="image/*"
                                             capture='user'
                                             style={{ display: "none" }}
-                                            onChange={(event)=>uploadImage(event)}
+                                            onChange={(event) => uploadImage(event)}
                                         />
                                     </label>
                                 </div>
 
                                 <h3>Category</h3>
                                 <ul className="categories">
-                                    {loaiSanPhams.filter(item => item.status === true)
-                                        .map(loai => (
-                                            <li key={loai.productTypeID} style={{cursor:'pointer'}}>
-                                                <a onClick={() => { setLoai(loai),setPageNum(1) }}>{loai.typeName}</a></li>
-                                        ))}
+                                    {loading ? (
+                                        [...Array(5)].map((_, i) => (
+                                            <li key={i}>
+                                                <div className='placeholder-wave'>
+                                                    <span className='placeholder col-6'></span>
+                                                </div>
+                                            </li>
+                                        ))
+                                    ) : (
+                                        loaiSanPhams.filter(item => item.status === true)
+                                            .map(loai => (
+                                                <li key={loai.productTypeID} style={{ cursor: 'pointer' }}>
+                                                    <a onClick={() => { setLoai(loai), setPageNum(1) }}>{loai.typeName}</a></li>
+                                            ))
+                                    )}
                                 </ul>
 
                                 <h3>Price</h3>
@@ -217,12 +230,12 @@ const Product = () => {
                                     {/* <input type="number" className="form-control" name="minPrice" id="minPrice" placeholder="Min Price" onChange={(e)=>setPrice({...price,minPrice:e.target.valueAsNumber})} />
                                     <input type="number" className="form-control" name="maxPrice" id="maxPrice" placeholder="Max Price" c /> */}
                                     <label htmlFor="" className='form-label'>Min price: <span>{price.minPrice.toLocaleString()} VND</span></label>
-                                    <input value={price.minPrice} type="range" className="form-control-range" id="priceRange" min="0" max="250000" step="1000" onChange={(e)=>setPrice({...price,minPrice:e.target.valueAsNumber})} />
-                                    
+                                    <input value={price.minPrice} type="range" className="form-control-range" id="priceRange" min="0" max="250000" step="1000" onChange={(e) => setPrice({ ...price, minPrice: e.target.valueAsNumber })} />
+
                                     <label htmlFor="" className='form-label'>Max price: <span>{price.maxPrice.toLocaleString()} VND</span></label>
-                                    <input value={price.maxPrice} type="range" className="form-control-range" id="priceRange" min="0" max="250000" step="1000" onChange={(e)=>setPrice({...price,maxPrice:e.target.valueAsNumber})} />
+                                    <input value={price.maxPrice} type="range" className="form-control-range" id="priceRange" min="0" max="250000" step="1000" onChange={(e) => setPrice({ ...price, maxPrice: e.target.valueAsNumber })} />
                                 </div>
-                                <button onClick={()=>fetchProductsByPage(pageNum,timKiem,loai)} type="button" className="btn btn-primary">Filter</button>
+                                <button onClick={() => fetchProductsByPage(pageNum, timKiem, loai)} type="button" className="btn btn-primary">Filter</button>
                             </div>
                         </div>
                     </div>
@@ -237,8 +250,8 @@ const Product = () => {
                                 </select>
                             </div>
                         </div>
-                       
-                        {loading ? 
+
+                        {loading ?
                             // <div>Loading...</div>
                             <div className='d-flex justify-content-center align-items-center' style={{ minHeight: 310 }}>
                                 <FourSquare color="#D95D39" size="large" text="" textColor="" />
@@ -250,7 +263,7 @@ const Product = () => {
                                         .map(product => (
                                             <div key={product.productID} className="col-md-4">
                                                 <div className="card">
-                                                    <img src={product.coverImage} alt={product.productName} onClick={() => { navigate(`/home/product-details/${product.productID}`,{state:{productID:product.productID,productType:product.productTypeID}}) }} />
+                                                    <img src={product.coverImage} alt={product.productName} onClick={() => { navigate(`/home/product-details/${product.productID}`, { state: { productID: product.productID, productType: product.productTypeID } }) }} />
                                                     <div className="card-body">
                                                         <h3 className="product-name">{product.productName}</h3>
                                                         <div className="action row">
@@ -268,7 +281,7 @@ const Product = () => {
                                 <ReactPaginate
                                     breakLabel="..."
                                     nextLabel={<i className="fa-solid fa-forward-step"></i>}
-                                    onPageChange={(event)=>setPageNum(event.selected + 1)}
+                                    onPageChange={(event) => setPageNum(event.selected + 1)}
                                     pageRangeDisplayed={3}
                                     pageCount={totalPage}
                                     previousLabel={<i className="fa-solid fa-backward-step"></i>}

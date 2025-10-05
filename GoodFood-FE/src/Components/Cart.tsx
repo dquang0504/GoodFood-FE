@@ -28,7 +28,6 @@ const Cart = () => {
         try {
             const response = await axiosInstance.get(`cart?accountID=${user?.accountID}`)
             setListCart(response.data.data);
-            console.log(response);
         } catch (error) {
             console.log(error);
         }
@@ -56,8 +55,6 @@ const Cart = () => {
     }, [])
 
     useEffect(() => {
-        console.log(totalProductSelect);
-    
         const checkboxes = document.querySelectorAll<HTMLInputElement>(".checkboxClass");
         const checkboxAll = document.querySelector<HTMLInputElement>("#checkboxAll");
     
@@ -144,7 +141,6 @@ const Cart = () => {
             setShowModalDeleteAll(false);
             return;
         }
-        console.log("user rỗng");
     }
 
     const navigate = useNavigate();

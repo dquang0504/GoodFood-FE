@@ -9,7 +9,7 @@ import Footer from './Footer';
 import axios from 'axios';
 import { ENDPOINT } from '../App';
 import { Products } from '../Interfaces/Products';
-import { useDispatch} from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { addMessage, openChatbot } from '../Slices/ChatbotSlice';
 import { toast } from 'react-toastify';
 import ThreeDCarousel from './ThreeDCarouse';
@@ -28,14 +28,17 @@ const Home = () => {
         errEmail: "",
         errMessage: "",
     })
+    const [loading, setLoading] = useState(false);
 
     const fetchProduct = async () => {
+        setLoading(true);
         try {
             const response = await axios.get(`${ENDPOINT}/products/getFeaturings`)
             setProducts(response.data.data);
-            console.log(response);
         } catch (error) {
             console.log(error)
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -84,7 +87,7 @@ const Home = () => {
         }
     }
 
-    const resetForm = ()=>{
+    const resetForm = () => {
         setFormData({
             name: '',
             fromEmail: '',
@@ -98,7 +101,6 @@ const Home = () => {
         ) {
             try {
                 const response = await axios.post(`${ENDPOINT}/user/contact`, formData);
-                console.log(response);
                 toast.success(response.data.message);
                 resetForm();
             } catch (error) {
@@ -148,7 +150,22 @@ const Home = () => {
                         </div>
                         <div className="col-md-6 text-center">
                             <h2 className="featured-title mb-4">Featured Products</h2>
-                            <ThreeDCarousel products={products}></ThreeDCarousel>
+                            {loading ? (
+                                <div className="row">
+                                    {[...Array(4)].map((_, i) => (
+                                        <div key={i} className="col-md-3">
+                                            <div className="card placeholder-wave">
+                                                <div className="card-body">
+                                                    <div className="placeholder col-12 mb-2"></div>
+                                                    <div className="placeholder col-8"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <ThreeDCarousel products={products} />
+                            )}
                         </div>
                     </div>
                 </div>
@@ -294,7 +311,7 @@ const Home = () => {
                                             name="name"
                                             placeholder="Fullname"
                                             value={formData.name}
-                                            onChange={(e)=>basicValidation(e,null,"fullname")}
+                                            onChange={(e) => basicValidation(e, null, "fullname")}
                                             required
                                         />
                                     </div>
@@ -307,7 +324,7 @@ const Home = () => {
                                             name="toEmail"
                                             placeholder="Email"
                                             value={formData.fromEmail}
-                                            onChange={(e)=>basicValidation(e,null,"email")}
+                                            onChange={(e) => basicValidation(e, null, "email")}
                                             required
                                         />
                                     </div>
@@ -320,7 +337,7 @@ const Home = () => {
                                             rows={3}
                                             placeholder="Message"
                                             value={formData.content}
-                                            onChange={(e)=>basicValidation(null,e,"message")}
+                                            onChange={(e) => basicValidation(null, e, "message")}
 
                                             required
                                         ></textarea>

@@ -35,6 +35,7 @@ export const addToCart = createAsyncThunk(
             accountID: accountID,
         }
         try {
+            console.log(payload);
             const response = await axiosInstance.post(`cart/add`, payload);
             toast.success(response.data.message);
             return response.data.data
