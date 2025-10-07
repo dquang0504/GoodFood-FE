@@ -2,7 +2,6 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { ENDPOINT } from '../App';
 import { toast } from 'react-toastify';
-import { Users } from '../Interfaces/Users';
 import { clearCart } from './CartSlice';
 
 interface SelectedUserFields {
@@ -10,6 +9,9 @@ interface SelectedUserFields {
     role: boolean,
     username: string
     avatar: string,
+    fullName: string,
+    email: string,
+    phoneNumber: string,
 }
 
 export interface LoginState {
@@ -62,7 +64,7 @@ const loginSlice = createSlice({
                 state.isLoading = true;
                 state.error = null;
             })
-            .addCase(logout.fulfilled, (state, action) => {
+            .addCase(logout.fulfilled, () => {
                 return initialState
             })
             .addCase(logout.rejected, (state, action) => {
@@ -73,7 +75,7 @@ const loginSlice = createSlice({
                 state.accessToken = action.payload;
                 state.isAuthenticated = true;
             })
-            .addCase(refreshAccessToken.rejected, (state) => {
+            .addCase(refreshAccessToken.rejected, () => {
                 return initialState
             })
             .addCase(loginGoogle.pending, (state) => {
@@ -116,7 +118,6 @@ export const login = createAsyncThunk(
             username,
             password
         }
-        console.log(payload);
         try {
             const response = await axios.post(`${ENDPOINT}/user/login`, payload, { withCredentials: true });
             toast.success("Successfully logged in!");

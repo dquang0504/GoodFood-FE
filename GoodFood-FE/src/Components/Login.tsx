@@ -16,7 +16,6 @@ import FacebookLogin from "./FacebookLogin";
 
 const Login = () => {
     const {state} = useLocation();
-    console.log(state?.isLogin)
     const [isLoginTab, setIsLoginTab] = useState(state ? state.isLogin : true);
 
     // Login state
@@ -123,8 +122,7 @@ const Login = () => {
 
     const handleFacebookLogin = async(accessToken: string)=>{
         try {
-            const response = dispatch(loginFacebook(accessToken))
-            console.log(response);
+            dispatch(loginFacebook(accessToken))
         } catch (error) {
             console.log(error);
         }
@@ -165,7 +163,6 @@ const Login = () => {
                                     const accessToken = credentialResponse.credential;
                                     if (!accessToken) return "Failed"; 
                                     const response = await dispatch(loginGoogle(accessToken))
-                                    console.log(response);
                                     toast.error(response.payload);
                                 }} onError={()=>console.log("Login failed")}>
 

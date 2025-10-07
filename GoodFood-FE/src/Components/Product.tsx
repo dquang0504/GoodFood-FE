@@ -276,30 +276,32 @@ const Product = () => {
                                         ))}
                                 </div>
                         }
-                        <div className="pagination justify-content-center">
-                            <div className='d-flex justify-content-center' >
-                                <ReactPaginate
-                                    breakLabel="..."
-                                    nextLabel={<i className="fa-solid fa-forward-step"></i>}
-                                    onPageChange={(event) => setPageNum(event.selected + 1)}
-                                    pageRangeDisplayed={3}
-                                    pageCount={totalPage}
-                                    previousLabel={<i className="fa-solid fa-backward-step"></i>}
-                                    renderOnZeroPageCount={null}
-                                    pageClassName='page-item  page-address'
-                                    pageLinkClassName='page-link'
-                                    previousClassName='page-item page-address'
-                                    previousLinkClassName='page-link'
-                                    nextClassName='page-item page-address'
-                                    nextLinkClassName='page-link'
-                                    breakClassName='page-item'
-                                    breakLinkClassName='page-link'
-                                    containerClassName='pagination'
-                                    activeClassName='active'
-                                    forcePage={pageNum - 1}
-                                />
+                        {totalPage > 0 && (
+                            <div className="pagination justify-content-center">
+                                <div className='d-flex justify-content-center' >
+                                    <ReactPaginate
+                                        breakLabel="..."
+                                        nextLabel={<i className="fa-solid fa-forward-step"></i>}
+                                        onPageChange={(event) => setPageNum(event.selected + 1)}
+                                        pageRangeDisplayed={3}
+                                        pageCount={totalPage}
+                                        previousLabel={<i className="fa-solid fa-backward-step"></i>}
+                                        renderOnZeroPageCount={null}
+                                        pageClassName='page-item  page-address'
+                                        pageLinkClassName='page-link'
+                                        previousClassName='page-item page-address'
+                                        previousLinkClassName='page-link'
+                                        nextClassName='page-item page-address'
+                                        nextLinkClassName='page-link'
+                                        breakClassName='page-item'
+                                        breakLinkClassName='page-link'
+                                        containerClassName='pagination'
+                                        activeClassName='active'
+                                        forcePage={pageNum - 1}
+                                    />
+                                </div>
                             </div>
-                        </div>
+                        )}
                     </div>
                 </div>
             </div>

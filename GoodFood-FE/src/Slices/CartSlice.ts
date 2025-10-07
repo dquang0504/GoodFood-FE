@@ -107,7 +107,7 @@ const cartSlice = createSlice({
     name: "cart",
     initialState: initialState,
     reducers:{
-        clearCart: (state)=>{
+        clearCart: ()=>{
             sessionStorage.removeItem("cart");
             return initialState
         },

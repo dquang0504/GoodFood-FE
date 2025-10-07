@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import Navbar from './Navbar';
-import Footer from './Footer';
 import axiosInstance from '../Services/AxiosInstance';
 import { Reviews } from '../Interfaces/Reviews';
 import { useSelector } from 'react-redux';
 import { RootState } from '../Store/store';
-import { formatVND } from '../Services/FormatVND';
 import { InvoiceDetails } from '../Interfaces/InvoiceDetails';
-import UploadImgProduct from './Admin/UploadImgProduct';
 import { ReviewImages } from '../Interfaces/ReviewImages';
 import { toast } from 'react-toastify';
 import Lightbox, { SlideImage } from 'yet-another-react-lightbox';
 import { useLocation, useNavigate } from 'react-router-dom';
+import Navbar from './Navbar';
+import { formatVND } from '../Services/FormatVND';
+import UploadImgProduct from './Admin/UploadImgProduct';
+import Footer from './Footer';
 
 const EditReviewProduct = () => {
     const { user } = useSelector((state: RootState) => state.login);
@@ -23,7 +23,18 @@ const EditReviewProduct = () => {
         comment: "",
         invoiceID: 0,
         productID: 0,
-        reviewAccount: user,
+        reviewAccount: {
+            accountID: user?.accountID ?? 0,
+            role: user?.role ?? false,
+            username: user?.username ?? "",
+            avatar: user?.avatar ?? "",
+            email: "",
+            fullName: "",
+            gender: true,
+            password: "",
+            phoneNumber: "",
+            status: true,
+        },
         reviewDate: new Date(),
         reviewID: 0,
         reviewProduct: null,

@@ -11,7 +11,6 @@ const initialState: LoginState = {
     error: null,
     isLoading: false,
     resetToken: null,
-    sessionID: null
 }
 
 const updateAccountSlice = createSlice({

@@ -131,7 +131,7 @@ const ChatBot = () => {
 
             return messages;
         } catch (error) {
-            console.error("Lỗi khi tải tin nhắn từ Firestore:", error);
+            console.error("Error loading messages from Firestore:", error);
             return [];
         }
     };

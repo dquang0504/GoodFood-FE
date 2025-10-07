@@ -16,7 +16,18 @@ import { setUser } from '../Slices/LoginSlice';
 const UpdateAccount = () => {
     const {user} = useSelector((state:RootState)=>state.login);
     if (!user) return;
-    const [account,setAccount] = useState<Users>(user);
+    const [account,setAccount] = useState<Users>({
+        accountID: user?.accountID ?? 0,
+        role: user?.role ?? false,
+        username: user?.username ?? "",
+        avatar: user?.avatar ?? "",
+        email: user?.email ?? "",
+        fullName: user?.fullName ?? "",
+        gender: true,
+        password: "",
+        phoneNumber: user?.email ?? "",
+        status: true,
+    });
     const [err,setErr] = useState({
         errName: "",
         errPhone: "",
