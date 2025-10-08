@@ -11,7 +11,7 @@ const PieChart = () => {
 
     const [dataPC,setDataPC] = useState<pieChart[]>([]);
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const chartInstanceRef = useRef<any>(null); // thay vì Chart
+    const chartInstanceRef = useRef<Chart | null>(null); // thay vì Chart
 
     const fetchData = async()=>{
         try {

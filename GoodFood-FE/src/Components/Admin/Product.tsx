@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import SideNav from './SideNav';
 import HorizontalNav from './HorizontalNav';
 import { Products } from '../../Interfaces/Products';
@@ -67,7 +67,7 @@ const Product = () => {
     const [open, setOpen] = useState(false);
     const [slides, setSlides] = useState<SlideImage[]>([]);
 
-    const fetchData = async (page: number, sort: string, search: string) => {
+    const fetchData = useCallback(async (page: number, sort: string, search: string) => {
         try {
             const response = await axiosInstance.get(`admin/product?page=${page}&sort=${sort}&search=${search}`);
             setListLoaiSP(response.data.listLoaiSP);
@@ -77,11 +77,11 @@ const Product = () => {
         } catch (error) {
             console.log(error);
         }
-    }
+    },[])
 
     useEffect(() => {
         fetchData(pageNum, sort, search);
-    }, []);
+    }, [pageNum,sort,search,fetchData]);
 
     const basicValidation = (e: React.ChangeEvent<HTMLInputElement> | null, selectEvent: React.ChangeEvent<HTMLSelectElement> | null, fieldName: string) => {
         if (fieldName === "productName" && e) {
@@ -145,12 +145,12 @@ const Product = () => {
 
     const handlePost = async () => {
         let newUniqueFileName = "";
-        let imageURL: ProductImages[] = []
+        const imageURL: ProductImages[] = []
         if (imageFile.length > 0) {
             for (const file of imageFile) {
                 //split the extension of the file
-                let fileExtension = file.name.split('.').pop();
-                let fileNameWithoutExtension = file.name.split('.').join('.');
+                const fileExtension = file.name.split('.').pop();
+                const fileNameWithoutExtension = file.name.split('.').join('.');
 
                 //create a new file name with v4 library
                 newUniqueFileName = `${fileNameWithoutExtension}_${v4()}.${fileExtension}`;
@@ -180,6 +180,7 @@ const Product = () => {
                 toast.success(response.data.message);
                 console.log(response);
                 resetForm();
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
             } catch (error: any) {
                 console.log(error);
                 setErr(error.response.data.err)
@@ -193,12 +194,12 @@ const Product = () => {
 
     const handlePut = async () => {
         let newUniqueFileName = ""
-        let imageURL: ProductImages[] = []
+        const imageURL: ProductImages[] = []
         if (imageFile.length > 0) {
             for (const file of imageFile) {
                 //split the extension of the file
-                let fileExtension = file.name.split('.').pop();
-                let fileNameWithoutExtension = file.name.split('.').join();
+                const fileExtension = file.name.split('.').pop();
+                const fileNameWithoutExtension = file.name.split('.').join();
                 //create a new file name with v4 library
                 newUniqueFileName = `${fileNameWithoutExtension}_${v4()}.${fileExtension}`
                 //checking if the product already has images
@@ -208,7 +209,7 @@ const Product = () => {
                         const imageName = imageNameWithParams?.split("?")[0];
                         try {
                             await deleteObject(ref(storage, `AnhSanPham/${imageName}`));
-                            console.log("Đã xóa ảnh cũ:", imageName);
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         } catch (error: any) {
                             if (error.code === 'storage/object-not-found') {
                                 console.warn(`Ảnh không tồn tại: ${imageName} — đã bị xóa trước đó.`);
@@ -246,6 +247,7 @@ const Product = () => {
                 console.log(response);
                 resetForm();
                 setEditting(false);
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
             } catch (error: any) {
                 console.log(error);
                 setErr(error.response.data.err)

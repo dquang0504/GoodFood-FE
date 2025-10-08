@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import '../assets/css/Address.css'
 import '../assets/css/pagination.css'
 import Navbar from './Navbar';
@@ -61,7 +61,7 @@ const Address = () => {
     const [listWard, setListWard] = useState<Wards[]>([]);
     const [listAddress,setListAddress] = useState<Addresses[]>([]);
 
-    const fetchAddresesByPage = async(page: number)=>{
+    const fetchAddresesByPage = useCallback(async(page: number)=>{
         try {
             const response = await axiosInstance.get(`address/fetch?page=${page}&accountID=${user?.accountID}`)
             setToTalPage(response.data.totalPage);
@@ -69,7 +69,7 @@ const Address = () => {
         } catch (error) {
             console.log(error);
         }
-    }
+    },[user?.accountID])
 
     const fetchWard = async(districtID: number, selectedWard: string)=>{
         try {
@@ -136,15 +136,11 @@ const Address = () => {
             fetchWard(selectedValue[fieldName],"");
         }
     }
-    
-    useEffect(()=>{
-        fetchAddresesByPage(pageNum);
-    },[])
 
 
     useEffect(()=>{
         fetchAddresesByPage(pageNum);
-    },[pageNum])
+    },[pageNum, fetchAddresesByPage])
 
     const clickAddNewAddress = async()=>{
         const updatedAddressForm = {
@@ -232,7 +228,7 @@ const Address = () => {
 
     const basicValidation = () => {
         let validated = true;
-        let newErrors: typeof errorMessages = {
+        const newErrors: typeof errorMessages = {
             fullNameError: "",
             districtError:"",
             phoneError:"",

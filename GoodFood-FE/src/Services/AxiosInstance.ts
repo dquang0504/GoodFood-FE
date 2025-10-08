@@ -9,6 +9,8 @@ export const setStore = (store: Store<RootState>) => { storeRef = store; };
 // const ENDPOINT = "http://127.0.0.1:8080/api"
 const ENDPOINT = "http://localhost:8080/api"
 
+export type ApiError = {message: string}
+
 const axiosInstance = axios.create({
     baseURL: ENDPOINT,
     withCredentials: true,

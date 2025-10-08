@@ -11,7 +11,7 @@ const BarChart = () => {
     
     const [dataBC,setDataBC] = useState<barChart[]>([]);
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const chartInstanceRef = useRef<any>(null); // thay vì Chart
+    const chartInstanceRef = useRef<Chart | null>(null); // thay vì Chart
 
     const fetchData = async()=>{
         try {
