@@ -13,6 +13,10 @@ jobs:
   ci:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: ./GoodFood-FE #default working directory
+
     steps:
       #1. Checkout code
       - name: Checkout repository
@@ -26,7 +30,7 @@ jobs:
       
       #3. Install dependencies
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       #4. Lint code
       - name: Lint code
